@@ -1,0 +1,22 @@
+{
+  "_contract": "experiment_config.json v1.0",
+  "_dataset": "diabetes",
+  "_note": "SYNTHETIC",
+  "dataset_id": "c3d4e5f6-a7b8-4901-c2d3-e4f5a6b7c8d9",
+  "status": "READY_FOR_EXECUTION",
+  "task": "BINARY_CLASSIFICATION",
+  "quantum_enabled": true,
+  "classical_models": [
+    "logistic_regression",
+    "svm",
+    "random_forest"
+  ],
+  "quantum_models": [
+    "vqc"
+  ],
+  "evaluation": {
+    "split": "stratified",
+    "test_size": 0.2,
+    "random_state": 42
+  }
+}

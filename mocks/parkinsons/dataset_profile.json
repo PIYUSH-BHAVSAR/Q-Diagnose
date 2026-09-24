@@ -1,0 +1,40 @@
+{
+  "_contract": "dataset_profile.json v1.0",
+  "_dataset": "parkinsons",
+  "dataset_id": "d4e5f6a7-b8c9-4012-d3e4-f5a6b7c8d9e0",
+  "profile_id": "PROFILE-000004",
+  "modality": "TABULAR",
+  "dimensions": {
+    "rows": 195,
+    "columns": 24
+  },
+  "features": {
+    "numerical": 22,
+    "categorical": 1
+  },
+  "target": {
+    "candidate": "status",
+    "confidence": "HIGH"
+  },
+  "task": {
+    "candidate": "BINARY_CLASSIFICATION",
+    "confidence": "HIGH"
+  },
+  "class_distribution": {
+    "0": 48,
+    "1": 147
+  },
+  "missing_values": {
+    "total": 0,
+    "percentage": 0.0,
+    "by_column": {}
+  },
+  "duplicates": {
+    "candidate_count": 0
+  },
+  "warnings": [
+    "Severe class imbalance: 75.4% vs 24.6%"
+  ],
+  "status": "PROFILED",
+  "profiled_at": "2026-09-24T08:41:38.010Z"
+}

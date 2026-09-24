@@ -1,0 +1,55 @@
+{
+  "_contract": "recommendation.json v1.0",
+  "_dataset": "breast_cancer",
+  "benchmark_id": "BENCH-5035F65E",
+  "dataset_id": "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7",
+  "classical_best": {
+    "experiment_id": "EXP-EC590B9D",
+    "model_name": "RandomForest",
+    "metrics": {
+      "accuracy": 0.9737,
+      "precision": 1.0,
+      "recall": 0.9286,
+      "specificity": 1.0,
+      "f1_score": 0.963,
+      "roc_auc": 0.9977,
+      "pr_auc": 0.9957
+    },
+    "training_time_seconds": 0.134
+  },
+  "quantum_best": {
+    "experiment_id": "EXP-0850F91D",
+    "model_name": "VQC",
+    "qubits": 8,
+    "metrics": {
+      "accuracy": 0.9637,
+      "precision": 0.985,
+      "recall": 0.9421,
+      "specificity": 0.99,
+      "f1_score": 0.958,
+      "roc_auc": 0.9868,
+      "pr_auc": 0.9848
+    },
+    "training_time_seconds": 2.4,
+    "total_circuit_executions": 20475
+  },
+  "performance_differences": {
+    "accuracy_delta": -0.01,
+    "recall_delta": 0.0135,
+    "auc_delta": -0.0109,
+    "f1_delta": -0.005
+  },
+  "resource_comparison": {
+    "training_time_ratio": 17.8,
+    "inference_time_ratio": 1199.9,
+    "memory_ratio": 3.2
+  },
+  "classification": "TRADEOFF",
+  "observations": [
+    "VQC achieved +1.3pp recall vs RandomForest (94.2% vs 92.9%)",
+    "RandomForest achieved 1.1pp higher ROC-AUC",
+    "VQC required 17.8\u00d7 more training time"
+  ],
+  "recommendation_text": "For this breast cancer dataset, the VQC model achieved +1.3pp higher recall than the best classical model (RandomForest). Classification: TRADEOFF. VQC required 17.8\u00d7 more training time. All results from local quantum simulator \u2014 not real quantum hardware.",
+  "benchmark_timestamp": "2026-09-24T08:41:37.629Z"
+}

@@ -1,0 +1,181 @@
+{
+  "_contract": "explanation.json v1.0",
+  "_dataset": "heart_disease",
+  "_explainability_note": "Feature importance from RandomForest (proxy). In production, VQC uses perturbation analysis.",
+  "explanation_id": "EXPL-7FA6BD37",
+  "experiment_id": "EXP-654CF731",
+  "sample_id": "TEST_SAMPLE_000",
+  "prediction": {
+    "value": 0,
+    "score": 0.18,
+    "actual_label": 0,
+    "is_correct": true
+  },
+  "feature_importance": [
+    {
+      "feature_name": "cp",
+      "feature_index": 2,
+      "feature_value": -0.936,
+      "importance": 0.1377,
+      "effect": "negative"
+    },
+    {
+      "feature_name": "thalach",
+      "feature_index": 7,
+      "feature_value": -1.7382,
+      "importance": 0.1263,
+      "effect": "negative"
+    },
+    {
+      "feature_name": "thal",
+      "feature_index": 12,
+      "feature_value": -2.2175,
+      "importance": 0.1211,
+      "effect": "negative"
+    },
+    {
+      "feature_name": "oldpeak",
+      "feature_index": 9,
+      "feature_value": -0.392,
+      "importance": 0.1192,
+      "effect": "negative"
+    },
+    {
+      "feature_name": "chol",
+      "feature_index": 4,
+      "feature_value": 0.6517,
+      "importance": 0.0854,
+      "effect": "positive"
+    },
+    {
+      "feature_name": "age",
+      "feature_index": 0,
+      "feature_value": 0.2968,
+      "importance": 0.0851,
+      "effect": "positive"
+    },
+    {
+      "feature_name": "ca",
+      "feature_index": 11,
+      "feature_value": 0.2462,
+      "importance": 0.0848,
+      "effect": "positive"
+    },
+    {
+      "feature_name": "trestbps",
+      "feature_index": 3,
+      "feature_value": 1.0187,
+      "importance": 0.0745,
+      "effect": "positive"
+    }
+  ],
+  "global_importance": [
+    {
+      "feature_name": "cp",
+      "importance": 0.1377
+    },
+    {
+      "feature_name": "thalach",
+      "importance": 0.1263
+    },
+    {
+      "feature_name": "thal",
+      "importance": 0.1211
+    },
+    {
+      "feature_name": "oldpeak",
+      "importance": 0.1192
+    },
+    {
+      "feature_name": "chol",
+      "importance": 0.0854
+    },
+    {
+      "feature_name": "age",
+      "importance": 0.0851
+    },
+    {
+      "feature_name": "ca",
+      "importance": 0.0848
+    },
+    {
+      "feature_name": "trestbps",
+      "importance": 0.0745
+    },
+    {
+      "feature_name": "slope",
+      "importance": 0.0535
+    },
+    {
+      "feature_name": "exang",
+      "importance": 0.051
+    }
+  ],
+  "quantum_circuit_explanation": {
+    "qubits": 8,
+    "circuit_depth": 17,
+    "encoding_method": "angle_encoding",
+    "feature_to_qubit_mapping": {
+      "PC1": "qubit_0",
+      "PC2": "qubit_1",
+      "PC3": "qubit_2",
+      "PC4": "qubit_3",
+      "PC5": "qubit_4",
+      "PC6": "qubit_5",
+      "PC7": "qubit_6",
+      "PC8": "qubit_7"
+    },
+    "measured_qubits": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "circuit_diagram_url": null
+  },
+  "pipeline_trace": [
+    {
+      "phase": "Phase 1",
+      "component": "Ingestion",
+      "artifact": "DS-000002"
+    },
+    {
+      "phase": "Phase 4",
+      "component": "Preprocessing",
+      "artifact": "PREP-0295FE7A",
+      "note": "StandardScaler fitted on training data only"
+    },
+    {
+      "phase": "Phase 6",
+      "component": "Feature Reduction",
+      "artifact": "QREP-001",
+      "method": "PCA",
+      "dimensions": "13 \u2192 8",
+      "variance_retained": "80.0%"
+    },
+    {
+      "phase": "Phase 8",
+      "component": "Quantum Model",
+      "artifact": "VQC",
+      "qubits": 8
+    },
+    {
+      "phase": "Phase 10",
+      "component": "Execution",
+      "artifact": "EXP-654CF731",
+      "backend": "LOCAL_SIMULATOR"
+    }
+  ],
+  "model_decision_reason": "The VQC model predicted NEGATIVE (healthy) with score 0.180. Strongest contributing feature: 'cp' (importance 0.138). Actual label was NEGATIVE \u2014 correct prediction.",
+  "warnings": [
+    "Feature importance is approximated via RandomForest proxy \u2014 VQC uses perturbation analysis in production.",
+    "Prediction score is uncalibrated and should not be interpreted as a clinical probability.",
+    "This is a research/benchmarking system output. Not a clinical diagnosis."
+  ],
+  "explainability_method": "feature_perturbation",
+  "explanation_timestamp": "2026-09-24T08:41:37.837Z"
+}

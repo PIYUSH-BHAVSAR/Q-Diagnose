@@ -1,0 +1,55 @@
+{
+  "_contract": "recommendation.json v1.0",
+  "_dataset": "heart_disease",
+  "benchmark_id": "BENCH-C14CF3AD",
+  "dataset_id": "b2c3d4e5-f6a7-4890-b1c2-d3e4f5a6b7c8",
+  "classical_best": {
+    "experiment_id": "EXP-1949FB3F",
+    "model_name": "RandomForest",
+    "metrics": {
+      "accuracy": 0.7705,
+      "precision": 0.7436,
+      "recall": 0.8788,
+      "specificity": 0.6429,
+      "f1_score": 0.8056,
+      "roc_auc": 0.888,
+      "pr_auc": 0.9038
+    },
+    "training_time_seconds": 0.1
+  },
+  "quantum_best": {
+    "experiment_id": "EXP-654CF731",
+    "model_name": "VQC",
+    "qubits": 8,
+    "metrics": {
+      "accuracy": 0.7605,
+      "precision": 0.7286,
+      "recall": 0.8923,
+      "specificity": 0.6329,
+      "f1_score": 0.8006,
+      "roc_auc": 0.8771,
+      "pr_auc": 0.8929
+    },
+    "training_time_seconds": 1.8,
+    "total_circuit_executions": 10890
+  },
+  "performance_differences": {
+    "accuracy_delta": -0.01,
+    "recall_delta": 0.0135,
+    "auc_delta": -0.0109,
+    "f1_delta": -0.005
+  },
+  "resource_comparison": {
+    "training_time_ratio": 17.9,
+    "inference_time_ratio": 1200.1,
+    "memory_ratio": 3.2
+  },
+  "classification": "TRADEOFF",
+  "observations": [
+    "VQC achieved +1.3pp recall vs RandomForest (89.2% vs 87.9%)",
+    "RandomForest achieved 1.1pp higher ROC-AUC",
+    "VQC required 17.9\u00d7 more training time"
+  ],
+  "recommendation_text": "For this heart disease dataset, the VQC model achieved +1.3pp higher recall than the best classical model (RandomForest). Classification: TRADEOFF. VQC required 17.9\u00d7 more training time. All results from local quantum simulator \u2014 not real quantum hardware.",
+  "benchmark_timestamp": "2026-09-24T08:41:37.832Z"
+}

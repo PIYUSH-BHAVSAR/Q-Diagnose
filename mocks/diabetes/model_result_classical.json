@@ -1,0 +1,45 @@
+{
+  "_contract": "model_result.json v1.0",
+  "_dataset": "diabetes",
+  "_note": "SYNTHETIC",
+  "experiment_id": "EXP-11DF7FEC",
+  "model_type": "CLASSICAL",
+  "model_name": "RandomForest",
+  "representation_id": "REP-001",
+  "status": "COMPLETED",
+  "metrics": {
+    "accuracy": 0.7987,
+    "precision": 0.7018,
+    "recall": 0.7407,
+    "specificity": 0.83,
+    "f1_score": 0.7207,
+    "roc_auc": 0.8658,
+    "pr_auc": 0.7284
+  },
+  "confusion_matrix": [
+    [
+      83,
+      17
+    ],
+    [
+      14,
+      40
+    ]
+  ],
+  "resource_usage": {
+    "training_time_seconds": 0.153,
+    "inference_time_seconds": 0.0049,
+    "memory_peak_mb": 0.4,
+    "model_size_mb": null
+  },
+  "quantum_metrics": null,
+  "model_artifact_path": "artifacts/experiments/EXP-11DF7FEC/models/random_forest.pkl",
+  "hyperparameters": {
+    "n_estimators": 100,
+    "class_weight": "balanced",
+    "random_state": 42
+  },
+  "random_seed": 42,
+  "execution_timestamp": "2026-09-24T08:41:38.222Z",
+  "error_message": null
+}

@@ -1,0 +1,27 @@
+experiment:
+  random_state: 42
+  test_size: 0.20
+
+classical:
+  models:
+    - logistic_regression
+    - svm
+    - random_forest
+
+quantum:
+  model: vqc
+  max_qubits: 8
+  candidate_dimensions:
+    - 4
+    - 8
+  layers: 2
+  shots: 1024
+  epochs: 20
+  learning_rate: 0.01
+
+resources:
+  max_runtime_seconds: 300
+
+feature_reduction:
+  method: pca
+  variance_threshold: 0.95

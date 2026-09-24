@@ -1,0 +1,45 @@
+{
+  "_contract": "model_result.json v1.0",
+  "_dataset": "parkinsons",
+  "_model": "random_forest",
+  "experiment_id": "EXP-B73501A7",
+  "model_type": "CLASSICAL",
+  "model_name": "RandomForest",
+  "representation_id": "REP-001",
+  "status": "COMPLETED",
+  "metrics": {
+    "accuracy": 0.9231,
+    "precision": 0.9394,
+    "recall": 0.9688,
+    "specificity": 0.7143,
+    "f1_score": 0.9538,
+    "roc_auc": 0.9643,
+    "pr_auc": 0.9922
+  },
+  "confusion_matrix": [
+    [
+      5,
+      2
+    ],
+    [
+      1,
+      31
+    ]
+  ],
+  "resource_usage": {
+    "training_time_seconds": 0.092,
+    "inference_time_seconds": 0.0046,
+    "memory_peak_mb": 0.0,
+    "model_size_mb": null
+  },
+  "quantum_metrics": null,
+  "model_artifact_path": "artifacts/experiments/EXP-B73501A7/models/random_forest.pkl",
+  "hyperparameters": {
+    "n_estimators": 100,
+    "class_weight": "balanced",
+    "random_state": 42
+  },
+  "random_seed": 42,
+  "execution_timestamp": "2026-09-24T08:41:38.023Z",
+  "error_message": null
+}

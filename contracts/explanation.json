@@ -1,0 +1,191 @@
+{
+  "_comment": "Explanation - Phase 12 Output",
+  "_description": "Produced by: Phase 12 explainability engine. Consumed by: Frontend explanation UI, audit trails, medical review.",
+  
+  "explanation_id": {
+    "_type": "string",
+    "_example": "EXPL-000001"
+  },
+  
+  "experiment_id": {
+    "_type": "string",
+    "_example": "EXP-Q-000001"
+  },
+  
+  "sample_id": {
+    "_type": "string | integer",
+    "_description": "Identifier for the specific sample being explained (e.g., test set index or patient ID).",
+    "_example": "TEST_SAMPLE_042"
+  },
+  
+  "prediction": {
+    "value": {
+      "_type": "integer | string",
+      "_description": "Predicted class label.",
+      "_example_binary": 1,
+      "_interpretation": "1 = disease positive, 0 = disease negative"
+    },
+    "score": {
+      "_type": "float [0-1]",
+      "_description": "Raw model confidence score (uncalibrated).",
+      "_example": 0.873
+    },
+    "actual_label": {
+      "_type": "integer | null",
+      "_description": "True label if available (for error analysis).",
+      "_example": 1
+    },
+    "is_correct": {
+      "_type": "boolean | null",
+      "_example": true
+    }
+  },
+  
+  "feature_importance": {
+    "_type": "array of objects",
+    "_description": "Top contributing features ranked by importance/effect on prediction.",
+    "_method_classical": "SHAP values for tree-based models, coefficients for linear models",
+    "_method_quantum": "Perturbation-based or ablation-based importance",
+    
+    "_example": [
+      {
+        "feature_name": "mean_radius",
+        "feature_index": 0,
+        "feature_value": 17.23,
+        "importance": 0.312,
+        "effect": "positive",
+        "_description": "Higher value pushes prediction toward positive class"
+      },
+      {
+        "feature_name": "worst_concave_points",
+        "feature_index": 7,
+        "feature_value": 0.145,
+        "importance": 0.241,
+        "effect": "positive"
+      },
+      {
+        "feature_name": "mean_texture",
+        "feature_index": 1,
+        "feature_value": 10.38,
+        "importance": 0.087,
+        "effect": "negative",
+        "_description": "Value pushes prediction toward negative class"
+      }
+    ]
+  },
+  
+  "global_importance": {
+    "_type": "array of objects",
+    "_description": "Average feature importance across entire test set (not sample-specific).",
+    "_example": [
+      {"feature_name": "worst_radius", "importance": 0.187},
+      {"feature_name": "worst_concave_points", "importance": 0.156},
+      {"feature_name": "mean_concave_points", "importance": 0.134}
+    ]
+  },
+  
+  "quantum_circuit_explanation": {
+    "_type": "object | null",
+    "_description": "Present only for quantum models.",
+    "_nullable_for_classical": true,
+    
+    "qubits": {"_type": "integer", "_example": 8},
+    "circuit_depth": {"_type": "integer", "_example": 12},
+    "encoding_method": {"_type": "string", "_example": "angle_encoding"},
+    "feature_to_qubit_mapping": {
+      "_type": "object",
+      "_example": {
+        "feature_0": "qubit_0",
+        "feature_1": "qubit_1",
+        "feature_7": "qubit_7"
+      }
+    },
+    "measured_qubits": {
+      "_type": "array of integers",
+      "_example": [0, 1, 2, 3, 4, 5, 6, 7]
+    },
+    "circuit_diagram_url": {
+      "_type": "string | null",
+      "_description": "Path to generated circuit visualization image.",
+      "_example": "explanations/EXPL-000001/circuit.png"
+    }
+  },
+  
+  "pipeline_trace": {
+    "_type": "array of objects",
+    "_description": "Complete pipeline lineage showing how this prediction was produced.",
+    "_example": [
+      {"phase": "Phase 1", "component": "Ingestion", "artifact": "DS-000001"},
+      {"phase": "Phase 4", "component": "Preprocessing", "artifact": "PREP-000001"},
+      {"phase": "Phase 5", "component": "Feature Engineering", "artifact": "FE-000001"},
+      {"phase": "Phase 6", "component": "Feature Reduction", "artifact": "QREP-000001", "method": "PCA", "dimensions": "30 -> 8"},
+      {"phase": "Phase 8", "component": "Quantum Model", "artifact": "VQC", "qubits": 8},
+      {"phase": "Phase 10", "component": "Execution", "artifact": "EXP-Q-000001", "backend": "LOCAL_SIMULATOR"}
+    ]
+  },
+  
+  "perturbation_analysis": {
+    "_type": "object | null",
+    "_description": "Feature perturbation analysis showing sensitivity to input changes.",
+    "_example": {
+      "feature_0_perturbation": {
+        "original_value": 17.23,
+        "perturbed_value": 15.50,
+        "original_prediction_score": 0.873,
+        "perturbed_prediction_score": 0.742,
+        "delta": -0.131,
+        "interpretation": "Decreasing this feature significantly reduces disease probability"
+      }
+    }
+  },
+  
+  "counterfactual": {
+    "_type": "object | null",
+    "_description": "Minimal feature changes that would flip the prediction (if computed).",
+    "_example": {
+      "current_prediction": 1,
+      "counterfactual_prediction": 0,
+      "required_changes": [
+        {"feature": "mean_radius", "from": 17.23, "to": 12.5},
+        {"feature": "worst_concave_points", "from": 0.145, "to": 0.08}
+      ]
+    }
+  },
+  
+  "confidence_calibration": {
+    "_type": "object | null",
+    "_description": "Calibration information if available (Phase 12 may compute this).",
+    "raw_score": {"_type": "float", "_example": 0.873},
+    "calibrated_probability": {"_type": "float | null", "_example": 0.821},
+    "is_calibrated": {"_type": "boolean", "_example": false},
+    "_note": "Uncalibrated scores should not be interpreted as true probabilities."
+  },
+  
+  "model_decision_reason": {
+    "_type": "string",
+    "_description": "Human-readable explanation of why the model made this prediction.",
+    "_example": "The model predicted POSITIVE (malignant) with score 0.873. The prediction was strongly influenced by elevated mean_radius (17.23, importance 0.312) and worst_concave_points (0.145, importance 0.241), which are characteristic indicators in the training data. The actual label was POSITIVE, so this is a correct prediction."
+  },
+  
+  "warnings": {
+    "_type": "array of strings",
+    "_description": "Warnings about explanation reliability or limitations.",
+    "_example": [
+      "This explanation is based on perturbation analysis and may not reflect true model causality.",
+      "Prediction score is uncalibrated and should not be interpreted as clinical probability.",
+      "This is a research system output, not a clinical diagnosis."
+    ]
+  },
+  
+  "explainability_method": {
+    "_type": "string",
+    "_description": "Method used to generate explanation.",
+    "_example_classical": "SHAP",
+    "_example_quantum": "feature_perturbation"
+  },
+  
+  "explanation_timestamp": {
+    "_type": "ISO 8601 datetime",
+    "_example": "2026-09-10T16:45:23.789Z"
+  }
+}

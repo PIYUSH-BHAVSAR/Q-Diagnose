@@ -1,0 +1,55 @@
+{
+  "_contract": "recommendation.json v1.0",
+  "_dataset": "diabetes",
+  "_note": "SYNTHETIC",
+  "benchmark_id": "BENCH-024A16BE",
+  "dataset_id": "c3d4e5f6-a7b8-4901-c2d3-e4f5a6b7c8d9",
+  "classical_best": {
+    "experiment_id": "EXP-11DF7FEC",
+    "model_name": "RandomForest",
+    "metrics": {
+      "accuracy": 0.7987,
+      "precision": 0.7018,
+      "recall": 0.7407,
+      "specificity": 0.83,
+      "f1_score": 0.7207,
+      "roc_auc": 0.8658,
+      "pr_auc": 0.7284
+    },
+    "training_time_seconds": 0.153
+  },
+  "quantum_best": {
+    "experiment_id": "EXP-C80184C7",
+    "model_name": "VQC",
+    "qubits": 8,
+    "metrics": {
+      "accuracy": 0.7887,
+      "precision": 0.6868,
+      "recall": 0.7757,
+      "specificity": 0.82,
+      "f1_score": 0.7157,
+      "roc_auc": 0.8474,
+      "pr_auc": 0.71
+    },
+    "training_time_seconds": 2.8,
+    "total_circuit_executions": 27630
+  },
+  "performance_differences": {
+    "accuracy_delta": -0.01,
+    "recall_delta": 0.035,
+    "auc_delta": -0.0184
+  },
+  "resource_comparison": {
+    "training_time_ratio": 18.3,
+    "inference_time_ratio": 1200.0,
+    "memory_ratio": 3.1
+  },
+  "classification": "QUANTUM_ADVANTAGE",
+  "observations": [
+    "VQC recall delta: +3.5pp",
+    "AUC delta: -1.8pp",
+    "VQC required 18.3\u00d7 more training time"
+  ],
+  "recommendation_text": "Diabetes dataset (synthetic). Classification: QUANTUM_ADVANTAGE.",
+  "benchmark_timestamp": "2026-09-24T08:41:38.223Z"
+}

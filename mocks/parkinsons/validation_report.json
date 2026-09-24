@@ -1,0 +1,120 @@
+{
+  "_contract": "validation_report.json v1.1",
+  "_dataset": "parkinsons",
+  "dataset_id": "d4e5f6a7-b8c9-4012-d3e4-f5a6b7c8d9e0",
+  "validation_timestamp": "2026-09-24T08:41:38.010Z",
+  "validation_status": "PASS_WITH_WARNINGS",
+  "quality_score": 80,
+  "next_phase": "PREPROCESSING",
+  "target_validation": {
+    "status": "PASS",
+    "target_column": "status",
+    "target_type": "binary",
+    "unique_values": 2,
+    "value_distribution": {
+      "0": 48,
+      "1": 147
+    },
+    "missing_count": 0,
+    "is_identifier_risk": false
+  },
+  "schema_validation": {
+    "status": "PASS",
+    "expected_numerical": 22,
+    "expected_categorical": 1,
+    "actual_numerical": 22,
+    "actual_categorical": 1,
+    "type_mismatches": []
+  },
+  "missing_values": {
+    "status": "PASS",
+    "dataset_level": {
+      "total_missing": 0,
+      "missing_percentage": 0.0
+    },
+    "column_level": {},
+    "sample_level": {
+      "samples_with_missing": 0,
+      "max_missing_per_sample_pct": 0.0
+    },
+    "severity": "PASS"
+  },
+  "duplicates": {
+    "status": "PASS",
+    "exact_duplicates": 0,
+    "duplicate_percentage": 0.0,
+    "severity": "PASS"
+  },
+  "class_balance": {
+    "status": "WARNING",
+    "class_counts": {
+      "0": 48,
+      "1": 147
+    },
+    "imbalance_ratio": 3.06,
+    "minority_percentage": 24.6,
+    "severity": "HIGH"
+  },
+  "value_validation": {
+    "status": "PASS",
+    "structural_invalidity_count": 0,
+    "potential_outlier_count": 14,
+    "invalid_ranges": []
+  },
+  "outliers": {
+    "status": "INFO",
+    "columns_with_outliers": [
+      "MDVP:Fhi(Hz)",
+      "MDVP:Jitter(%)",
+      "MDVP:Jitter(Abs)",
+      "MDVP:RAP",
+      "MDVP:PPQ"
+    ],
+    "total_outlier_samples": 14,
+    "outlier_percentage": 7.18
+  },
+  "leakage": {
+    "status": "PASS",
+    "identifier_candidates": [
+      "name"
+    ],
+    "high_correlation_with_target": [],
+    "suspicious_relationships": []
+  },
+  "patient_level_split_risk": {
+    "detected": true,
+    "patient_id_column": "name",
+    "recommendation": "Use GroupShuffleSplit on 'name' column \u2014 multiple recordings per subject."
+  },
+  "image_label_validation": {
+    "applicable": false
+  },
+  "critical_issues": [],
+  "warnings": [
+    {
+      "code": "CLASS_IMBALANCE",
+      "message": "High imbalance (3.06:1 ratio)",
+      "severity": "HIGH",
+      "column": "status"
+    },
+    {
+      "code": "PATIENT_LEAKAGE_RISK",
+      "message": "Multiple recordings per subject detected in 'name' column \u2014 use GroupShuffleSplit",
+      "severity": "HIGH",
+      "column": "name"
+    }
+  ],
+  "info_messages": [
+    {
+      "code": "OUTLIER_DETECTION",
+      "message": "Potential statistical outliers detected (IQR method)",
+      "severity": "INFO"
+    }
+  ],
+  "recommended_preprocessing_steps": [
+    "StandardScaler normalisation on training data only",
+    "Apply class_weight='balanced' to address high class imbalance",
+    "Drop identifier columns: name",
+    "Use GroupShuffleSplit on 'name' to prevent patient leakage"
+  ]
+}

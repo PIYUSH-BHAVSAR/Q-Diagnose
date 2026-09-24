@@ -1,0 +1,55 @@
+{
+  "_contract": "recommendation.json v1.0",
+  "_dataset": "parkinsons",
+  "benchmark_id": "BENCH-D9206EA6",
+  "dataset_id": "d4e5f6a7-b8c9-4012-d3e4-f5a6b7c8d9e0",
+  "classical_best": {
+    "experiment_id": "EXP-B73501A7",
+    "model_name": "RandomForest",
+    "metrics": {
+      "accuracy": 0.9231,
+      "precision": 0.9394,
+      "recall": 0.9688,
+      "specificity": 0.7143,
+      "f1_score": 0.9538,
+      "roc_auc": 0.9643,
+      "pr_auc": 0.9922
+    },
+    "training_time_seconds": 0.092
+  },
+  "quantum_best": {
+    "experiment_id": "EXP-1FDB13EC",
+    "model_name": "VQC",
+    "qubits": 8,
+    "metrics": {
+      "accuracy": 0.9131,
+      "precision": 0.9244,
+      "recall": 0.9823,
+      "specificity": 0.7043,
+      "f1_score": 0.9488,
+      "roc_auc": 0.9534,
+      "pr_auc": 0.9813
+    },
+    "training_time_seconds": 1.7,
+    "total_circuit_executions": 7020
+  },
+  "performance_differences": {
+    "accuracy_delta": -0.01,
+    "recall_delta": 0.0135,
+    "auc_delta": -0.0109,
+    "f1_delta": -0.005
+  },
+  "resource_comparison": {
+    "training_time_ratio": 18.4,
+    "inference_time_ratio": 1200.0,
+    "memory_ratio": 0.0
+  },
+  "classification": "TRADEOFF",
+  "observations": [
+    "VQC achieved +1.3pp recall vs RandomForest (98.2% vs 96.9%)",
+    "RandomForest achieved 1.1pp higher ROC-AUC",
+    "VQC required 18.4\u00d7 more training time"
+  ],
+  "recommendation_text": "For this parkinsons dataset, the VQC model achieved +1.3pp higher recall than the best classical model (RandomForest). Classification: TRADEOFF. VQC required 18.4\u00d7 more training time. All results from local quantum simulator \u2014 not real quantum hardware.",
+  "benchmark_timestamp": "2026-09-24T08:41:38.024Z"
+}

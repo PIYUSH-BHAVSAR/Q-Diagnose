@@ -1,0 +1,64 @@
+{
+  "_contract": "validation_report.json v1.1",
+  "_dataset": "diabetes",
+  "_note": "SYNTHETIC",
+  "dataset_id": "c3d4e5f6-a7b8-4901-c2d3-e4f5a6b7c8d9",
+  "validation_timestamp": "2026-09-24T08:41:38.219Z",
+  "validation_status": "PASS_WITH_WARNINGS",
+  "quality_score": 85,
+  "next_phase": "PREPROCESSING",
+  "target_validation": {
+    "status": "PASS",
+    "target_column": "Outcome",
+    "unique_values": 2,
+    "value_distribution": {
+      "0": 500,
+      "1": 268
+    },
+    "missing_count": 0,
+    "is_identifier_risk": false
+  },
+  "missing_values": {
+    "status": "WARNING",
+    "dataset_level": {
+      "total_missing": 652,
+      "missing_percentage": 10.7
+    },
+    "severity": "MODERATE"
+  },
+  "class_balance": {
+    "status": "WARNING",
+    "class_counts": {
+      "0": 500,
+      "1": 268
+    },
+    "imbalance_ratio": 1.87,
+    "minority_percentage": 34.9,
+    "severity": "MODERATE"
+  },
+  "leakage": {
+    "status": "PASS",
+    "identifier_candidates": [],
+    "high_correlation_with_target": []
+  },
+  "patient_level_split_risk": {
+    "detected": false,
+    "patient_id_column": null,
+    "recommendation": "Standard stratified split acceptable"
+  },
+  "critical_issues": [],
+  "warnings": [
+    {
+      "code": "MISSING_VALUES",
+      "message": "10.7% missing (biologically impossible zeros in real dataset)",
+      "severity": "MODERATE",
+      "column": "multiple"
+    },
+    {
+      "code": "CLASS_IMBALANCE",
+      "message": "Moderate imbalance (1.87:1)",
+      "severity": "MODERATE",
+      "column": "Outcome"
+    }
+  ]
+}

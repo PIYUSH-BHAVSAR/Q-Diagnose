@@ -1,0 +1,164 @@
+# ════════════════════════════════════════════════════════════
+#  SIH 2026 — Hybrid QML Disease Detection Platform
+#  .gitignore
+#
+#  WHAT IS TRACKED (everyone can build from a fresh clone):
+#    ✓  phase1.md … phase15.md       — architecture docs
+#    ✓  guide_*.md                   — per-role developer guides
+#    ✓  contracts/                   — JSON/MD interface contracts
+#    ✓  mocks/                       — generated mock data (44 files)
+#    ✓  ISSUES.md                    — audit log
+#    ✓  generate_mocks.py            — mock generation script
+#    ✓  mvp/backend/                 — all Python source code
+#    ✓  mvp/frontend/src/            — all React source code
+#    ✓  mvp/config.yaml              — platform configuration
+#    ✓  mvp/requirements.txt         — Python dependencies list
+#    ✓  mvp/frontend/package.json    — Node dependencies list
+#    ✓  data/demo/                   — the 3 real demo CSVs
+#
+#  WHAT IS NOT TRACKED:
+#    ✗  Python venv (mvp/venv/)
+#    ✗  Node modules (mvp/frontend/node_modules/)
+#    ✗  User-uploaded datasets (data/uploads/)
+#    ✗  Trained model artifacts (artifacts/)
+#    ✗  SQLite database (mvp.db)
+#    ✗  Python bytecode (__pycache__, *.pyc)
+#    ✗  IDE / OS metadata
+# ════════════════════════════════════════════════════════════
+
+
+# ── Python virtual environment ───────────────────────────────
+mvp/venv/
+venv/
+.venv/
+env/
+.env/
+ENV/
+
+
+# ── Python bytecode ──────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+
+
+# ── Python packaging / build artefacts ──────────────────────
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+*.whl
+MANIFEST
+
+
+# ── Node / frontend ──────────────────────────────────────────
+mvp/frontend/node_modules/
+mvp/frontend/dist/
+mvp/frontend/.vite/
+mvp/frontend/.cache/
+# Keep: package.json, vite.config.js, src/
+
+
+# ── SQLite database (auto-created on first run) ──────────────
+*.db
+*.sqlite
+*.sqlite3
+mvp/mvp.db
+
+
+# ── Uploaded datasets (user data, not for the repo) ─────────
+# The 3 demo CSVs in data/demo/ ARE tracked (small, needed for mocks).
+# User uploads are NOT tracked.
+data/uploads/
+
+
+# ── Trained model artefacts and experiment results ──────────
+# These are large and reproducible — re-run the pipeline to regenerate.
+artifacts/experiments/
+artifacts/models/
+artifacts/reports/
+# Keep: artifacts/ directory itself (tracked via .gitkeep files)
+
+
+# ── Logs ─────────────────────────────────────────────────────
+*.log
+logs/
+mvp/logs/
+
+
+# ── Environment / secrets ─────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.secret
+secrets/
+config.local.yaml
+
+
+# ── OS metadata ──────────────────────────────────────────────
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+
+# ── IDE / editor ─────────────────────────────────────────────
+# VS Code (keep workspace settings if useful, ignore personal)
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+# JetBrains
+.idea/
+*.iml
+*.iws
+# Vim / Emacs
+*.swp
+*.swo
+*~
+\#*\#
+.\#*
+
+
+# ── Testing artefacts ─────────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+nosetests.xml
+coverage.xml
+*.cover
+
+
+# ── Jupyter (if anyone uses notebooks locally) ───────────────
+.ipynb_checkpoints/
+*.ipynb
+
+
+# ── Type-checking / linting caches ───────────────────────────
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.ruff_cache/
+
+
+# ── Miscellaneous large generated files ──────────────────────
+*.npy
+*.pkl
+*.joblib
+# Note: if you want to commit a specific pkl for demo purposes,
+# override with:  !artifacts/demo/specific_model.pkl

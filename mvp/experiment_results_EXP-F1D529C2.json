@@ -1,0 +1,655 @@
+{
+  "experiment_id": "EXP-F1D529C2",
+  "status": "completed",
+  "results": {
+    "dataset_profile": {
+      "dataset_id": "DS-426503E4",
+      "name": "heart_disease",
+      "rows": 303,
+      "columns": [
+        {
+          "name": "age",
+          "dtype": "int64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 41,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            63,
+            37,
+            41,
+            56,
+            57
+          ]
+        },
+        {
+          "name": "sex",
+          "dtype": "int64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 2,
+          "is_numeric": true,
+          "is_categorical": true,
+          "is_target_candidate": true,
+          "sample_values": [
+            1,
+            1,
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "name": "cp",
+          "dtype": "int64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 4,
+          "is_numeric": true,
+          "is_categorical": true,
+          "is_target_candidate": true,
+          "sample_values": [
+            3,
+            2,
+            1,
+            1,
+            0
+          ]
+        },
+        {
+          "name": "trestbps",
+          "dtype": "int64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 49,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            145,
+            130,
+            130,
+            120,
+            120
+          ]
+        },
+        {
+          "name": "chol",
+          "dtype": "int64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 152,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            233,
+            250,
+            204,
+            236,
+            354
+          ]
+        },
+        {
+          "name": "fbs",
+          "dtype": "int64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 2,
+          "is_numeric": true,
+          "is_categorical": true,
+          "is_target_candidate": true,
+          "sample_values": [
+            1,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "name": "restecg",
+          "dtype": "int64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 3,
+          "is_numeric": true,
+          "is_categorical": true,
+          "is_target_candidate": true,
+          "sample_values": [
+            0,
+            1,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "thalach",
+          "dtype": "int64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 91,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            150,
+            187,
+            172,
+            178,
+            163
+          ]
+        },
+        {
+          "name": "exang",
+          "dtype": "int64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 2,
+          "is_numeric": true,
+          "is_categorical": true,
+          "is_target_candidate": true,
+          "sample_values": [
+            0,
+            0,
+            0,
+            0,
+            1
+          ]
+        },
+        {
+          "name": "oldpeak",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 40,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            2.3,
+            3.5,
+            1.4,
+            0.8,
+            0.6
+          ]
+        },
+        {
+          "name": "slope",
+          "dtype": "int64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 3,
+          "is_numeric": true,
+          "is_categorical": true,
+          "is_target_candidate": true,
+          "sample_values": [
+            0,
+            0,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "name": "ca",
+          "dtype": "int64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 5,
+          "is_numeric": true,
+          "is_categorical": true,
+          "is_target_candidate": true,
+          "sample_values": [
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "name": "thal",
+          "dtype": "int64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 4,
+          "is_numeric": true,
+          "is_categorical": true,
+          "is_target_candidate": true,
+          "sample_values": [
+            1,
+            2,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "name": "target",
+          "dtype": "int64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 2,
+          "is_numeric": true,
+          "is_categorical": true,
+          "is_target_candidate": true,
+          "sample_values": [
+            1,
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "missing_values_total": 0,
+      "missing_percentage": 0.0,
+      "duplicate_rows": 1,
+      "numerical_columns_count": 14,
+      "categorical_columns_count": 9,
+      "target_candidates": [
+        "target",
+        "sex",
+        "fbs",
+        "exang",
+        "cp",
+        "restecg",
+        "slope",
+        "ca",
+        "thal"
+      ],
+      "recommended_target": "target",
+      "is_binary_classification": true,
+      "class_distribution": {
+        "1": 165,
+        "0": 138
+      },
+      "class_imbalance_ratio": 1.1956521739130435,
+      "subject_column": null,
+      "profiled_at": "2026-09-15T17:12:39.525664"
+    },
+    "validation": {
+      "is_valid": true,
+      "issues": [],
+      "warnings": [],
+      "ready_for_ml": true,
+      "needs_target_selection": false,
+      "details": {
+        "auto_detected_target": "target",
+        "target_unique_values": 2,
+        "target_classes": [
+          1,
+          0
+        ],
+        "task_type": "binary_classification"
+      }
+    },
+    "preprocessing": {
+      "train_samples": 242,
+      "test_samples": 61,
+      "original_features": 13,
+      "reduced_features": 8,
+      "preprocessing": {
+        "steps": [
+          "train_test_split",
+          "feature_scaling"
+        ],
+        "original_shape": [
+          303,
+          13
+        ],
+        "split_type": "stratified",
+        "final_shape": {
+          "train": [
+            242,
+            13
+          ],
+          "test": [
+            61,
+            13
+          ]
+        }
+      },
+      "reduction": {
+        "n_components": 8,
+        "cumulative_variance": 0.8003,
+        "explained_variance_ratio": [
+          0.2223,
+          0.1203,
+          0.0983,
+          0.0876,
+          0.0746,
+          0.0715,
+          0.0668,
+          0.0589
+        ],
+        "component_names": [
+          "PC1",
+          "PC2",
+          "PC3",
+          "PC4",
+          "PC5",
+          "PC6",
+          "PC7",
+          "PC8"
+        ],
+        "original_features": 13,
+        "reduction_method": "pca"
+      }
+    },
+    "models": {
+      "logistic_regression": {
+        "model_name": "logistic_regression",
+        "model_type": "classical",
+        "metrics": {
+          "accuracy": 0.8032786885245902,
+          "precision": 0.7692307692307693,
+          "recall": 0.9090909090909091,
+          "f1": 0.8333333333333334,
+          "specificity": 0.6785714285714286,
+          "sensitivity": 0.9090909090909091,
+          "confusion_matrix": [
+            [
+              19,
+              9
+            ],
+            [
+              3,
+              30
+            ]
+          ],
+          "roc_auc": 0.8809523809523809
+        },
+        "training_time": 0.0038,
+        "inference_time": 0.0003
+      },
+      "svm": {
+        "model_name": "svm",
+        "model_type": "classical",
+        "metrics": {
+          "accuracy": 0.8360655737704918,
+          "precision": 0.7948717948717948,
+          "recall": 0.9393939393939394,
+          "f1": 0.8611111111111112,
+          "specificity": 0.7142857142857143,
+          "sensitivity": 0.9393939393939394,
+          "confusion_matrix": [
+            [
+              20,
+              8
+            ],
+            [
+              2,
+              31
+            ]
+          ],
+          "roc_auc": 0.8733766233766234
+        },
+        "training_time": 0.0067,
+        "inference_time": 0.0032
+      },
+      "random_forest": {
+        "model_name": "random_forest",
+        "model_type": "classical",
+        "metrics": {
+          "accuracy": 0.7868852459016393,
+          "precision": 0.75,
+          "recall": 0.9090909090909091,
+          "f1": 0.821917808219178,
+          "specificity": 0.6428571428571429,
+          "sensitivity": 0.9090909090909091,
+          "confusion_matrix": [
+            [
+              18,
+              10
+            ],
+            [
+              3,
+              30
+            ]
+          ],
+          "roc_auc": 0.8885281385281386
+        },
+        "training_time": 0.1109,
+        "inference_time": 0.011
+      },
+      "vqc": {
+        "model_name": "vqc",
+        "model_type": "quantum",
+        "metrics": {
+          "accuracy": 0.36065573770491804,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "specificity": 0.7857142857142857,
+          "sensitivity": 0.0,
+          "confusion_matrix": [
+            [
+              22,
+              6
+            ],
+            [
+              33,
+              0
+            ]
+          ],
+          "roc_auc": 0.31926406926406925,
+          "quantum_resources": {
+            "n_qubits": 8,
+            "n_layers": 2,
+            "n_params": 32,
+            "shots": 1024,
+            "circuit_depth": 56,
+            "n_circuit_executions": 24200,
+            "training_time": 306.74706680000054
+          }
+        },
+        "training_time": 306.7471,
+        "inference_time": 2.1344
+      }
+    },
+    "comparison": {
+      "best_model": "svm",
+      "best_classical": "svm",
+      "best_quantum": "vqc",
+      "performance_ranking": [
+        {
+          "model": "svm",
+          "type": "classical",
+          "score": 0.8611,
+          "accuracy": 0.8361,
+          "recall": 0.9394,
+          "f1": 0.8611,
+          "roc_auc": 0.8734,
+          "training_time": 0.0067
+        },
+        {
+          "model": "logistic_regression",
+          "type": "classical",
+          "score": 0.8333,
+          "accuracy": 0.8033,
+          "recall": 0.9091,
+          "f1": 0.8333,
+          "roc_auc": 0.881,
+          "training_time": 0.0038
+        },
+        {
+          "model": "random_forest",
+          "type": "classical",
+          "score": 0.8219,
+          "accuracy": 0.7869,
+          "recall": 0.9091,
+          "f1": 0.8219,
+          "roc_auc": 0.8885,
+          "training_time": 0.1109
+        },
+        {
+          "model": "vqc",
+          "type": "quantum",
+          "score": 0.3607,
+          "accuracy": 0.3607,
+          "recall": 0.0,
+          "f1": 0.0,
+          "roc_auc": 0.3193,
+          "training_time": 306.7471
+        }
+      ],
+      "metrics_comparison": {
+        "logistic_regression": {
+          "accuracy": 0.8033,
+          "precision": 0.7692,
+          "recall": 0.9091,
+          "f1": 0.8333,
+          "specificity": 0.6786,
+          "sensitivity": 0.9091,
+          "confusion_matrix": [
+            [
+              19,
+              9
+            ],
+            [
+              3,
+              30
+            ]
+          ],
+          "roc_auc": 0.881
+        },
+        "svm": {
+          "accuracy": 0.8361,
+          "precision": 0.7949,
+          "recall": 0.9394,
+          "f1": 0.8611,
+          "specificity": 0.7143,
+          "sensitivity": 0.9394,
+          "confusion_matrix": [
+            [
+              20,
+              8
+            ],
+            [
+              2,
+              31
+            ]
+          ],
+          "roc_auc": 0.8734
+        },
+        "random_forest": {
+          "accuracy": 0.7869,
+          "precision": 0.75,
+          "recall": 0.9091,
+          "f1": 0.8219,
+          "specificity": 0.6429,
+          "sensitivity": 0.9091,
+          "confusion_matrix": [
+            [
+              18,
+              10
+            ],
+            [
+              3,
+              30
+            ]
+          ],
+          "roc_auc": 0.8885,
+          "feature_importance": {
+            "PC1": 0.384330080025638,
+            "PC2": 0.10960682496955008,
+            "PC3": 0.0816287336509292,
+            "PC4": 0.1109747602240833,
+            "PC5": 0.06975362685122732,
+            "PC6": 0.0854648973805239,
+            "PC7": 0.08624347997044628,
+            "PC8": 0.07199759692760188
+          }
+        },
+        "vqc": {
+          "accuracy": 0.3607,
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "specificity": 0.7857,
+          "sensitivity": 0.0,
+          "confusion_matrix": [
+            [
+              22,
+              6
+            ],
+            [
+              33,
+              0
+            ]
+          ],
+          "roc_auc": 0.3193
+        }
+      },
+      "runtime_comparison": {
+        "logistic_regression": 0.003759100000024773,
+        "svm": 0.006725100000039674,
+        "random_forest": 0.11088240000026417,
+        "vqc": 306.74706680000054
+      },
+      "quantum_vs_classical": {
+        "classical_model": "svm",
+        "quantum_model": "vqc",
+        "metrics_diff": {
+          "accuracy": {
+            "classical": 0.8361,
+            "quantum": 0.3607,
+            "difference": -0.4754,
+            "quantum_better": false
+          },
+          "recall": {
+            "classical": 0.9394,
+            "quantum": 0.0,
+            "difference": -0.9394,
+            "quantum_better": false
+          },
+          "precision": {
+            "classical": 0.7949,
+            "quantum": 0.0,
+            "difference": -0.7949,
+            "quantum_better": false
+          },
+          "f1": {
+            "classical": 0.8611,
+            "quantum": 0.0,
+            "difference": -0.8611,
+            "quantum_better": false
+          },
+          "roc_auc": {
+            "classical": 0.8734,
+            "quantum": 0.3193,
+            "difference": -0.5541,
+            "quantum_better": false
+          }
+        },
+        "runtime_diff": {
+          "classical": 0.0067,
+          "quantum": 306.7471,
+          "ratio": 45612.27
+        },
+        "quantum_resources": {
+          "n_qubits": 8,
+          "n_layers": 2,
+          "n_params": 32,
+          "shots": 1024,
+          "circuit_depth": 56,
+          "n_circuit_executions": 24200,
+          "training_time": 306.74706680000054
+        }
+      },
+      "recommendation": "CLASSICAL MODEL PREFERRED: Classical model shows +47.5% accuracy advantage with 0.0x lower runtime. Recommended for production use."
+    },
+    "resource_usage": {
+      "cpu_percent": 0.0,
+      "memory_mb": 193.24,
+      "peak_memory_mb": 189.98,
+      "elapsed_time": 312.9513,
+      "quantum_resources": null
+    }
+  }
+}

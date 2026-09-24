@@ -1,0 +1,40 @@
+{
+  "_contract": "dataset_profile.json v1.0",
+  "_dataset": "heart_disease",
+  "dataset_id": "b2c3d4e5-f6a7-4890-b1c2-d3e4f5a6b7c8",
+  "profile_id": "PROFILE-000002",
+  "modality": "TABULAR",
+  "dimensions": {
+    "rows": 303,
+    "columns": 14
+  },
+  "features": {
+    "numerical": 13,
+    "categorical": 0
+  },
+  "target": {
+    "candidate": "target",
+    "confidence": "HIGH"
+  },
+  "task": {
+    "candidate": "BINARY_CLASSIFICATION",
+    "confidence": "HIGH"
+  },
+  "class_distribution": {
+    "0": 138,
+    "1": 165
+  },
+  "missing_values": {
+    "total": 0,
+    "percentage": 0.0,
+    "by_column": {}
+  },
+  "duplicates": {
+    "candidate_count": 1
+  },
+  "warnings": [
+    "1 potential duplicate rows detected"
+  ],
+  "status": "PROFILED",
+  "profiled_at": "2026-09-24T08:41:37.820Z"
+}

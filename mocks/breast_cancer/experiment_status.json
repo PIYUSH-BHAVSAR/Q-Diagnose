@@ -1,0 +1,27 @@
+{
+  "_contract": "experiment_status.json v1.1",
+  "_dataset": "breast_cancer",
+  "experiment_id": "EXP-0850F91D",
+  "status": "COMPLETED",
+  "stage": "completed",
+  "progress": 1.0,
+  "message": "Experiment completed successfully",
+  "started_at": "2026-09-24T08:41:37.620Z",
+  "elapsed_seconds": 2.6,
+  "estimated_remaining_seconds": null,
+  "current_model": null,
+  "completed_models": [
+    "logistic_regression",
+    "svm",
+    "random_forest",
+    "vqc"
+  ],
+  "circuit_executions": 20475,
+  "current_epoch": null,
+  "total_epochs": null,
+  "error_message": null,
+  "resource_snapshot": {
+    "cpu_percent": 12.1,
+    "memory_mb": 0.7
+  }
+}

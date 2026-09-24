@@ -1,0 +1,366 @@
+{
+  "title": "experiment_config.json",
+  "description": "Phase 9 complete immutable experiment configuration - the contract for Phase 10 execution",
+  "producer": "Phase 9 - Experiment Planning & Orchestration",
+  "consumers": [
+    "Phase 10 - Model Training & Execution (executes experiments)",
+    "Frontend - Experiment Progress Display",
+    "Phase 11 - Benchmarking (groups experiments for comparison)",
+    "Phase 13 - Cost Evaluation (tracks resource usage per config)"
+  ],
+  "version": "1.0.0",
+  
+  "example_classical_xgboost": {
+    "experiment_id": "EXP-C-000001",
+    "experiment_type": "CLASSICAL",
+    "priority": "P0",
+    "status": "READY",
+    "created_timestamp": "2026-08-29T02:15:30Z",
+    
+    "dataset": {
+      "dataset_id": "20260829_020959_breast_cancer",
+      "dataset_version": "v1",
+      "modality": "TABULAR",
+      "task_type": "BINARY_CLASSIFICATION",
+      "samples": 569,
+      "features": 30,
+      "_comment": "Produced by: Phase 2 profiling. Consumed by: Phase 10 (loads correct dataset version)"
+    },
+    
+    "representation": {
+      "representation_id": "REP-001",
+      "representation_type": "FULL_CLASSICAL",
+      "feature_count": 30,
+      "feature_names": ["radius_mean", "texture_mean", "perimeter_mean"],
+      "preprocessing_applied": ["StandardScaler", "duplicate_removal"],
+      "_comment": "Produced by: Phase 4/5/6 feature pipeline. Consumed by: Phase 10 (loads correct feature representation)"
+    },
+    
+    "model": {
+      "model_id": "CMODEL-XGB-001",
+      "model_type": "XGBoost",
+      "model_family": "CLASSICAL",
+      "hyperparameters": {
+        "n_estimators": 100,
+        "max_depth": 6,
+        "learning_rate": 0.1,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "random_state": 42
+      },
+      "_comment": "Produced by: Phase 7 classical model candidates. Consumed by: Phase 10 (instantiates model with exact config)"
+    },
+    
+    "evaluation_protocol": {
+      "method": "STRATIFIED_KFOLD",
+      "n_splits": 5,
+      "shuffle": true,
+      "random_state": 42,
+      "test_size": 0.15,
+      "_comment": "Produced by: Phase 9 planner. Consumed by: Phase 10 (creates train/val/test splits)"
+    },
+    
+    "metrics": {
+      "required": [
+        "accuracy",
+        "precision",
+        "recall",
+        "specificity",
+        "f1_score",
+        "roc_auc",
+        "pr_auc"
+      ],
+      "optional": [
+        "confusion_matrix",
+        "classification_report"
+      ],
+      "_comment": "Produced by: Phase 9 planner. Consumed by: Phase 10 (calculates these metrics), Phase 11 (compares across experiments)"
+    },
+    
+    "execution_budget": {
+      "max_time_minutes": 30,
+      "max_memory_gb": 4,
+      "cpu_cores": 4,
+      "gpu_required": false,
+      "_comment": "Produced by: Phase 9 resource estimator. Consumed by: Phase 10 (aborts if budget exceeded)"
+    },
+    
+    "resource_estimates": {
+      "estimated_training_time_seconds": 45,
+      "estimated_memory_gb": 0.8,
+      "estimated_inference_time_ms": 12,
+      "_comment": "Produced by: Phase 9 resource estimator. Consumed by: Phase 13 (compares estimate vs actual)"
+    },
+    
+    "reproducibility": {
+      "seed": 42,
+      "python_version": "3.10",
+      "library_versions": {
+        "xgboost": "2.0.3",
+        "scikit-learn": "1.3.2",
+        "numpy": "1.24.3"
+      },
+      "_comment": "Produced by: Phase 9 planner. Consumed by: Phase 10 (ensures reproducible results)"
+    },
+    
+    "comparison_group": {
+      "group_id": "GROUP-A-BASELINE",
+      "group_description": "Best classical baseline on full feature set",
+      "comparison_experiments": ["EXP-Q-000001", "EXP-Q-000002"],
+      "_comment": "Produced by: Phase 9 planner. Consumed by: Phase 11 (creates fair comparison groups)"
+    },
+    
+    "decision_trace": {
+      "rules_applied": [
+        "RULE-001: Binary classification detected",
+        "RULE-005: XGBoost selected as strong baseline",
+        "RULE-010: Full feature set for classical baseline"
+      ],
+      "reason": "Strong classical baseline required for fair quantum comparison",
+      "_comment": "Produced by: Phase 9 rule engine. Consumed by: Frontend (explainable decisions), Reports (audit trail)"
+    }
+  },
+  
+  "example_quantum_vqc": {
+    "experiment_id": "EXP-Q-000001",
+    "experiment_type": "QUANTUM",
+    "priority": "P0",
+    "status": "READY",
+    "created_timestamp": "2026-08-29T02:15:31Z",
+    
+    "dataset": {
+      "dataset_id": "20260829_020959_breast_cancer",
+      "dataset_version": "v1",
+      "modality": "TABULAR",
+      "task_type": "BINARY_CLASSIFICATION",
+      "samples": 569,
+      "features": 8
+    },
+    
+    "representation": {
+      "representation_id": "QREP-001",
+      "representation_type": "QUANTUM_COMPACT",
+      "feature_count": 8,
+      "reduction_method": "PCA",
+      "original_feature_count": 30,
+      "variance_retained": 0.94,
+      "_comment": "Produced by: Phase 6 dimensionality reduction. Consumed by: Phase 10 (loads compact representation for quantum encoding)"
+    },
+    
+    "model": {
+      "model_id": "QMODEL-VQC-001",
+      "model_type": "VQC",
+      "model_family": "QUANTUM",
+      "quantum_config": {
+        "qubits": 8,
+        "circuit_depth": 2,
+        "ansatz": "RealAmplitudes",
+        "entanglement": "linear",
+        "reps": 2,
+        "optimizer": "COBYLA",
+        "max_iterations": 200
+      },
+      "encoding": {
+        "encoding_type": "ANGLE_ENCODING",
+        "rotation_gates": ["RY"],
+        "feature_map": "ZZFeatureMap"
+      },
+      "_comment": "Produced by: Phase 8 quantum model candidates. Consumed by: Phase 10 (builds quantum circuit with exact parameters)"
+    },
+    
+    "backend": {
+      "backend_type": "LOCAL_SIMULATOR",
+      "backend_name": "qasm_simulator",
+      "provider": "qiskit_aer",
+      "shots": 1024,
+      "noise_model": null,
+      "coupling_map": null,
+      "_comment": "Produced by: Phase 9 backend selector. Consumed by: Phase 10 (connects to correct quantum backend)"
+    },
+    
+    "quantum_execution_params": {
+      "shots": 1024,
+      "measurement_basis": "computational",
+      "optimization_level": 1,
+      "seed_simulator": 42,
+      "seed_transpiler": 42,
+      "_comment": "Produced by: Phase 9 planner. Consumed by: Phase 10 quantum runtime (circuit execution settings)"
+    },
+    
+    "evaluation_protocol": {
+      "method": "STRATIFIED_KFOLD",
+      "n_splits": 5,
+      "shuffle": true,
+      "random_state": 42,
+      "test_size": 0.15
+    },
+    
+    "metrics": {
+      "required": [
+        "accuracy",
+        "precision",
+        "recall",
+        "specificity",
+        "f1_score",
+        "roc_auc",
+        "pr_auc"
+      ],
+      "quantum_specific": [
+        "circuit_depth",
+        "gate_count",
+        "two_qubit_gate_count",
+        "circuit_executions",
+        "total_shots"
+      ],
+      "_comment": "Quantum metrics tracked separately for cost analysis"
+    },
+    
+    "execution_budget": {
+      "max_time_minutes": 120,
+      "max_memory_gb": 8,
+      "cpu_cores": 4,
+      "gpu_required": false,
+      "max_circuit_executions": 50000,
+      "_comment": "Higher budget for quantum due to iterative circuit evaluations"
+    },
+    
+    "resource_estimates": {
+      "estimated_training_time_seconds": 842,
+      "estimated_memory_gb": 3.2,
+      "estimated_circuit_executions": 19932,
+      "estimated_inference_time_ms": 45
+    },
+    
+    "reproducibility": {
+      "seed": 42,
+      "python_version": "3.10",
+      "library_versions": {
+        "qiskit": "0.45.0",
+        "qiskit-aer": "0.13.0",
+        "scikit-learn": "1.3.2"
+      }
+    },
+    
+    "comparison_group": {
+      "group_id": "GROUP-B-QUANTUM-VS-CLASSICAL-SAME-REP",
+      "group_description": "VQC vs classical SVM on same 8-feature compact representation",
+      "comparison_experiments": ["EXP-C-000003"],
+      "_comment": "Fair comparison: same features, different learning method"
+    },
+    
+    "decision_trace": {
+      "rules_applied": [
+        "RULE-002: Feature dimension <= 16, QML feasible",
+        "RULE-003: Binary classification + small data regime",
+        "RULE-006: 8 qubits matches 8-feature representation",
+        "RULE-011: Local simulator available, estimated memory 3.2GB < 8GB budget"
+      ],
+      "reason": "Quantum branch enabled: compact representation, local simulation feasible"
+    }
+  },
+  
+  "example_quantum_kernel": {
+    "experiment_id": "EXP-Q-000002",
+    "experiment_type": "QUANTUM",
+    "model": {
+      "model_id": "QMODEL-KERNEL-001",
+      "model_type": "QUANTUM_KERNEL_SVM",
+      "model_family": "QUANTUM",
+      "quantum_config": {
+        "qubits": 8,
+        "feature_map": "ZZFeatureMap",
+        "reps": 2,
+        "entanglement": "full"
+      },
+      "classical_component": {
+        "kernel_method": "SVC",
+        "C": 1.0,
+        "gamma": "scale"
+      },
+      "_comment": "Hybrid: quantum kernel matrix + classical SVM"
+    },
+    "backend": {
+      "backend_type": "LOCAL_SIMULATOR",
+      "shots": 1024
+    }
+  },
+  
+  "example_deferred_experiment": {
+    "experiment_id": "EXP-Q-000006",
+    "experiment_type": "QUANTUM",
+    "priority": "P2",
+    "status": "DEFERRED",
+    "created_timestamp": "2026-08-29T02:15:35Z",
+    "model": {
+      "model_id": "QMODEL-VQC-003",
+      "quantum_config": {
+        "qubits": 16,
+        "circuit_depth": 6
+      }
+    },
+    "execution_budget": {
+      "max_time_minutes": 480,
+      "max_memory_gb": 16
+    },
+    "deferral_reason": "Estimated memory 16GB exceeds current local budget (8GB). Run after P0/P1 validate pipeline.",
+    "decision_trace": {
+      "rules_applied": [
+        "RULE-020: Estimated memory > available memory",
+        "RULE-021: Deprioritize expensive experiment until cheaper experiments validate"
+      ]
+    }
+  },
+  
+  "example_rejected_experiment": {
+    "experiment_id": "EXP-Q-000007",
+    "experiment_type": "QUANTUM",
+    "priority": "REJECTED",
+    "status": "REJECTED",
+    "created_timestamp": "2026-08-29T02:15:36Z",
+    "model": {
+      "model_id": "QMODEL-VQC-004",
+      "quantum_config": {
+        "qubits": 32,
+        "circuit_depth": 8
+      }
+    },
+    "rejection_reason": "32 qubits: estimated simulation memory 128GB exceeds local machine capability",
+    "decision_trace": {
+      "rules_applied": [
+        "RULE-030: Qubit count > local simulation limit"
+      ]
+    }
+  },
+  
+  "field_definitions": {
+    "experiment_id": "string: Unique identifier (EXP-C-NNNNNN for classical, EXP-Q-NNNNNN for quantum)",
+    "experiment_type": "enum: CLASSICAL or QUANTUM",
+    "priority": "enum: P0 (mandatory), P1 (important), P2 (optional), REJECTED, DEFERRED",
+    "status": "enum: READY, RUNNING, COMPLETED, FAILED, DEFERRED, REJECTED",
+    "representation_id": "string: Links to Phase 6 feature representation (REP-NNN or QREP-NNN)",
+    "model_id": "string: Links to Phase 7/8 model definition (CMODEL-XXX or QMODEL-XXX)",
+    "backend_type": "enum: LOCAL_SIMULATOR, CLOUD_SIMULATOR, HARDWARE",
+    "shots": "integer: Number of measurement repetitions per circuit execution",
+    "evaluation_protocol.method": "enum: STRATIFIED_KFOLD, HOLDOUT, STRATIFIED_HOLDOUT",
+    "comparison_group_id": "string: Groups experiments for fair scientific comparison in Phase 11",
+    "execution_budget": "Resource limits - Phase 10 aborts if exceeded",
+    "decision_trace": "Explainable decisions - which rules triggered experiment selection/rejection",
+    "deferral_reason": "string: Why experiment postponed (resource constraints, dependencies)",
+    "rejection_reason": "string: Why experiment cannot be run (exceeds capabilities, infeasible)"
+  },
+  
+  "notes": [
+    "This is the IMMUTABLE contract for Phase 10 - no changes after experiment starts",
+    "experiment_id becomes the primary key for tracking results through Phase 10/11/12/13",
+    "comparison_group enables fair quantum vs classical benchmarking in Phase 11",
+    "decision_trace provides auditable experiment selection - critical for scientific reproducibility",
+    "quantum_execution_params.shots affects both accuracy (more shots = stable estimate) and cost (more shots = more compute)",
+    "execution_budget prevents runaway experiments - Phase 10 enforces hard limits",
+    "Deferred experiments (P2) run only after P0/P1 validate pipeline",
+    "Rejected experiments never run - configuration infeasible for current environment",
+    "Phase 9 → Phase 10 handoff: experiment_config.json + dataset + representation + model definition",
+    "Classical experiments use full feature set or reduced representation depending on comparison group",
+    "Quantum experiments REQUIRE dimensionality reduction (Phase 6) before encoding",
+    "Backend abstraction allows same config to target local_sim, cloud_sim, or hardware with minimal changes"
+  ]
+}

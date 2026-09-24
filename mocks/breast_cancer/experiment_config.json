@@ -1,0 +1,66 @@
+{
+  "_contract": "experiment_config.json v1.0",
+  "_dataset": "breast_cancer",
+  "plan_id": "PLAN-000001",
+  "dataset_id": "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7",
+  "status": "READY_FOR_EXECUTION",
+  "task": "BINARY_CLASSIFICATION",
+  "quantum_enabled": true,
+  "use_class_weight": true,
+  "preprocessing": [
+    "standard_scaling"
+  ],
+  "reduction": {
+    "method": "PCA",
+    "components": 8,
+    "variance_retained": 0.9276
+  },
+  "classical_models": [
+    "logistic_regression",
+    "svm",
+    "random_forest"
+  ],
+  "quantum_models": [
+    "vqc"
+  ],
+  "evaluation": {
+    "split": "stratified",
+    "test_size": 0.2,
+    "random_state": 42
+  },
+  "experiments": [
+    {
+      "id": "EXP-EC590B9D",
+      "priority": "P0",
+      "model": "logistic_regression",
+      "representation": "REP-001"
+    },
+    {
+      "id": "EXP-F919AA1B",
+      "priority": "P0",
+      "model": "svm",
+      "representation": "REP-001"
+    },
+    {
+      "id": "EXP-B655BBCA",
+      "priority": "P0",
+      "model": "random_forest",
+      "representation": "REP-001"
+    },
+    {
+      "id": "EXP-0850F91D",
+      "priority": "P0",
+      "model": "vqc",
+      "representation": "QREP-001"
+    }
+  ],
+  "decision_trace": {
+    "rules_applied": [
+      "RULE-001: Binary classification detected",
+      "RULE-002: 8 features \u2264 8 max qubits \u2014 quantum enabled",
+      "RULE-003: 569 samples \u2014 standard training regime",
+      "RULE-004: Imbalance 1.68:1 \u2014 class_weight='balanced' applied"
+    ],
+    "reason": "Rule-based deterministic planning"
+  }
+}

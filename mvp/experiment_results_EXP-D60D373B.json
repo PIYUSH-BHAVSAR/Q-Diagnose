@@ -1,0 +1,953 @@
+{
+  "experiment_id": "EXP-D60D373B",
+  "status": "completed",
+  "results": {
+    "dataset_profile": {
+      "dataset_id": "DS-2DB37EA9",
+      "name": "breast_cancer",
+      "rows": 569,
+      "columns": [
+        {
+          "name": "id",
+          "dtype": "int64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 569,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            842302,
+            842517,
+            84300903,
+            84348301,
+            84358402
+          ]
+        },
+        {
+          "name": "diagnosis",
+          "dtype": "str",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 2,
+          "is_numeric": false,
+          "is_categorical": true,
+          "is_target_candidate": true,
+          "sample_values": [
+            "M",
+            "M",
+            "M",
+            "M",
+            "M"
+          ]
+        },
+        {
+          "name": "radius_mean",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 456,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            17.99,
+            20.57,
+            19.69,
+            11.42,
+            20.29
+          ]
+        },
+        {
+          "name": "texture_mean",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 479,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            10.38,
+            17.77,
+            21.25,
+            20.38,
+            14.34
+          ]
+        },
+        {
+          "name": "perimeter_mean",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 522,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            122.8,
+            132.9,
+            130.0,
+            77.58,
+            135.1
+          ]
+        },
+        {
+          "name": "area_mean",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 539,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            1001.0,
+            1326.0,
+            1203.0,
+            386.1,
+            1297.0
+          ]
+        },
+        {
+          "name": "smoothness_mean",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 474,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            0.1184,
+            0.08474,
+            0.1096,
+            0.1425,
+            0.1003
+          ]
+        },
+        {
+          "name": "compactness_mean",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 537,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            0.2776,
+            0.07864,
+            0.1599,
+            0.2839,
+            0.1328
+          ]
+        },
+        {
+          "name": "concavity_mean",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 537,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            0.3001,
+            0.0869,
+            0.1974,
+            0.2414,
+            0.198
+          ]
+        },
+        {
+          "name": "concave points_mean",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 542,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            0.1471,
+            0.07017,
+            0.1279,
+            0.1052,
+            0.1043
+          ]
+        },
+        {
+          "name": "symmetry_mean",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 432,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            0.2419,
+            0.1812,
+            0.2069,
+            0.2597,
+            0.1809
+          ]
+        },
+        {
+          "name": "fractal_dimension_mean",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 499,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            0.07871,
+            0.05667,
+            0.05999,
+            0.09744,
+            0.05883
+          ]
+        },
+        {
+          "name": "radius_se",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 540,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            1.095,
+            0.5435,
+            0.7456,
+            0.4956,
+            0.7572
+          ]
+        },
+        {
+          "name": "texture_se",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 519,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            0.9053,
+            0.7339,
+            0.7869,
+            1.156,
+            0.7813
+          ]
+        },
+        {
+          "name": "perimeter_se",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 533,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            8.589,
+            3.398,
+            4.585,
+            3.445,
+            5.438
+          ]
+        },
+        {
+          "name": "area_se",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 528,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            153.4,
+            74.08,
+            94.03,
+            27.23,
+            94.44
+          ]
+        },
+        {
+          "name": "smoothness_se",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 547,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            0.006399,
+            0.005225,
+            0.00615,
+            0.00911,
+            0.01149
+          ]
+        },
+        {
+          "name": "compactness_se",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 541,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            0.04904,
+            0.01308,
+            0.04006,
+            0.07458,
+            0.02461
+          ]
+        },
+        {
+          "name": "concavity_se",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 533,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            0.05373,
+            0.0186,
+            0.03832,
+            0.05661,
+            0.05688
+          ]
+        },
+        {
+          "name": "concave points_se",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 507,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            0.01587,
+            0.0134,
+            0.02058,
+            0.01867,
+            0.01885
+          ]
+        },
+        {
+          "name": "symmetry_se",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 498,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            0.03003,
+            0.01389,
+            0.0225,
+            0.05963,
+            0.01756
+          ]
+        },
+        {
+          "name": "fractal_dimension_se",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 545,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            0.006193,
+            0.003532,
+            0.004571,
+            0.009208,
+            0.005115
+          ]
+        },
+        {
+          "name": "radius_worst",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 457,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            25.38,
+            24.99,
+            23.57,
+            14.91,
+            22.54
+          ]
+        },
+        {
+          "name": "texture_worst",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 511,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            17.33,
+            23.41,
+            25.53,
+            26.5,
+            16.67
+          ]
+        },
+        {
+          "name": "perimeter_worst",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 514,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            184.6,
+            158.8,
+            152.5,
+            98.87,
+            152.2
+          ]
+        },
+        {
+          "name": "area_worst",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 544,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            2019.0,
+            1956.0,
+            1709.0,
+            567.7,
+            1575.0
+          ]
+        },
+        {
+          "name": "smoothness_worst",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 411,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            0.1622,
+            0.1238,
+            0.1444,
+            0.2098,
+            0.1374
+          ]
+        },
+        {
+          "name": "compactness_worst",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 529,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            0.6656,
+            0.1866,
+            0.4245,
+            0.8663,
+            0.205
+          ]
+        },
+        {
+          "name": "concavity_worst",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 539,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            0.7119,
+            0.2416,
+            0.4504,
+            0.6869,
+            0.4
+          ]
+        },
+        {
+          "name": "concave points_worst",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 492,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            0.2654,
+            0.186,
+            0.243,
+            0.2575,
+            0.1625
+          ]
+        },
+        {
+          "name": "symmetry_worst",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 500,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            0.4601,
+            0.275,
+            0.3613,
+            0.6638,
+            0.2364
+          ]
+        },
+        {
+          "name": "fractal_dimension_worst",
+          "dtype": "float64",
+          "missing_count": 0,
+          "missing_percentage": 0.0,
+          "unique_count": 535,
+          "is_numeric": true,
+          "is_categorical": false,
+          "is_target_candidate": false,
+          "sample_values": [
+            0.1189,
+            0.08902,
+            0.08758,
+            0.173,
+            0.07678
+          ]
+        }
+      ],
+      "missing_values_total": 0,
+      "missing_percentage": 0.0,
+      "duplicate_rows": 0,
+      "numerical_columns_count": 31,
+      "categorical_columns_count": 1,
+      "target_candidates": [
+        "diagnosis"
+      ],
+      "recommended_target": "diagnosis",
+      "is_binary_classification": true,
+      "class_distribution": {
+        "B": 357,
+        "M": 212
+      },
+      "class_imbalance_ratio": 1.6839622641509433,
+      "subject_column": null,
+      "profiled_at": "2026-09-15T17:43:46.446163"
+    },
+    "validation": {
+      "is_valid": true,
+      "issues": [],
+      "warnings": [],
+      "ready_for_ml": true,
+      "needs_target_selection": false,
+      "details": {
+        "auto_detected_target": "diagnosis",
+        "target_unique_values": 2,
+        "target_classes": [
+          "M",
+          "B"
+        ],
+        "task_type": "binary_classification"
+      }
+    },
+    "preprocessing": {
+      "train_samples": 455,
+      "test_samples": 114,
+      "original_features": 30,
+      "reduced_features": 8,
+      "preprocessing": {
+        "steps": [
+          "train_test_split",
+          "feature_scaling"
+        ],
+        "original_shape": [
+          569,
+          30
+        ],
+        "split_type": "stratified",
+        "final_shape": {
+          "train": [
+            455,
+            30
+          ],
+          "test": [
+            114,
+            30
+          ]
+        }
+      },
+      "reduction": {
+        "n_components": 8,
+        "cumulative_variance": 0.9276,
+        "explained_variance_ratio": [
+          0.4459,
+          0.1855,
+          0.0958,
+          0.0659,
+          0.0562,
+          0.0399,
+          0.0221,
+          0.0161
+        ],
+        "component_names": [
+          "PC1",
+          "PC2",
+          "PC3",
+          "PC4",
+          "PC5",
+          "PC6",
+          "PC7",
+          "PC8"
+        ],
+        "original_features": 30,
+        "reduction_method": "pca"
+      }
+    },
+    "models": {
+      "logistic_regression": {
+        "model_name": "logistic_regression",
+        "model_type": "classical",
+        "metrics": {
+          "accuracy": 0.9824561403508771,
+          "precision": 0.9761904761904762,
+          "recall": 0.9761904761904762,
+          "f1": 0.9761904761904762,
+          "specificity": 0.9861111111111112,
+          "sensitivity": 0.9761904761904762,
+          "confusion_matrix": [
+            [
+              71,
+              1
+            ],
+            [
+              1,
+              41
+            ]
+          ],
+          "roc_auc": 0.9976851851851852
+        },
+        "training_time": 0.006,
+        "inference_time": 0.0003
+      },
+      "svm": {
+        "model_name": "svm",
+        "model_type": "classical",
+        "metrics": {
+          "accuracy": 0.956140350877193,
+          "precision": 0.9743589743589743,
+          "recall": 0.9047619047619048,
+          "f1": 0.9382716049382716,
+          "specificity": 0.9861111111111112,
+          "sensitivity": 0.9047619047619048,
+          "confusion_matrix": [
+            [
+              71,
+              1
+            ],
+            [
+              4,
+              38
+            ]
+          ],
+          "roc_auc": 0.9950396825396826
+        },
+        "training_time": 0.0077,
+        "inference_time": 0.0012
+      },
+      "random_forest": {
+        "model_name": "random_forest",
+        "model_type": "classical",
+        "metrics": {
+          "accuracy": 0.9473684210526315,
+          "precision": 0.95,
+          "recall": 0.9047619047619048,
+          "f1": 0.926829268292683,
+          "specificity": 0.9722222222222222,
+          "sensitivity": 0.9047619047619048,
+          "confusion_matrix": [
+            [
+              70,
+              2
+            ],
+            [
+              4,
+              38
+            ]
+          ],
+          "roc_auc": 0.9920634920634921
+        },
+        "training_time": 0.1195,
+        "inference_time": 0.0105
+      },
+      "vqc": {
+        "model_name": "vqc",
+        "model_type": "quantum",
+        "metrics": {
+          "accuracy": 0.8421052631578947,
+          "precision": 1.0,
+          "recall": 0.5714285714285714,
+          "f1": 0.7272727272727273,
+          "specificity": 1.0,
+          "sensitivity": 0.5714285714285714,
+          "confusion_matrix": [
+            [
+              72,
+              0
+            ],
+            [
+              18,
+              24
+            ]
+          ],
+          "roc_auc": 0.9857804232804234,
+          "quantum_resources": {
+            "n_qubits": 8,
+            "n_layers": 2,
+            "n_params": 32,
+            "shots": 1024,
+            "circuit_depth": 56,
+            "n_circuit_executions": 9100,
+            "training_time": 427.3840550999994
+          }
+        },
+        "training_time": 427.3841,
+        "inference_time": 3.4796
+      }
+    },
+    "comparison": {
+      "best_model": "logistic_regression",
+      "best_classical": "logistic_regression",
+      "best_quantum": "vqc",
+      "performance_ranking": [
+        {
+          "model": "logistic_regression",
+          "type": "classical",
+          "score": 0.9762,
+          "accuracy": 0.9825,
+          "recall": 0.9762,
+          "f1": 0.9762,
+          "roc_auc": 0.9977,
+          "training_time": 0.006
+        },
+        {
+          "model": "svm",
+          "type": "classical",
+          "score": 0.9383,
+          "accuracy": 0.9561,
+          "recall": 0.9048,
+          "f1": 0.9383,
+          "roc_auc": 0.995,
+          "training_time": 0.0077
+        },
+        {
+          "model": "random_forest",
+          "type": "classical",
+          "score": 0.9268,
+          "accuracy": 0.9474,
+          "recall": 0.9048,
+          "f1": 0.9268,
+          "roc_auc": 0.9921,
+          "training_time": 0.1195
+        },
+        {
+          "model": "vqc",
+          "type": "quantum",
+          "score": 0.7273,
+          "accuracy": 0.8421,
+          "recall": 0.5714,
+          "f1": 0.7273,
+          "roc_auc": 0.9858,
+          "training_time": 427.3841
+        }
+      ],
+      "metrics_comparison": {
+        "logistic_regression": {
+          "accuracy": 0.9825,
+          "precision": 0.9762,
+          "recall": 0.9762,
+          "f1": 0.9762,
+          "specificity": 0.9861,
+          "sensitivity": 0.9762,
+          "confusion_matrix": [
+            [
+              71,
+              1
+            ],
+            [
+              1,
+              41
+            ]
+          ],
+          "roc_auc": 0.9977
+        },
+        "svm": {
+          "accuracy": 0.9561,
+          "precision": 0.9744,
+          "recall": 0.9048,
+          "f1": 0.9383,
+          "specificity": 0.9861,
+          "sensitivity": 0.9048,
+          "confusion_matrix": [
+            [
+              71,
+              1
+            ],
+            [
+              4,
+              38
+            ]
+          ],
+          "roc_auc": 0.995
+        },
+        "random_forest": {
+          "accuracy": 0.9474,
+          "precision": 0.95,
+          "recall": 0.9048,
+          "f1": 0.9268,
+          "specificity": 0.9722,
+          "sensitivity": 0.9048,
+          "confusion_matrix": [
+            [
+              70,
+              2
+            ],
+            [
+              4,
+              38
+            ]
+          ],
+          "roc_auc": 0.9921,
+          "feature_importance": {
+            "PC1": 0.5215885783332984,
+            "PC2": 0.12385446711599554,
+            "PC3": 0.12117048966216919,
+            "PC4": 0.04687948473766035,
+            "PC5": 0.05512905127518678,
+            "PC6": 0.04519449532420617,
+            "PC7": 0.053014941814436355,
+            "PC8": 0.033168491737047306
+          }
+        },
+        "vqc": {
+          "accuracy": 0.8421,
+          "precision": 1.0,
+          "recall": 0.5714,
+          "f1": 0.7273,
+          "specificity": 1.0,
+          "sensitivity": 0.5714,
+          "confusion_matrix": [
+            [
+              72,
+              0
+            ],
+            [
+              18,
+              24
+            ]
+          ],
+          "roc_auc": 0.9858
+        }
+      },
+      "runtime_comparison": {
+        "logistic_regression": 0.005968099998426624,
+        "svm": 0.007744500000626431,
+        "random_forest": 0.11954950000108511,
+        "vqc": 427.3840550999994
+      },
+      "quantum_vs_classical": {
+        "classical_model": "logistic_regression",
+        "quantum_model": "vqc",
+        "metrics_diff": {
+          "accuracy": {
+            "classical": 0.9825,
+            "quantum": 0.8421,
+            "difference": -0.1404,
+            "quantum_better": false
+          },
+          "recall": {
+            "classical": 0.9762,
+            "quantum": 0.5714,
+            "difference": -0.4048,
+            "quantum_better": false
+          },
+          "precision": {
+            "classical": 0.9762,
+            "quantum": 1.0,
+            "difference": 0.0238,
+            "quantum_better": true
+          },
+          "f1": {
+            "classical": 0.9762,
+            "quantum": 0.7273,
+            "difference": -0.2489,
+            "quantum_better": false
+          },
+          "roc_auc": {
+            "classical": 0.9977,
+            "quantum": 0.9858,
+            "difference": -0.0119,
+            "quantum_better": false
+          }
+        },
+        "runtime_diff": {
+          "classical": 0.006,
+          "quantum": 427.3841,
+          "ratio": 71611.41
+        },
+        "quantum_resources": {
+          "n_qubits": 8,
+          "n_layers": 2,
+          "n_params": 32,
+          "shots": 1024,
+          "circuit_depth": 56,
+          "n_circuit_executions": 9100,
+          "training_time": 427.3840550999994
+        }
+      },
+      "recommendation": "CLASSICAL MODEL PREFERRED: Classical model shows +14.0% accuracy advantage with 0.0x lower runtime. Recommended for production use."
+    },
+    "resource_usage": {
+      "cpu_percent": 0.0,
+      "memory_mb": 221.91,
+      "peak_memory_mb": 191.44,
+      "elapsed_time": 437.122,
+      "quantum_resources": null
+    }
+  }
+}

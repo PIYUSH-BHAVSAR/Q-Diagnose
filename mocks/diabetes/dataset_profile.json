@@ -1,0 +1,41 @@
+{
+  "_contract": "dataset_profile.json v1.0",
+  "_dataset": "diabetes",
+  "_note": "SYNTHETIC",
+  "dataset_id": "c3d4e5f6-a7b8-4901-c2d3-e4f5a6b7c8d9",
+  "profile_id": "PROFILE-000003",
+  "modality": "TABULAR",
+  "dimensions": {
+    "rows": 768,
+    "columns": 9
+  },
+  "features": {
+    "numerical": 8,
+    "categorical": 0
+  },
+  "target": {
+    "candidate": "Outcome",
+    "confidence": "HIGH"
+  },
+  "task": {
+    "candidate": "BINARY_CLASSIFICATION",
+    "confidence": "HIGH"
+  },
+  "class_distribution": {
+    "0": 500,
+    "1": 268
+  },
+  "missing_values": {
+    "total": 0,
+    "percentage": 0.0,
+    "by_column": {}
+  },
+  "duplicates": {
+    "candidate_count": 0
+  },
+  "warnings": [
+    "Class imbalance detected: 65.1% vs 34.9%"
+  ],
+  "status": "PROFILED",
+  "profiled_at": "2026-09-24T08:41:38.218Z"
+}

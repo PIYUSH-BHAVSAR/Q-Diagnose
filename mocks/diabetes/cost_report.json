@@ -1,0 +1,49 @@
+{
+  "_contract": "cost_report.json v1.0",
+  "_dataset": "diabetes",
+  "_note": "SYNTHETIC",
+  "experiment_id": "EXP-C80184C7",
+  "report_timestamp": "2026-09-24T08:41:38.229Z",
+  "performance_summary": {
+    "roc_auc": 0.8474,
+    "recall": 0.7757,
+    "accuracy": 0.7887
+  },
+  "computational_cost": {
+    "training": {
+      "wall_clock_time_seconds": 2.8,
+      "ram_peak_gb": 0.001
+    },
+    "inference": {
+      "avg_time_ms": 5930.0
+    }
+  },
+  "quantum_cost": {
+    "qubits": 8,
+    "circuit_depth": 17,
+    "shots_per_execution": 1024,
+    "total_circuit_executions": 27630
+  },
+  "pipeline_cost_breakdown": {
+    "quantum_training_seconds": 2.8,
+    "total_pipeline_seconds": 3.0,
+    "quantum_percentage": 94.8
+  },
+  "comparison_classical_baseline": {
+    "classical_model": "RandomForest",
+    "classical_training_seconds": 0.153,
+    "quantum_training_seconds": 2.8,
+    "speedup_classical": 18.3,
+    "verdict": "Classification: QUANTUM_ADVANTAGE"
+  },
+  "scalability_assessment": {
+    "current_environment": "LOCAL_LAPTOP",
+    "this_experiment_status": "FEASIBLE",
+    "recommended_max_qubits": 8,
+    "note": "8 qubits feasible on local machine."
+  },
+  "financial_cost_local": {
+    "estimate": 0,
+    "note": "Local quantum simulator. No cloud quantum cost."
+  }
+}
