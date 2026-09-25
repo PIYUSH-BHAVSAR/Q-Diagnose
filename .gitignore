@@ -1,0 +1,38 @@
+# Virtual environment
+venv/
+env/
+.env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Pytest cache
+.pytest_cache/
+.cache/
+
+# Runtime artifacts (generated at runtime, not source code)
+artifacts/
+
+# PDF and report files (optional)
+*.pdf
+
+# PDF generator (internal use only)
+generate_summary_pdf.py
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
