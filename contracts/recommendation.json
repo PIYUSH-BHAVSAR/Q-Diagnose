@@ -1,0 +1,150 @@
+{
+  "_comment": "Final Recommendation - Phase 11 Output",
+  "_description": "Produced by: Phase 11 benchmarking engine. Consumed by: Frontend summary, Phase 15 final report.",
+  
+  "benchmark_id": {
+    "_type": "string",
+    "_example": "BENCH-000001"
+  },
+  
+  "dataset_id": {
+    "_type": "string",
+    "_example": "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7"
+  },
+  
+  "classical_best": {
+    "experiment_id": {"_type": "string", "_example": "EXP-C-000003"},
+    "model_name": {"_type": "string", "_example": "XGBoost"},
+    "representation": {"_type": "string", "_example": "REP-000001"},
+    "metrics": {
+      "accuracy": {"_type": "float", "_example_breast_cancer": 0.953},
+      "recall": {"_type": "float", "_example_breast_cancer": 0.903},
+      "specificity": {"_type": "float", "_example_breast_cancer": 0.982},
+      "roc_auc": {"_type": "float", "_example_breast_cancer": 0.973}
+    },
+    "training_time_seconds": {"_type": "float", "_example": 42.7}
+  },
+  
+  "quantum_best": {
+    "experiment_id": {"_type": "string", "_example": "EXP-Q-000001"},
+    "model_name": {"_type": "string", "_example": "VQC"},
+    "representation": {"_type": "string", "_example": "QREP-000001"},
+    "qubits": {"_type": "integer", "_example": 8},
+    "metrics": {
+      "accuracy": {"_type": "float", "_example_breast_cancer": 0.941},
+      "recall": {"_type": "float", "_example_breast_cancer": 0.935},
+      "specificity": {"_type": "float", "_example_breast_cancer": 0.945},
+      "roc_auc": {"_type": "float", "_example_breast_cancer": 0.961}
+    },
+    "training_time_seconds": {"_type": "float", "_example": 842.1},
+    "total_circuit_executions": {"_type": "integer", "_example": 19932}
+  },
+  
+  "comparison_same_representation": {
+    "_description": "Fair comparison using same feature representation (QREP-001).",
+    "representation": {"_type": "string", "_example": "QREP-000001"},
+    "classical_model": {"_type": "string", "_example": "SVM"},
+    "quantum_model": {"_type": "string", "_example": "VQC"},
+    "classical_metrics": {
+      "roc_auc": {"_type": "float", "_example": 0.897},
+      "recall": {"_type": "float", "_example": 0.871}
+    },
+    "quantum_metrics": {
+      "roc_auc": {"_type": "float", "_example": 0.912},
+      "recall": {"_type": "float", "_example": 0.903}
+    }
+  },
+  
+  "performance_differences": {
+    "accuracy_delta": {
+      "_type": "float",
+      "_description": "Quantum accuracy - Classical accuracy. Positive = quantum better.",
+      "_example_breast_cancer": -0.012
+    },
+    "recall_delta": {
+      "_type": "float",
+      "_example_breast_cancer": 0.032
+    },
+    "auc_delta": {
+      "_type": "float",
+      "_example_breast_cancer": -0.012
+    }
+  },
+  
+  "resource_comparison": {
+    "training_time_ratio": {
+      "_type": "float",
+      "_description": "Quantum training time / Classical training time.",
+      "_example": 19.7
+    },
+    "inference_time_ratio": {
+      "_type": "float",
+      "_example": 1450.0
+    },
+    "memory_ratio": {
+      "_type": "float",
+      "_example": 3.3
+    }
+  },
+  
+  "classification": {
+    "_type": "enum",
+    "_values": ["QUANTUM_ADVANTAGE", "PERFORMANCE_PARITY", "TRADEOFF", "CLASSICAL_ADVANTAGE"],
+    "_description": "Final classification of experiment outcome.",
+    "_example_breast_cancer": "TRADEOFF",
+    "_notes": {
+      "QUANTUM_ADVANTAGE": "Quantum meaningfully outperforms classical on key metrics at acceptable cost.",
+      "PERFORMANCE_PARITY": "Quantum and classical perform similarly on key metrics.",
+      "TRADEOFF": "Quantum shows advantage on some metrics (e.g., recall) but not others (e.g., AUC), or requires significantly more resources.",
+      "CLASSICAL_ADVANTAGE": "Classical clearly outperforms quantum or quantum cost is prohibitive."
+    }
+  },
+  
+  "observations": {
+    "_type": "array of strings",
+    "_description": "Key findings from Phase 11 analysis.",
+    "_example_breast_cancer": [
+      "VQC achieved +3.2 pp higher recall than XGBoost (93.5% vs 90.3%)",
+      "XGBoost achieved +1.2 pp higher ROC-AUC than VQC (97.3% vs 96.1%)",
+      "VQC required 19.7x more training time than XGBoost",
+      "On same 8-feature representation, VQC outperformed SVM by +3.2 pp on recall",
+      "Class-weighted XGBoost on full features remains strongest overall performer"
+    ]
+  },
+  
+  "recommendation_text": {
+    "_type": "string",
+    "_description": "Natural language recommendation for end users and Phase 15 report.",
+    "_example_breast_cancer": "For this breast cancer dataset, the VQC quantum model demonstrated higher sensitivity/recall (+3.2 percentage points) compared to the best classical baseline, which may be valuable for disease screening applications where minimizing false negatives is critical. However, the classical XGBoost model achieved slightly better overall discrimination (ROC-AUC) and required significantly less computational time. The observed result indicates a recall-vs-efficiency tradeoff rather than a universal quantum advantage. Recommendation: Consider VQC when recall is the primary objective and computational resources are available; use XGBoost for balanced performance with faster execution."
+  },
+  
+  "statistical_confidence": {
+    "n_runs": {"_type": "integer", "_description": "Number of repeated runs for stability.", "_example": 5},
+    "recall_quantum_mean": {"_type": "float", "_example": 0.931},
+    "recall_quantum_std": {"_type": "float", "_example": 0.012},
+    "recall_classical_mean": {"_type": "float", "_example": 0.901},
+    "recall_classical_std": {"_type": "float", "_example": 0.008}
+  },
+  
+  "generalization_analysis": {
+    "classical_train_test_gap": {
+      "_type": "float",
+      "_description": "Train AUC - Test AUC for classical model.",
+      "_example": 0.021
+    },
+    "quantum_train_test_gap": {
+      "_type": "float",
+      "_example": 0.034
+    },
+    "overfitting_concern": {
+      "_type": "enum",
+      "_values": ["NONE", "LOW", "MODERATE", "HIGH"],
+      "_example": "LOW"
+    }
+  },
+  
+  "benchmark_timestamp": {
+    "_type": "ISO 8601 datetime",
+    "_example": "2026-09-10T16:15:42.456Z"
+  }
+}

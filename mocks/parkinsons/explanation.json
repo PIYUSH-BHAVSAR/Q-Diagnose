@@ -1,0 +1,181 @@
+{
+  "_contract": "explanation.json v1.0",
+  "_dataset": "parkinsons",
+  "_explainability_note": "Feature importance from RandomForest (proxy). In production, VQC uses perturbation analysis.",
+  "explanation_id": "EXPL-A39A63D2",
+  "experiment_id": "EXP-1FDB13EC",
+  "sample_id": "TEST_SAMPLE_000",
+  "prediction": {
+    "value": 1,
+    "score": 1.0,
+    "actual_label": 1,
+    "is_correct": true
+  },
+  "feature_importance": [
+    {
+      "feature_name": "PPE",
+      "feature_index": 21,
+      "feature_value": 0.7279,
+      "importance": 0.1487,
+      "effect": "positive"
+    },
+    {
+      "feature_name": "spread1",
+      "feature_index": 18,
+      "feature_value": 0.6627,
+      "importance": 0.0939,
+      "effect": "positive"
+    },
+    {
+      "feature_name": "MDVP:Fo(Hz)",
+      "feature_index": 0,
+      "feature_value": -1.4127,
+      "importance": 0.0726,
+      "effect": "negative"
+    },
+    {
+      "feature_name": "MDVP:Fhi(Hz)",
+      "feature_index": 1,
+      "feature_value": -0.8366,
+      "importance": 0.0631,
+      "effect": "negative"
+    },
+    {
+      "feature_name": "spread2",
+      "feature_index": 19,
+      "feature_value": 1.223,
+      "importance": 0.0604,
+      "effect": "positive"
+    },
+    {
+      "feature_name": "Jitter:DDP",
+      "feature_index": 7,
+      "feature_value": -0.1813,
+      "importance": 0.0549,
+      "effect": "negative"
+    },
+    {
+      "feature_name": "NHR",
+      "feature_index": 14,
+      "feature_value": -0.3462,
+      "importance": 0.0501,
+      "effect": "negative"
+    },
+    {
+      "feature_name": "Shimmer:APQ5",
+      "feature_index": 11,
+      "feature_value": -0.0793,
+      "importance": 0.0454,
+      "effect": "negative"
+    }
+  ],
+  "global_importance": [
+    {
+      "feature_name": "PPE",
+      "importance": 0.1487
+    },
+    {
+      "feature_name": "spread1",
+      "importance": 0.0939
+    },
+    {
+      "feature_name": "MDVP:Fo(Hz)",
+      "importance": 0.0726
+    },
+    {
+      "feature_name": "MDVP:Fhi(Hz)",
+      "importance": 0.0631
+    },
+    {
+      "feature_name": "spread2",
+      "importance": 0.0604
+    },
+    {
+      "feature_name": "Jitter:DDP",
+      "importance": 0.0549
+    },
+    {
+      "feature_name": "NHR",
+      "importance": 0.0501
+    },
+    {
+      "feature_name": "Shimmer:APQ5",
+      "importance": 0.0454
+    },
+    {
+      "feature_name": "MDVP:RAP",
+      "importance": 0.0409
+    },
+    {
+      "feature_name": "MDVP:Shimmer(dB)",
+      "importance": 0.038
+    }
+  ],
+  "quantum_circuit_explanation": {
+    "qubits": 8,
+    "circuit_depth": 17,
+    "encoding_method": "angle_encoding",
+    "feature_to_qubit_mapping": {
+      "PC1": "qubit_0",
+      "PC2": "qubit_1",
+      "PC3": "qubit_2",
+      "PC4": "qubit_3",
+      "PC5": "qubit_4",
+      "PC6": "qubit_5",
+      "PC7": "qubit_6",
+      "PC8": "qubit_7"
+    },
+    "measured_qubits": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "circuit_diagram_url": null
+  },
+  "pipeline_trace": [
+    {
+      "phase": "Phase 1",
+      "component": "Ingestion",
+      "artifact": "DS-000004"
+    },
+    {
+      "phase": "Phase 4",
+      "component": "Preprocessing",
+      "artifact": "PREP-5F69E9A7",
+      "note": "StandardScaler fitted on training data only"
+    },
+    {
+      "phase": "Phase 6",
+      "component": "Feature Reduction",
+      "artifact": "QREP-001",
+      "method": "PCA",
+      "dimensions": "22 \u2192 8",
+      "variance_retained": "96.1%"
+    },
+    {
+      "phase": "Phase 8",
+      "component": "Quantum Model",
+      "artifact": "VQC",
+      "qubits": 8
+    },
+    {
+      "phase": "Phase 10",
+      "component": "Execution",
+      "artifact": "EXP-1FDB13EC",
+      "backend": "LOCAL_SIMULATOR"
+    }
+  ],
+  "model_decision_reason": "The VQC model predicted POSITIVE (disease) with score 1.000. Strongest contributing feature: 'PPE' (importance 0.149). Actual label was POSITIVE \u2014 correct prediction.",
+  "warnings": [
+    "Feature importance is approximated via RandomForest proxy \u2014 VQC uses perturbation analysis in production.",
+    "Prediction score is uncalibrated and should not be interpreted as a clinical probability.",
+    "This is a research/benchmarking system output. Not a clinical diagnosis."
+  ],
+  "explainability_method": "feature_perturbation",
+  "explanation_timestamp": "2026-09-24T08:41:38.029Z"
+}

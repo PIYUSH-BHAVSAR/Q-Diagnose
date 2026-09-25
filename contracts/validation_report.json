@@ -1,0 +1,309 @@
+{
+  "title": "validation_report.json",
+  "description": "Phase 3 dataset validation output describing quality assessment, structural issues, and readiness status",
+  "producer": "Phase 3 - Dataset Validation & Quality Assessment",
+  "consumers": [
+    "Phase 4 - Preprocessing Pipeline (decides how to fix issues)",
+    "Frontend - Data Quality Display",
+    "Phase 9 - Experiment Planner (filters unsafe datasets)"
+  ],
+  "version": "1.0.0",
+  
+  "example_breast_cancer": {
+    "dataset_id": "20260829_020959_breast_cancer",
+    "validation_timestamp": "2026-08-29T02:10:42Z",
+    "validation_status": "PASS_WITH_WARNINGS",
+    "quality_score": 92,
+    "next_phase": "PREPROCESSING",
+    
+    "target_validation": {
+      "status": "PASS",
+      "target_column": "diagnosis",
+      "target_type": "categorical",
+      "unique_values": 2,
+      "value_distribution": {
+        "M": 212,
+        "B": 357
+      },
+      "missing_count": 0,
+      "is_identifier_risk": false,
+      "_comment": "Produced by: Phase 3 Target Validator. Consumed by: Phase 4 (confirms target), Phase 9 (verifies binary classification)"
+    },
+    
+    "schema_validation": {
+      "status": "PASS",
+      "expected_numerical": 30,
+      "expected_categorical": 1,
+      "actual_numerical": 30,
+      "actual_categorical": 1,
+      "type_mismatches": [],
+      "_comment": "Produced by: Phase 3 Schema Validator. Consumed by: Phase 4 (verifies data types before normalization)"
+    },
+    
+    "missing_values": {
+      "status": "PASS",
+      "dataset_level": {
+        "total_missing": 0,
+        "missing_percentage": 0.0
+      },
+      "column_level": {
+        "radius_mean": 0.0,
+        "texture_mean": 0.0,
+        "perimeter_mean": 0.0
+      },
+      "sample_level": {
+        "samples_with_missing": 0,
+        "max_missing_per_sample_pct": 0.0
+      },
+      "severity": "PASS",
+      "_comment": "Produced by: Phase 3 Missing Data Analyzer. Consumed by: Phase 4 (decides imputation strategy - median/mean/KNN)"
+    },
+    
+    "duplicates": {
+      "status": "WARNING",
+      "exact_duplicates": 12,
+      "duplicate_percentage": 2.1,
+      "severity": "LOW",
+      "_comment": "Produced by: Phase 3 Duplicate Analyzer. Consumed by: Phase 4 (decides whether to drop/keep duplicates)"
+    },
+    
+    "class_balance": {
+      "status": "WARNING",
+      "class_counts": {
+        "M": 212,
+        "B": 357
+      },
+      "imbalance_ratio": 1.68,
+      "minority_percentage": 37.3,
+      "severity": "MODERATE",
+      "_comment": "Produced by: Phase 3 Class Balance Analyzer. Consumed by: Phase 4 (decides balancing - class_weight/SMOTE/threshold), Phase 10 (stratified CV)"
+    },
+    
+    "value_validation": {
+      "status": "PASS",
+      "structural_invalidity_count": 0,
+      "potential_outlier_count": 47,
+      "invalid_ranges": [],
+      "_comment": "Produced by: Phase 3 Range/Value Validator. Consumed by: Phase 4 (decides outlier treatment)"
+    },
+    
+    "outliers": {
+      "status": "INFO",
+      "columns_with_outliers": [
+        "area_mean",
+        "perimeter_worst",
+        "concave points_worst"
+      ],
+      "total_outlier_samples": 47,
+      "outlier_percentage": 8.3,
+      "_comment": "Produced by: Phase 3 Outlier Analyzer (IQR/z-score). Consumed by: Phase 4 (decides clipping/removal/keep)"
+    },
+    
+    "leakage": {
+      "status": "PASS",
+      "identifier_candidates": ["id"],
+      "high_correlation_with_target": [],
+      "suspicious_relationships": [],
+      "_comment": "Produced by: Phase 3 Leakage Analyzer. Consumed by: Phase 4 (excludes identifier columns), Phase 10 (prevents training on leaked features)"
+    },
+    
+    "patient_level_split_risk": {
+      "detected": false,
+      "patient_id_column": null,
+      "recommendation": "Standard random split acceptable",
+      "_comment": "Produced by: Phase 3 Patient Split Analyzer. Consumed by: Phase 4/Phase 10 (determines stratified vs patient-grouped split)"
+    },
+    
+    "image_label_validation": {
+      "applicable": false,
+      "_comment": "Only populated for image datasets. Produced by: Phase 3 Image/Label Validator. Consumed by: Phase 4 (verifies alignment)"
+    },
+    
+    "critical_issues": [],
+    
+    "warnings": [
+      {
+        "code": "DUPLICATE_ROWS",
+        "message": "12 duplicate rows detected",
+        "severity": "LOW",
+        "column": null
+      },
+      {
+        "code": "CLASS_IMBALANCE",
+        "message": "Moderate class imbalance (1.68:1 ratio)",
+        "severity": "MODERATE",
+        "column": "diagnosis"
+      }
+    ],
+    
+    "info_messages": [
+      {
+        "code": "OUTLIER_DETECTION",
+        "message": "47 potential statistical outliers detected across 3 columns",
+        "severity": "INFO"
+      }
+    ],
+    
+    "recommended_preprocessing_steps": [
+      "Consider duplicate removal or investigation",
+      "Consider class balancing strategy (e.g., class_weight, SMOTE, threshold adjustment)",
+      "Outlier treatment optional - medical context required"
+    ]
+  },
+  
+  "example_heart_disease": {
+    "dataset_id": "20260829_021013_heart_disease",
+    "validation_status": "PASS_WITH_WARNINGS",
+    "quality_score": 88,
+    "missing_values": {
+      "status": "WARNING",
+      "dataset_level": {
+        "total_missing": 174,
+        "missing_percentage": 4.1
+      },
+      "severity": "LOW"
+    },
+    "class_balance": {
+      "class_counts": {
+        "0": 138,
+        "1": 165
+      },
+      "imbalance_ratio": 1.20,
+      "severity": "BALANCED"
+    }
+  },
+  
+  "example_parkinsons": {
+    "dataset_id": "20260829_135712_parkinsons",
+    "validation_status": "PASS_WITH_WARNINGS",
+    "quality_score": 94,
+    "class_balance": {
+      "class_counts": {
+        "0": 48,
+        "1": 147
+      },
+      "imbalance_ratio": 3.06,
+      "severity": "HIGH"
+    }
+  },
+  
+  "example_diabetes": {
+    "dataset_id": "c3d4e5f6-a7b8-4901-c2d3-e4f5a6b7c8d9",
+    "validation_status": "PASS_WITH_WARNINGS",
+    "quality_score": 85,
+    "next_phase": "PREPROCESSING",
+    "target_validation": {
+      "status": "PASS",
+      "target_column": "Outcome",
+      "target_type": "binary",
+      "unique_values": 2,
+      "value_distribution": { "0": 500, "1": 268 },
+      "missing_count": 0,
+      "is_identifier_risk": false
+    },
+    "missing_values": {
+      "status": "WARNING",
+      "dataset_level": { "total_missing": 652, "missing_percentage": 10.7 },
+      "severity": "MODERATE",
+      "_comment": "Zero-coded missing values in Glucose, BloodPressure, SkinThickness, Insulin, BMI — biologically impossible zeros treated as missing"
+    },
+    "class_balance": {
+      "status": "WARNING",
+      "class_counts": { "0": 500, "1": 268 },
+      "imbalance_ratio": 1.87,
+      "minority_percentage": 34.9,
+      "severity": "MODERATE"
+    },
+    "leakage": {
+      "status": "PASS",
+      "identifier_candidates": [],
+      "high_correlation_with_target": []
+    },
+    "patient_level_split_risk": {
+      "detected": false,
+      "patient_id_column": null,
+      "recommendation": "Standard stratified split acceptable"
+    },
+    "critical_issues": [],
+    "warnings": [
+      { "code": "MISSING_VALUES", "message": "10.7% missing (biologically impossible zeros)", "severity": "MODERATE", "column": "multiple" },
+      { "code": "CLASS_IMBALANCE", "message": "Moderate imbalance (1.87:1 ratio)", "severity": "MODERATE", "column": "Outcome" }
+    ]
+  },
+
+  "example_parkinsons": {
+    "dataset_id": "d4e5f6a7-b8c9-4012-d3e4-f5a6b7c8d9e0",
+    "validation_status": "PASS_WITH_WARNINGS",
+    "quality_score": 89,
+    "next_phase": "PREPROCESSING",
+    "target_validation": {
+      "status": "PASS",
+      "target_column": "status",
+      "target_type": "binary",
+      "unique_values": 2,
+      "value_distribution": { "0": 48, "1": 147 },
+      "missing_count": 0,
+      "is_identifier_risk": false
+    },
+    "missing_values": {
+      "status": "PASS",
+      "dataset_level": { "total_missing": 0, "missing_percentage": 0.0 },
+      "severity": "PASS"
+    },
+    "duplicates": {
+      "status": "PASS",
+      "exact_duplicates": 0,
+      "duplicate_percentage": 0.0,
+      "severity": "PASS"
+    },
+    "class_balance": {
+      "status": "WARNING",
+      "class_counts": { "0": 48, "1": 147 },
+      "imbalance_ratio": 3.06,
+      "minority_percentage": 24.6,
+      "severity": "HIGH"
+    },
+    "leakage": {
+      "status": "PASS",
+      "identifier_candidates": ["name"],
+      "high_correlation_with_target": []
+    },
+    "patient_level_split_risk": {
+      "detected": true,
+      "patient_id_column": "name",
+      "recommendation": "Use GroupShuffleSplit on 'name' column — multiple recordings per subject. Standard random split would leak patient data across train/test."
+    },
+    "critical_issues": [],
+    "warnings": [
+      { "code": "CLASS_IMBALANCE", "message": "High imbalance (3.06:1 ratio) — 75.4% positive class", "severity": "HIGH", "column": "status" },
+      { "code": "PATIENT_LEAKAGE_RISK", "message": "Multiple recordings per subject detected — use grouped split", "severity": "HIGH", "column": "name" }
+    ]
+  },
+
+  "field_definitions": {
+    "validation_status": "enum: PASS | PASS_WITH_WARNINGS | BLOCKED",
+    "quality_score": "integer 0-100 (clamped, never negative): Technical readiness score NOT medical quality. Start at 100, subtract: 5 per LOW, 10 per MODERATE, 20 per HIGH, 40 per CRITICAL. Apply max(0, score).",
+    "target_validation.is_identifier_risk": "boolean: Whether column behaves like identifier (patient_id) rather than target",
+    "missing_values.severity": "enum: PASS (0%) | LOW (0-5%) | MODERATE (5-20%) | HIGH (>20%) — configurable thresholds",
+    "class_balance.severity": "enum: BALANCED (ratio < 1.5) | MODERATE (1.5-3.0) | HIGH (3.0-10.0) | EXTREME (>10.0) — DECISION 2026-09-10: canonical enum, replaces old 'PASS' for balanced case",
+    "class_balance.imbalance_ratio": "float: majority_count / minority_count",
+    "value_validation.structural_invalidity_count": "integer: Clearly invalid values (age=-17, BMI=900)",
+    "value_validation.potential_outlier_count": "integer: Statistical outliers that MAY be valid measurements — never auto-delete",
+    "leakage.identifier_candidates": "array of strings: Column names like 'id', 'name', 'patient_id' to exclude from features",
+    "patient_level_split_risk.detected": "boolean: Whether multiple samples per patient exist — requires GroupShuffleSplit",
+    "critical_issues": "array: Issues that set validation_status=BLOCKED (target missing, corrupted dataset, no usable labels)",
+    "warnings": "array of {code, message, severity, column}: Issues that allow progression but require preprocessing decisions in Phase 4",
+    "recommended_preprocessing_steps": "array of strings: Suggestions for Phase 4 — Phase 3 does NOT execute these"
+  },
+  
+  "notes": [
+    "Phase 3 DETECTS problems but does NOT FIX them - Phase 4 owns transformation decisions",
+    "validation_status=BLOCKED prevents progression to Phase 4 until critical issues resolved",
+    "quality_score is technical readiness, NOT medical quality assessment",
+    "Outlier detection distinguishes structural invalidity (age=-17) from statistical outliers (cholesterol=350)",
+    "For medical datasets, patient-level split detection prevents train/test leakage",
+    "Identifier columns (patient_id) flagged for exclusion from feature set",
+    "Thresholds (0-5% LOW, 5-20% MODERATE, >20% HIGH) are configurable engineering categories",
+    "Phase 3 → Phase 4 handoff: dataset_id + dataset_profile + validation_report"
+  ]
+}

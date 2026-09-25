@@ -1,0 +1,376 @@
+{
+  "title": "cost_report.json",
+  "description": "Phase 13 comprehensive cost, scalability, and deployment evaluation report",
+  "producer": "Phase 13 - Cost, Scalability & Deployment Evaluation",
+  "consumers": [
+    "Frontend - Cost/Performance Dashboard",
+    "Phase 9 - Experiment Planner (feedback loop for improved resource estimation)",
+    "Reports - Final Platform Presentation",
+    "Business Decision Layer - ROI Analysis"
+  ],
+  "version": "1.0.0",
+  
+  "example_quantum_vqc": {
+    "experiment_id": "EXP-Q-000001",
+    "experiment_type": "QUANTUM",
+    "model_type": "VQC",
+    "dataset_id": "20260829_020959_breast_cancer",
+    "report_timestamp": "2026-08-29T02:28:15Z",
+    
+    "performance_summary": {
+      "roc_auc": 0.94,
+      "recall": 0.93,
+      "specificity": 0.91,
+      "accuracy": 0.92,
+      "_comment": "Produced by: Phase 10 execution. Consumed by: Phase 13 (correlates performance with cost)"
+    },
+    
+    "computational_cost": {
+      "training": {
+        "wall_clock_time_seconds": 842,
+        "cpu_time_seconds": 3124,
+        "cpu_cores_used": 4,
+        "cpu_utilization_avg_percent": 82,
+        "ram_peak_gb": 3.2,
+        "ram_avg_gb": 2.8,
+        "gpu_time_seconds": 0,
+        "gpu_required": false,
+        "_comment": "Produced by: Phase 13 Resource Profiler. Consumed by: Phase 13 cost estimator, Phase 9 (improved future estimates)"
+      },
+      "inference": {
+        "avg_time_ms": 45,
+        "samples_per_second": 22,
+        "ram_required_gb": 1.2,
+        "_comment": "Inference cost matters for deployment at scale"
+      }
+    },
+    
+    "quantum_cost": {
+      "qubits": 8,
+      "circuit_depth": 12,
+      "gate_count": 156,
+      "two_qubit_gates": 48,
+      "shots_per_execution": 1024,
+      "total_circuit_executions": 19932,
+      "total_shots": 20410368,
+      "optimization_iterations": 178,
+      "_comment": "Produced by: Phase 10 quantum runtime. Consumed by: Phase 13 (quantum workload quantification), cloud cost estimator"
+    },
+    
+    "storage_cost": {
+      "model_size_mb": 2.4,
+      "checkpoint_size_mb": 8.7,
+      "intermediate_results_mb": 12.3,
+      "total_storage_mb": 23.4,
+      "_comment": "Produced by: Phase 13 storage monitor. Consumed by: deployment planner"
+    },
+    
+    "financial_cost_local": {
+      "infrastructure": "LOCAL_LAPTOP",
+      "financial_cost_estimate": 0,
+      "cost_units": {
+        "cpu_core_hours": 0.87,
+        "ram_gb_hours": 3.95,
+        "electricity_kwh_estimate": 0.42
+      },
+      "_comment": "Local execution: financial cost ≈ 0, but resource usage ≠ 0. Produced by: Phase 13 cost estimator."
+    },
+    
+    "financial_cost_cloud_estimate": {
+      "applicable": false,
+      "estimated_cost_usd": null,
+      "note": "Cloud cost estimation requires selected provider pricing. Example: AWS, IBM Quantum, Azure Quantum.",
+      "_comment": "Produced by: Phase 13 cloud cost estimator (when provider configured). Consumed by: business decision layer"
+    },
+    
+    "scalability_analysis": {
+      "dataset_size_scaling": {
+        "tested_sample_sizes": [100, 250, 500, 1000],
+        "results": [
+          {
+            "samples": 100,
+            "training_time_seconds": 68,
+            "ram_gb": 1.8,
+            "circuit_executions": 3240,
+            "roc_auc": 0.89
+          },
+          {
+            "samples": 250,
+            "training_time_seconds": 154,
+            "ram_gb": 2.1,
+            "circuit_executions": 7890,
+            "roc_auc": 0.91
+          },
+          {
+            "samples": 500,
+            "training_time_seconds": 412,
+            "ram_gb": 2.6,
+            "circuit_executions": 15240,
+            "roc_auc": 0.93
+          },
+          {
+            "samples": 1000,
+            "training_time_seconds": 842,
+            "ram_gb": 3.2,
+            "circuit_executions": 19932,
+            "roc_auc": 0.94
+          }
+        ],
+        "growth_trend": "Approximately linear time scaling with sample count. Performance plateaus after 500 samples.",
+        "_comment": "Produced by: Phase 13 scalability module. Consumed by: Phase 9 (decides subset strategy for large datasets)"
+      },
+      
+      "feature_scaling": {
+        "tested_feature_counts": [4, 8, 12, 16],
+        "results": [
+          {
+            "features": 4,
+            "qubits": 4,
+            "training_time_seconds": 98,
+            "ram_gb": 0.9,
+            "roc_auc": 0.87
+          },
+          {
+            "features": 8,
+            "qubits": 8,
+            "training_time_seconds": 842,
+            "ram_gb": 3.2,
+            "roc_auc": 0.94
+          },
+          {
+            "features": 12,
+            "qubits": 12,
+            "training_time_seconds": 2847,
+            "ram_gb": 6.8,
+            "roc_auc": 0.945
+          },
+          {
+            "features": 16,
+            "qubits": 16,
+            "training_time_seconds": 8234,
+            "ram_gb": 14.2,
+            "roc_auc": 0.947
+          }
+        ],
+        "growth_trend": "Exponential memory scaling with qubit count. Diminishing performance returns beyond 8 qubits.",
+        "recommendation": "8 qubits optimal for this dataset - balances performance and resource cost.",
+        "_comment": "Feature reduction (Phase 6) is NOT optional decoration - it makes quantum branch computationally feasible"
+      },
+      
+      "circuit_depth_scaling": {
+        "tested_depths": [1, 2, 4, 6],
+        "results": [
+          {
+            "depth": 1,
+            "training_time_seconds": 412,
+            "roc_auc": 0.90
+          },
+          {
+            "depth": 2,
+            "training_time_seconds": 842,
+            "roc_auc": 0.94
+          },
+          {
+            "depth": 4,
+            "training_time_seconds": 1834,
+            "roc_auc": 0.943
+          },
+          {
+            "depth": 6,
+            "training_time_seconds": 3621,
+            "roc_auc": 0.944
+          }
+        ],
+        "recommendation": "Depth 2 optimal - depth 4/6 provide negligible improvement at 2-4× cost",
+        "_comment": "Produced by: Phase 13 circuit depth analyzer. Consumed by: Phase 8 (quantum model configuration)"
+      },
+      
+      "shots_scaling": {
+        "tested_shots": [128, 256, 512, 1024, 2048],
+        "results": [
+          {
+            "shots": 128,
+            "training_time_seconds": 542,
+            "roc_auc": 0.92,
+            "result_variance": 0.034
+          },
+          {
+            "shots": 512,
+            "training_time_seconds": 742,
+            "roc_auc": 0.935,
+            "result_variance": 0.018
+          },
+          {
+            "shots": 1024,
+            "training_time_seconds": 842,
+            "roc_auc": 0.94,
+            "result_variance": 0.012
+          },
+          {
+            "shots": 2048,
+            "training_time_seconds": 1124,
+            "roc_auc": 0.941,
+            "result_variance": 0.009
+          }
+        ],
+        "recommendation": "1024 shots provides stable measurement estimates. 2048 minimal improvement at 33% cost increase.",
+        "_comment": "More shots = more stable estimate but higher execution cost"
+      }
+    },
+    
+    "resource_feasibility": {
+      "current_environment": "LOCAL_LAPTOP",
+      "current_capabilities": {
+        "ram_total_gb": 8,
+        "cpu_cores": 4,
+        "gpu_available": false
+      },
+      "this_experiment_status": "FEASIBLE",
+      "bottleneck": "RAM (used 3.2GB of 8GB)",
+      "scaling_limit": "16 qubits feasible with high resource usage. 32 qubits NOT recommended.",
+      "_comment": "Produced by: Phase 13 feasibility analyzer. Consumed by: Phase 9 (filters infeasible configurations)"
+    },
+    
+    "performance_vs_cost": {
+      "performance_metric": "roc_auc",
+      "performance_value": 0.94,
+      "cost_metric": "training_time_seconds",
+      "cost_value": 842,
+      "pareto_efficient": true,
+      "dominated_by": null,
+      "dominates": ["EXP-Q-000005"],
+      "_comment": "Produced by: Phase 13 Pareto analyzer. Consumed by: Frontend (performance-cost curve), reports (practical recommendations)"
+    },
+    
+    "comparison_classical_baseline": {
+      "classical_experiment_id": "EXP-C-000001",
+      "classical_model": "XGBoost",
+      "classical_performance": {
+        "roc_auc": 0.96,
+        "recall": 0.95
+      },
+      "classical_cost": {
+        "training_time_seconds": 45,
+        "ram_gb": 0.8
+      },
+      "quantum_performance": {
+        "roc_auc": 0.94,
+        "recall": 0.93
+      },
+      "quantum_cost": {
+        "training_time_seconds": 842,
+        "ram_gb": 3.2
+      },
+      "verdict": "Classical XGBoost superior in both performance (2% higher AUC) and cost (18× faster). Quantum NOT advantageous for this dataset/configuration.",
+      "_comment": "Honest comparison - quantum not always better. Produced by: Phase 13. Consumed by: Phase 11 (recommendation), reports"
+    },
+    
+    "deployment_recommendation": {
+      "production_readiness": "NOT_RECOMMENDED_PRODUCTION",
+      "reasons": [
+        "Classical baseline outperforms quantum in both accuracy and speed",
+        "Quantum training 18× slower with marginal performance gap",
+        "8-qubit VQC suitable for research/validation, not production deployment"
+      ],
+      "alternative": "Deploy XGBoost (EXP-C-000001) for production. Use quantum for continued research.",
+      "_comment": "Produced by: Phase 13 deployment evaluator. Consumed by: business decision layer, final reports"
+    },
+    
+    "backend_compatibility": {
+      "current_backend": "LOCAL_SIMULATOR",
+      "supports_cloud_simulator": true,
+      "supports_hardware": true,
+      "hardware_requirements": "8-qubit NISQ device with gate fidelity > 99%",
+      "migration_effort": "LOW - same experiment config, change backend_type only",
+      "_comment": "Backend abstraction allows future hardware/cloud migration without code rewrite"
+    },
+    
+    "pipeline_cost_breakdown": {
+      "data_preprocessing_seconds": 12,
+      "feature_extraction_seconds": 0,
+      "feature_reduction_seconds": 3,
+      "quantum_training_seconds": 842,
+      "evaluation_seconds": 8,
+      "total_pipeline_seconds": 865,
+      "quantum_percentage": 97.3,
+      "_comment": "Quantum training dominates pipeline cost. CNN feature extraction would dominate for image datasets."
+    },
+    
+    "caching_effectiveness": {
+      "cached_artifacts": [
+        "preprocessed_dataset",
+        "pca_transformation"
+      ],
+      "cache_hit_rate": 1.0,
+      "time_saved_seconds": 15,
+      "_comment": "Caching prevents repeated computation across experiments"
+    }
+  },
+  
+  "example_classical_xgboost": {
+    "experiment_id": "EXP-C-000001",
+    "experiment_type": "CLASSICAL",
+    "model_type": "XGBoost",
+    
+    "computational_cost": {
+      "training": {
+        "wall_clock_time_seconds": 45,
+        "cpu_time_seconds": 156,
+        "ram_peak_gb": 0.8
+      },
+      "inference": {
+        "avg_time_ms": 3,
+        "samples_per_second": 333
+      }
+    },
+    
+    "performance_summary": {
+      "roc_auc": 0.96,
+      "recall": 0.95,
+      "specificity": 0.94
+    },
+    
+    "deployment_recommendation": {
+      "production_readiness": "RECOMMENDED",
+      "reasons": [
+        "Highest performance (AUC 0.96)",
+        "Fast training (45 seconds)",
+        "Low resource usage (0.8GB RAM)",
+        "Fast inference (3ms per sample)"
+      ]
+    }
+  },
+  
+  "field_definitions": {
+    "computational_cost.training.wall_clock_time_seconds": "float: Actual elapsed time",
+    "computational_cost.training.cpu_time_seconds": "float: Total CPU time across all cores",
+    "quantum_cost.total_circuit_executions": "integer: Number of times quantum circuit was executed during training",
+    "quantum_cost.total_shots": "integer: circuit_executions × shots_per_execution",
+    "scalability_analysis.growth_trend": "string: Linear, exponential, logarithmic - describes resource scaling behavior",
+    "performance_vs_cost.pareto_efficient": "boolean: Whether this config is on Pareto frontier (no other config dominates it)",
+    "performance_vs_cost.dominated_by": "string or null: Experiment ID that provides better/equal performance at lower/equal cost",
+    "comparison_classical_baseline.verdict": "string: Honest assessment - classical may be superior",
+    "deployment_recommendation.production_readiness": "enum: RECOMMENDED, CONDITIONAL, NOT_RECOMMENDED_PRODUCTION, RESEARCH_ONLY",
+    "backend_compatibility.migration_effort": "enum: LOW, MEDIUM, HIGH - effort to migrate to cloud/hardware backend",
+    "pipeline_cost_breakdown": "object: Shows which pipeline stage dominates cost (quantum training, CNN extraction, etc.)"
+  },
+  
+  "notes": [
+    "Phase 13 answers: 'Can this system be used at scale, and what does it cost?'",
+    "Honest comparison: quantum NOT always better - this report doesn't hide classical superiority",
+    "Scalability testing shows growth trends - exponential memory for qubits, linear for samples",
+    "Feature reduction (Phase 6) is what makes quantum branch feasible - not optional",
+    "Pareto frontier identifies practical sweet spots - best performance for given cost",
+    "deployment_recommendation may say 'use classical' - platform honesty is strength",
+    "Backend abstraction means same experiment_config can target local_sim/cloud_sim/hardware",
+    "Pipeline cost breakdown reveals bottleneck - may be CNN feature extraction, not quantum",
+    "Financial cost ≈ 0 for local execution, but resource usage ≠ 0 (CPU, RAM, electricity)",
+    "Cloud cost estimation requires provider pricing - example providers: IBM Quantum, AWS Braket, Azure Quantum",
+    "Phase 13 → Phase 9 feedback loop: actual costs improve future resource estimates",
+    "This report connects to SIH concern: 'What about cost? What is in it for people?'",
+    "Platform demonstrates: quantum MAY provide value for specific datasets/configs, but classical remains strong baseline",
+    "Scalability modes: LOCAL (dev/small datasets) → GPU/HPC (larger workloads) → CLOUD_SIMULATOR → HARDWARE",
+    "Resource-aware scheduling prevents runaway experiments - execution_budget enforced",
+    "Caching (CNN embeddings, PCA transformations, kernel matrices) dramatically reduces repeated computation"
+  ]
+}

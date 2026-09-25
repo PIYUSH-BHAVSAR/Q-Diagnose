@@ -1,0 +1,66 @@
+{
+  "_contract": "experiment_config.json v1.0",
+  "_dataset": "heart_disease",
+  "plan_id": "PLAN-000002",
+  "dataset_id": "b2c3d4e5-f6a7-4890-b1c2-d3e4f5a6b7c8",
+  "status": "READY_FOR_EXECUTION",
+  "task": "BINARY_CLASSIFICATION",
+  "quantum_enabled": true,
+  "use_class_weight": false,
+  "preprocessing": [
+    "standard_scaling"
+  ],
+  "reduction": {
+    "method": "PCA",
+    "components": 8,
+    "variance_retained": 0.8003
+  },
+  "classical_models": [
+    "logistic_regression",
+    "svm",
+    "random_forest"
+  ],
+  "quantum_models": [
+    "vqc"
+  ],
+  "evaluation": {
+    "split": "stratified",
+    "test_size": 0.2,
+    "random_state": 42
+  },
+  "experiments": [
+    {
+      "id": "EXP-1949FB3F",
+      "priority": "P0",
+      "model": "logistic_regression",
+      "representation": "REP-001"
+    },
+    {
+      "id": "EXP-D49767D0",
+      "priority": "P0",
+      "model": "svm",
+      "representation": "REP-001"
+    },
+    {
+      "id": "EXP-9B072E1D",
+      "priority": "P0",
+      "model": "random_forest",
+      "representation": "REP-001"
+    },
+    {
+      "id": "EXP-654CF731",
+      "priority": "P0",
+      "model": "vqc",
+      "representation": "QREP-001"
+    }
+  ],
+  "decision_trace": {
+    "rules_applied": [
+      "RULE-001: Binary classification detected",
+      "RULE-002: 8 features \u2264 8 max qubits \u2014 quantum enabled",
+      "RULE-003: 303 samples \u2014 standard training regime",
+      "RULE-004: Imbalance 1.2:1 \u2014 class_weight='balanced' applied"
+    ],
+    "reason": "Rule-based deterministic planning"
+  }
+}

@@ -1,0 +1,260 @@
+{
+  "_comment": "Model Result - Phase 10 Output",
+  "_description": "Unified result schema for both classical and quantum models. Produced by: Phase 10 execution engine. Consumed by: Phase 11 benchmarking, Phase 12 explainability, Phase 13 cost analysis, frontend.",
+  
+  "experiment_id": {
+    "_type": "string",
+    "_description": "Unique experiment identifier linking to experiment configuration.",
+    "_example_classical": "EXP-C-000001",
+    "_example_quantum": "EXP-Q-000001"
+  },
+  
+  "model_type": {
+    "_type": "enum",
+    "_values": ["CLASSICAL", "QUANTUM", "HYBRID"],
+    "_description": "High-level model category for Phase 11 comparison grouping.",
+    "_example_classical": "CLASSICAL",
+    "_example_quantum": "QUANTUM"
+  },
+  
+  "model_name": {
+    "_type": "string",
+    "_description": "Specific model name from registry.",
+    "_example_logistic": "LogisticRegression",
+    "_example_xgboost": "XGBoost",
+    "_example_vqc": "VQC",
+    "_example_qkernel": "QuantumKernel"
+  },
+  
+  "representation_id": {
+    "_type": "string",
+    "_description": "Feature representation used (e.g., REP-001 for full features, QREP-001 for reduced).",
+    "_example_classical": "REP-000001",
+    "_example_quantum": "QREP-000001"
+  },
+  
+  "status": {
+    "_type": "enum",
+    "_values": ["COMPLETED", "FAILED", "TIMEOUT", "OUT_OF_MEMORY"],
+    "_description": "Execution completion status.",
+    "_example": "COMPLETED"
+  },
+  
+  "predictions": {
+    "train": {
+      "_type": "array of numbers",
+      "_description": "Model predictions on training set (for generalization analysis).",
+      "_shape_breast_cancer": "(398,)",
+      "_example": "[1, 0, 1, 0, ...]"
+    },
+    "validation": {
+      "_type": "array of numbers",
+      "_description": "Predictions on validation set.",
+      "_shape_breast_cancer": "(86,)",
+      "_example": "[0, 1, 0, 1, ...]"
+    },
+    "test": {
+      "_type": "array of numbers",
+      "_description": "Predictions on test set for final Phase 11 evaluation.",
+      "_shape_breast_cancer": "(85,)",
+      "_example": "[1, 0, 0, 1, ...]"
+    }
+  },
+  
+  "prediction_scores": {
+    "test": {
+      "_type": "array of floats",
+      "_description": "Raw model scores/probabilities for test set predictions (for ROC/PR curves).",
+      "_shape_breast_cancer": "(85,)",
+      "_example": "[0.87, 0.23, 0.91, ...]"
+    }
+  },
+  
+  "metrics": {
+    "accuracy": {
+      "_type": "float [0-1]",
+      "_description": "Overall classification accuracy on test set.",
+      "_example_breast_cancer_classical": 0.953,
+      "_example_breast_cancer_quantum": 0.941,
+      "_example_heart_disease_classical": 0.867,
+      "_example_diabetes_classical": 0.765,
+      "_example_parkinsons_quantum": 0.897
+    },
+    "precision": {
+      "_type": "float [0-1]",
+      "_description": "Positive predictive value (TP / (TP + FP)).",
+      "_example": 0.921
+    },
+    "recall": {
+      "_type": "float [0-1]",
+      "_description": "Sensitivity / True Positive Rate (TP / (TP + FN)). Critical for disease detection.",
+      "_example_breast_cancer_classical": 0.903,
+      "_example_breast_cancer_quantum": 0.935,
+      "_example_heart_disease_classical": 0.880,
+      "_example_diabetes_classical": 0.725,
+      "_example_parkinsons_quantum": 0.909
+    },
+    "specificity": {
+      "_type": "float [0-1]",
+      "_description": "True Negative Rate (TN / (TN + FP)). Important to avoid false alarms.",
+      "_example": 0.963
+    },
+    "f1_score": {
+      "_type": "float [0-1]",
+      "_description": "Harmonic mean of precision and recall.",
+      "_example": 0.912
+    },
+    "roc_auc": {
+      "_type": "float [0-1]",
+      "_description": "Area Under ROC Curve - primary discrimination metric for imbalanced data.",
+      "_example_breast_cancer_classical": 0.973,
+      "_example_breast_cancer_quantum": 0.961,
+      "_example_heart_disease_classical": 0.912,
+      "_example_diabetes_classical": 0.831,
+      "_example_parkinsons_quantum": 0.947
+    },
+    "pr_auc": {
+      "_type": "float [0-1]",
+      "_description": "Area Under Precision-Recall Curve - especially important for imbalanced classes.",
+      "_example": 0.892
+    }
+  },
+  
+  "confusion_matrix": {
+    "_type": "2D array [[TN, FP], [FN, TP]]",
+    "_description": "Confusion matrix for classification analysis in Phase 11/12.",
+    "_example_breast_cancer": [[52, 2], [3, 28]],
+    "_example_heart_disease": [[18, 2], [3, 22]],
+    "_example_diabetes": [[68, 7], [11, 29]],
+    "_example_parkinsons": [[6, 1], [2, 20]]
+  },
+  
+  "training_history": {
+    "_type": "object",
+    "_description": "Epoch-by-epoch training metrics for convergence analysis.",
+    "_example_classical": {
+      "epochs": 50,
+      "train_loss": [0.68, 0.54, 0.42, "..."],
+      "val_loss": [0.71, 0.57, 0.45, "..."]
+    },
+    "_example_quantum": {
+      "epochs": 30,
+      "train_loss": [0.72, 0.65, 0.58, 0.51, "..."],
+      "val_loss": [0.75, 0.68, 0.61, 0.54, "..."],
+      "quantum_circuit_executions": [3200, 3200, 3200, "..."]
+    }
+  },
+  
+  "resource_usage": {
+    "training_time_seconds": {
+      "_type": "float",
+      "_description": "Wall-clock training time for Phase 13 cost analysis.",
+      "_example_logistic": 2.3,
+      "_example_xgboost": 42.7,
+      "_example_vqc_8qubits": 842.1,
+      "_example_vqc_16qubits": 3421.5
+    },
+    "inference_time_seconds": {
+      "_type": "float",
+      "_description": "Total time to predict all test samples.",
+      "_example_classical": 0.012,
+      "_example_quantum": 17.4
+    },
+    "memory_peak_mb": {
+      "_type": "float",
+      "_description": "Peak RAM usage during training.",
+      "_example_classical": 382.5,
+      "_example_quantum_8q": 1247.8,
+      "_example_quantum_16q": 8192.3
+    },
+    "model_size_mb": {
+      "_type": "float",
+      "_description": "Serialized model file size.",
+      "_example": 12.4
+    }
+  },
+  
+  "quantum_metrics": {
+    "_type": "object | null",
+    "_description": "Present only for quantum models. Consumed by Phase 11/13 quantum-specific analysis.",
+    "_nullable_for_classical": true,
+    
+    "qubits": {
+      "_type": "integer",
+      "_description": "Number of qubits used in circuit.",
+      "_example_8features": 8,
+      "_example_16features": 16
+    },
+    "circuit_depth": {
+      "_type": "integer",
+      "_description": "Total circuit depth (layers).",
+      "_example": 12
+    },
+    "gate_count": {
+      "_type": "integer",
+      "_description": "Total quantum gates in circuit.",
+      "_example": 156
+    },
+    "two_qubit_gates": {
+      "_type": "integer",
+      "_description": "Count of two-qubit gates (CNOT, CZ, etc.) - key cost metric.",
+      "_example": 42
+    },
+    "shots": {
+      "_type": "integer",
+      "_description": "Number of measurement shots per circuit execution.",
+      "_example": 1024
+    },
+    "total_circuit_executions": {
+      "_type": "integer",
+      "_description": "Total circuit runs during training + inference. Critical for Phase 13 cost estimation.",
+      "_example_training": 19932,
+      "_example_inference": 1500
+    },
+    "backend_type": {
+      "_type": "enum",
+      "_values": ["LOCAL_SIMULATOR", "CLOUD_SIMULATOR", "HARDWARE"],
+      "_description": "Quantum backend used for execution.",
+      "_example": "LOCAL_SIMULATOR"
+    },
+    "encoding_method": {
+      "_type": "string",
+      "_description": "Quantum data encoding strategy.",
+      "_example": "angle_encoding"
+    }
+  },
+  
+  "hyperparameters": {
+    "_type": "object",
+    "_description": "Model-specific hyperparameters for reproducibility.",
+    "_example_xgboost": {
+      "n_estimators": 300,
+      "max_depth": 5,
+      "learning_rate": 0.05
+    },
+    "_example_vqc": {
+      "layers": 2,
+      "optimizer": "Adam",
+      "learning_rate": 0.01,
+      "epochs": 30
+    }
+  },
+  
+  "random_seed": {
+    "_type": "integer",
+    "_description": "Random seed for reproducibility.",
+    "_example": 42
+  },
+  
+  "execution_timestamp": {
+    "_type": "ISO 8601 datetime",
+    "_description": "When execution completed.",
+    "_example": "2026-09-10T15:42:31.789Z"
+  },
+  
+  "error_message": {
+    "_type": "string | null",
+    "_description": "Error details if status != COMPLETED.",
+    "_example": null
+  }
+}

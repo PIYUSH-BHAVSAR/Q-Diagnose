@@ -1,0 +1,94 @@
+{
+  "_contract": "processed_data_schema.md v1.1 (JSON summary)",
+  "_dataset": "breast_cancer",
+  "_note": "Full schema spec in contracts/processed_data_schema.md. This file holds the computed values for this dataset.",
+  "preprocessing_id": "PREP-9FA9A949",
+  "split_strategy": "stratified",
+  "test_size": 0.2,
+  "random_state": 42,
+  "n_train": 455,
+  "n_test": 114,
+  "n_features": 30,
+  "n_components": 8,
+  "variance_retained": 0.9276,
+  "feature_names": [
+    "radius_mean",
+    "texture_mean",
+    "perimeter_mean",
+    "area_mean",
+    "smoothness_mean",
+    "compactness_mean",
+    "concavity_mean",
+    "concave points_mean",
+    "symmetry_mean",
+    "fractal_dimension_mean",
+    "radius_se",
+    "texture_se",
+    "perimeter_se",
+    "area_se",
+    "smoothness_se",
+    "compactness_se",
+    "concavity_se",
+    "concave points_se",
+    "symmetry_se",
+    "fractal_dimension_se",
+    "radius_worst",
+    "texture_worst",
+    "perimeter_worst",
+    "area_worst",
+    "smoothness_worst",
+    "compactness_worst",
+    "concavity_worst",
+    "concave points_worst",
+    "symmetry_worst",
+    "fractal_dimension_worst"
+  ],
+  "reduced_feature_names": [
+    "PC1",
+    "PC2",
+    "PC3",
+    "PC4",
+    "PC5",
+    "PC6",
+    "PC7",
+    "PC8"
+  ],
+  "class_weights": {
+    "0": 0.7982,
+    "1": 1.3382
+  },
+  "array_shapes": {
+    "X_train": [
+      455,
+      30
+    ],
+    "X_test": [
+      114,
+      30
+    ],
+    "y_train": [
+      455
+    ],
+    "y_test": [
+      114
+    ],
+    "X_train_reduced": [
+      455,
+      8
+    ],
+    "X_test_reduced": [
+      114,
+      8
+    ]
+  },
+  "disk_paths": {
+    "X_train": "artifacts/experiments/{experiment_id}/data/X_train.npy",
+    "X_test": "artifacts/experiments/{experiment_id}/data/X_test.npy",
+    "X_train_reduced": "artifacts/experiments/{experiment_id}/data/X_train_reduced.npy",
+    "X_test_reduced": "artifacts/experiments/{experiment_id}/data/X_test_reduced.npy",
+    "y_train": "artifacts/experiments/{experiment_id}/data/y_train.npy",
+    "y_test": "artifacts/experiments/{experiment_id}/data/y_test.npy",
+    "feature_names": "artifacts/experiments/{experiment_id}/data/feature_names.json",
+    "pipeline_metadata": "artifacts/experiments/{experiment_id}/data/pipeline_metadata.json"
+  }
+}

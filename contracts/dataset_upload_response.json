@@ -1,0 +1,96 @@
+{
+  "_comment": "Dataset Upload Response - Phase 1 Output",
+  "_description": "Produced by: Phase 1 ingestion module. Consumed by: Phase 2 profiling, frontend dashboard, experiment manager.",
+  
+  "dataset_id": {
+    "_type": "string (UUID)",
+    "_description": "Unique internal UUID for the dataset. Primary reference for all phases.",
+    "_example_breast_cancer": "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7",
+    "_example_heart_disease": "b2c3d4e5-f6a7-4890-b1c2-d3e4f5a6b7c8",
+    "_example_diabetes": "c3d4e5f6-a7b8-4901-c2d3-e4f5a6b7c8d9",
+    "_example_parkinsons": "d4e5f6a7-b8c9-4012-d3e4-f5a6b7c8d9e0"
+  },
+  
+  "display_id": {
+    "_type": "string",
+    "_description": "Human-readable dataset identifier for UI display and reports.",
+    "_example_breast_cancer": "DS-000001",
+    "_example_heart_disease": "DS-000002",
+    "_example_diabetes": "DS-000003",
+    "_example_parkinsons": "DS-000004"
+  },
+  
+  "status": {
+    "_type": "enum",
+    "_values": ["REGISTERED", "REJECTED", "INVALID_FORMAT", "UNSAFE_ARCHIVE", "SIZE_LIMIT_EXCEEDED", "STORAGE_ERROR"],
+    "_description": "Registration status after Phase 1 validation pipeline completes.",
+    "_example": "REGISTERED"
+  },
+  
+  "filename": {
+    "_type": "string",
+    "_description": "Original uploaded filename from user.",
+    "_example_breast_cancer": "breast_cancer.csv",
+    "_example_heart_disease": "heart_disease.csv",
+    "_example_diabetes": "pima_diabetes.csv",
+    "_example_parkinsons": "parkinsons.csv"
+  },
+  
+  "container_type": {
+    "_type": "enum",
+    "_values": ["CSV", "XLSX", "ZIP", "UNKNOWN"],
+    "_description": "File format container type (NOT ML modality - that's Phase 2).",
+    "_example": "CSV"
+  },
+  
+  "upload_timestamp": {
+    "_type": "ISO 8601 datetime string",
+    "_description": "UTC timestamp of upload completion for audit logs.",
+    "_example": "2026-09-10T14:23:45.123Z"
+  },
+  
+  "file_size_bytes": {
+    "_type": "integer",
+    "_description": "Original file size for resource planning and storage management.",
+    "_example_breast_cancer": 125847,
+    "_example_heart_disease": 89234,
+    "_example_diabetes": 47890,
+    "_example_parkinsons": 39567
+  },
+  
+  "sha256": {
+    "_type": "string (64-char hex)",
+    "_description": "SHA-256 hash for integrity verification and duplicate detection.",
+    "_example": "a1b2c3d4e5f67890abcdef1234567890abcdef1234567890abcdef1234567890"
+  },
+  
+  "storage_path": {
+    "_type": "string (relative path)",
+    "_description": "Path to immutable raw dataset storage. Consumed by Phase 2 loader.",
+    "_example": "datasets/DS-000001/raw/original.csv"
+  },
+  
+  "is_duplicate": {
+    "_type": "boolean",
+    "_description": "Whether SHA-256 matches existing dataset. Triggers UI warning.",
+    "_example": false
+  },
+  
+  "duplicate_of": {
+    "_type": "string | null",
+    "_description": "Dataset ID of duplicate if is_duplicate=true.",
+    "_example": null
+  },
+  
+  "validation_warnings": {
+    "_type": "array of strings",
+    "_description": "Non-blocking warnings from Phase 1 validators.",
+    "_example": []
+  },
+  
+  "rejection_reason": {
+    "_type": "string | null",
+    "_description": "Reason if status != REGISTERED. Used for error display.",
+    "_example": null
+  }
+}

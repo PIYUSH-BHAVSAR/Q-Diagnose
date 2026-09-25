@@ -1,0 +1,56 @@
+{
+  "_contract": "cost_report.json v1.0",
+  "_dataset": "breast_cancer",
+  "experiment_id": "EXP-0850F91D",
+  "report_timestamp": "2026-09-24T08:41:37.640Z",
+  "performance_summary": {
+    "roc_auc": 0.9868,
+    "recall": 0.9421,
+    "specificity": 0.99,
+    "accuracy": 0.9637
+  },
+  "computational_cost": {
+    "training": {
+      "wall_clock_time_seconds": 2.4,
+      "ram_peak_gb": 0.001,
+      "cpu_utilization_avg_percent": 82.0
+    },
+    "inference": {
+      "avg_time_ms": 5002.0
+    }
+  },
+  "quantum_cost": {
+    "qubits": 8,
+    "circuit_depth": 17,
+    "gate_count": 142,
+    "two_qubit_gates": 14,
+    "shots_per_execution": 1024,
+    "total_circuit_executions": 20475,
+    "total_shots": 20966400
+  },
+  "pipeline_cost_breakdown": {
+    "preprocessing_seconds": 0.5,
+    "feature_reduction_seconds": 0.3,
+    "quantum_training_seconds": 2.4,
+    "evaluation_seconds": 1.0,
+    "total_pipeline_seconds": 2.6,
+    "quantum_percentage": 92.3
+  },
+  "comparison_classical_baseline": {
+    "classical_model": "RandomForest",
+    "classical_training_seconds": 0.134,
+    "quantum_training_seconds": 2.4,
+    "speedup_classical": 17.8,
+    "verdict": "Classical RandomForest trains 17.8\u00d7 faster. VQC higher recall (+1.3pp). Classification: TRADEOFF."
+  },
+  "scalability_assessment": {
+    "current_environment": "LOCAL_LAPTOP",
+    "this_experiment_status": "FEASIBLE",
+    "recommended_max_qubits": 8,
+    "note": "8 qubits feasible on local machine. 16 qubits feasible with high RAM. 32 qubits NOT recommended."
+  },
+  "financial_cost_local": {
+    "estimate": 0,
+    "note": "Local quantum simulator. No cloud quantum cost."
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "_contract": "dataset_upload_response.json v1.0",
+  "_dataset": "parkinsons",
+  "dataset_id": "d4e5f6a7-b8c9-4012-d3e4-f5a6b7c8d9e0",
+  "display_id": "DS-000004",
+  "status": "REGISTERED",
+  "filename": "parkinsons.csv",
+  "container_type": "CSV",
+  "upload_timestamp": "2026-09-24T08:41:38.002Z",
+  "file_size_bytes": 40697,
+  "sha256": "a36116c2deac07895b79ce97a2f99a1b3720ac4892995ff5c3b9ccb397ed2bc5",
+  "storage_path": "datasets/DS-000004/raw/original.csv",
+  "is_duplicate": false,
+  "duplicate_of": null,
+  "validation_warnings": [],
+  "rejection_reason": null
+}

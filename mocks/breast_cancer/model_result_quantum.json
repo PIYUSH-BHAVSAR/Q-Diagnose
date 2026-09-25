@@ -1,0 +1,57 @@
+{
+  "_contract": "model_result.json v1.0",
+  "_dataset": "breast_cancer",
+  "_model": "vqc",
+  "experiment_id": "EXP-0850F91D",
+  "model_type": "QUANTUM",
+  "model_name": "VQC",
+  "representation_id": "QREP-001",
+  "status": "COMPLETED",
+  "metrics": {
+    "accuracy": 0.9637,
+    "precision": 0.985,
+    "recall": 0.9421,
+    "specificity": 0.99,
+    "f1_score": 0.958,
+    "roc_auc": 0.9868,
+    "pr_auc": 0.9848
+  },
+  "confusion_matrix": [
+    [
+      72,
+      0
+    ],
+    [
+      3,
+      39
+    ]
+  ],
+  "resource_usage": {
+    "training_time_seconds": 2.4,
+    "inference_time_seconds": 5.002,
+    "memory_peak_mb": 0.7,
+    "model_size_mb": 0.04
+  },
+  "quantum_metrics": {
+    "qubits": 8,
+    "circuit_depth": 17,
+    "gate_count": 142,
+    "two_qubit_gates": 14,
+    "shots": 1024,
+    "total_circuit_executions": 20475,
+    "backend_type": "LOCAL_SIMULATOR",
+    "encoding_method": "angle_encoding"
+  },
+  "model_artifact_path": "artifacts/experiments/EXP-0850F91D/models/vqc_params.npy",
+  "hyperparameters": {
+    "n_qubits": 8,
+    "n_layers": 2,
+    "shots": 1024,
+    "epochs": 30,
+    "learning_rate": 0.01,
+    "random_state": 42
+  },
+  "random_seed": 42,
+  "execution_timestamp": "2026-09-24T08:41:37.629Z",
+  "error_message": null
+}

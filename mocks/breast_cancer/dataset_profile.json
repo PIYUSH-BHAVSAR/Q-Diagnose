@@ -1,0 +1,40 @@
+{
+  "_contract": "dataset_profile.json v1.0",
+  "_dataset": "breast_cancer",
+  "dataset_id": "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7",
+  "profile_id": "PROFILE-000001",
+  "modality": "TABULAR",
+  "dimensions": {
+    "rows": 569,
+    "columns": 33
+  },
+  "features": {
+    "numerical": 30,
+    "categorical": 2
+  },
+  "target": {
+    "candidate": "diagnosis",
+    "confidence": "HIGH"
+  },
+  "task": {
+    "candidate": "BINARY_CLASSIFICATION",
+    "confidence": "HIGH"
+  },
+  "class_distribution": {
+    "0": 357,
+    "1": 212
+  },
+  "missing_values": {
+    "total": 0,
+    "percentage": 0.0,
+    "by_column": {}
+  },
+  "duplicates": {
+    "candidate_count": 0
+  },
+  "warnings": [
+    "Class imbalance detected: 62.7% vs 37.3%"
+  ],
+  "status": "PROFILED",
+  "profiled_at": "2026-09-24T08:41:37.605Z"
+}

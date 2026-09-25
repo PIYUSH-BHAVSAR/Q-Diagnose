@@ -1,0 +1,17 @@
+{
+  "_contract": "dataset_upload_response.json v1.0",
+  "_dataset": "breast_cancer",
+  "dataset_id": "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7",
+  "display_id": "DS-000001",
+  "status": "REGISTERED",
+  "filename": "breast_cancer.csv",
+  "container_type": "CSV",
+  "upload_timestamp": "2026-09-24T08:41:37.595Z",
+  "file_size_bytes": 125204,
+  "sha256": "1425d9affa78ba8e53afc81d0ef8a19069ee10c4b21fe89b3cf514071b12ee33",
+  "storage_path": "datasets/DS-000001/raw/original.csv",
+  "is_duplicate": false,
+  "duplicate_of": null,
+  "validation_warnings": [],
+  "rejection_reason": null
+}

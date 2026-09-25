@@ -1,0 +1,164 @@
+{
+  "_contract": "explanation.json v1.0",
+  "_dataset": "diabetes",
+  "_note": "SYNTHETIC",
+  "explanation_id": "EXPL-E6748D7B",
+  "experiment_id": "EXP-C80184C7",
+  "sample_id": "TEST_SAMPLE_000",
+  "prediction": {
+    "value": 0,
+    "score": 0.48,
+    "actual_label": 0,
+    "is_correct": true
+  },
+  "feature_importance": [
+    {
+      "feature_name": "Glucose",
+      "feature_index": 1,
+      "feature_value": -0.2666,
+      "importance": 0.2554,
+      "effect": "negative"
+    },
+    {
+      "feature_name": "BMI",
+      "feature_index": 5,
+      "feature_value": 0.7381,
+      "importance": 0.1623,
+      "effect": "positive"
+    },
+    {
+      "feature_name": "DiabetesPedigreeFunction",
+      "feature_index": 6,
+      "feature_value": -2.0057,
+      "importance": 0.1435,
+      "effect": "negative"
+    },
+    {
+      "feature_name": "Pregnancies",
+      "feature_index": 0,
+      "feature_value": 0.9482,
+      "importance": 0.1075,
+      "effect": "positive"
+    },
+    {
+      "feature_name": "Insulin",
+      "feature_index": 4,
+      "feature_value": -0.8199,
+      "importance": 0.0922,
+      "effect": "negative"
+    },
+    {
+      "feature_name": "SkinThickness",
+      "feature_index": 3,
+      "feature_value": -0.2326,
+      "importance": 0.0875,
+      "effect": "negative"
+    },
+    {
+      "feature_name": "BloodPressure",
+      "feature_index": 2,
+      "feature_value": -2.863,
+      "importance": 0.0833,
+      "effect": "negative"
+    },
+    {
+      "feature_name": "Age",
+      "feature_index": 7,
+      "feature_value": 1.343,
+      "importance": 0.0683,
+      "effect": "positive"
+    }
+  ],
+  "global_importance": [
+    {
+      "feature_name": "Glucose",
+      "importance": 0.2554
+    },
+    {
+      "feature_name": "BMI",
+      "importance": 0.1623
+    },
+    {
+      "feature_name": "DiabetesPedigreeFunction",
+      "importance": 0.1435
+    },
+    {
+      "feature_name": "Pregnancies",
+      "importance": 0.1075
+    },
+    {
+      "feature_name": "Insulin",
+      "importance": 0.0922
+    },
+    {
+      "feature_name": "SkinThickness",
+      "importance": 0.0875
+    },
+    {
+      "feature_name": "BloodPressure",
+      "importance": 0.0833
+    },
+    {
+      "feature_name": "Age",
+      "importance": 0.0683
+    }
+  ],
+  "quantum_circuit_explanation": {
+    "qubits": 8,
+    "circuit_depth": 17,
+    "encoding_method": "angle_encoding",
+    "feature_to_qubit_mapping": {
+      "PC1": "qubit_0",
+      "PC2": "qubit_1",
+      "PC3": "qubit_2",
+      "PC4": "qubit_3",
+      "PC5": "qubit_4",
+      "PC6": "qubit_5",
+      "PC7": "qubit_6",
+      "PC8": "qubit_7"
+    },
+    "measured_qubits": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "circuit_diagram_url": null
+  },
+  "pipeline_trace": [
+    {
+      "phase": "Phase 1",
+      "component": "Ingestion",
+      "artifact": "DS-000003"
+    },
+    {
+      "phase": "Phase 4",
+      "component": "Preprocessing",
+      "artifact": "PREP-C0ED5C1E"
+    },
+    {
+      "phase": "Phase 6",
+      "component": "Feature Reduction",
+      "artifact": "QREP-001",
+      "method": "PCA",
+      "dimensions": "8\u21928"
+    },
+    {
+      "phase": "Phase 10",
+      "component": "Execution",
+      "artifact": "EXP-C80184C7",
+      "backend": "LOCAL_SIMULATOR"
+    }
+  ],
+  "warnings": [
+    "SYNTHETIC DATA \u2014 mock only.",
+    "Score is uncalibrated \u2014 not a clinical probability.",
+    "Research system \u2014 not a clinical diagnosis."
+  ],
+  "explainability_method": "feature_perturbation",
+  "explanation_timestamp": "2026-09-24T08:41:38.228Z"
+}

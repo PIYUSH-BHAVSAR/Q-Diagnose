@@ -1,0 +1,181 @@
+{
+  "_comment": "Experiment Status - Real-time Execution Status",
+  "_description": "Produced by: Phase 10 executor (updated after each model completes). Consumed by: Frontend progress UI (GET /api/experiments/{id}/status, polled every 2s), job scheduler.",
+  "_version": "1.1.0",
+  "_decisions": [
+    "DECISION 2026-09-10: Status enum is guide-versions (CREATED..FAILED) — more granular than original contract, required by frontend StageProgress component.",
+    "DECISION 2026-09-10: Stage strings use guide-versions (classical_training, quantum_training) — match StageProgress.jsx STAGES keys.",
+    "DECISION 2026-09-10: circuit_executions field name chosen (not circuit_executions_so_far) — shorter, matches all guide code.",
+    "DECISION 2026-09-10: completed_models and current_model added — required by StageProgress.jsx to show ✓/●/○ per model.",
+    "DECISION 2026-09-10: progress_data JSON column in Experiment SQLite table stores current_model + completed_models + circuit_executions, updated by executor after each model.",
+    "FIX: Resolves ISSUES.md B-01 (status enum mismatch), M-01 (stage string mismatch), M-08 (no tracking mechanism), M-10 (undefined fields on MOCK_MODE=false)."
+  ],
+
+  "experiment_id": {
+    "_type": "string",
+    "_description": "Unique experiment identifier. Format: EXP-{8-char-hex} e.g. EXP-A1B2C3D4",
+    "_example": "EXP-A1B2C3D4"
+  },
+
+  "status": {
+    "_type": "enum",
+    "_values": [
+      "CREATED",
+      "VALIDATING",
+      "PREPROCESSING",
+      "RUNNING_CLASSICAL",
+      "RUNNING_QUANTUM",
+      "BENCHMARKING",
+      "EXPLAINING",
+      "COMPLETED",
+      "FAILED"
+    ],
+    "_description": "Overall experiment lifecycle state. Transitions: CREATED → VALIDATING → PREPROCESSING → RUNNING_CLASSICAL → RUNNING_QUANTUM → BENCHMARKING → EXPLAINING → COMPLETED (or FAILED at any point).",
+    "_example": "RUNNING_QUANTUM"
+  },
+
+  "stage": {
+    "_type": "string",
+    "_description": "Current execution sub-stage. Used by StageProgress.jsx to show ✓/●/○ per pipeline step.",
+    "_values": [
+      "preprocessing",
+      "classical_training",
+      "quantum_training",
+      "benchmarking",
+      "explaining",
+      "completed"
+    ],
+    "_example": "quantum_training"
+  },
+
+  "progress": {
+    "_type": "float [0.0-1.0]",
+    "_description": "Overall completion fraction. 0.0 = not started, 1.0 = completed.",
+    "_example": 0.67
+  },
+
+  "message": {
+    "_type": "string",
+    "_description": "Human-readable status string for UI display (e.g. progress bars, log panel).",
+    "_example": "Training VQC — Epoch 18/30"
+  },
+
+  "started_at": {
+    "_type": "ISO 8601 datetime string",
+    "_description": "UTC timestamp when execution began.",
+    "_example": "2026-09-10T15:35:12.123Z"
+  },
+
+  "elapsed_seconds": {
+    "_type": "float",
+    "_description": "Seconds elapsed since started_at. Updated on every status write.",
+    "_example": 412.5
+  },
+
+  "estimated_remaining_seconds": {
+    "_type": "float | null",
+    "_description": "Estimated seconds remaining. Null until at least one model completes.",
+    "_example": 250.3
+  },
+
+  "current_model": {
+    "_type": "string | null",
+    "_description": "Name of the model currently training. Null when no model is actively training.",
+    "_values_classical": ["logistic_regression", "svm", "random_forest"],
+    "_values_quantum": ["vqc"],
+    "_example": "vqc"
+  },
+
+  "completed_models": {
+    "_type": "array of strings",
+    "_description": "Names of models that have finished (successfully or with error). Used by StageProgress.jsx ✓ markers.",
+    "_example": ["logistic_regression", "svm", "random_forest"]
+  },
+
+  "circuit_executions": {
+    "_type": "integer | null",
+    "_description": "Running count of quantum circuit executions so far. Null for classical-only stages. Updated by executor after each batch during VQC training.",
+    "_example": 8320
+  },
+
+  "current_epoch": {
+    "_type": "integer | null",
+    "_description": "Current VQC training epoch. Null for classical models and non-training stages.",
+    "_example": 18
+  },
+
+  "total_epochs": {
+    "_type": "integer | null",
+    "_description": "Total VQC training epochs configured. Null for classical models.",
+    "_example": 30
+  },
+
+  "error_message": {
+    "_type": "string | null",
+    "_description": "Error detail string when status=FAILED. Null otherwise. Displayed in red error box in frontend.",
+    "_example": null
+  },
+
+  "resource_snapshot": {
+    "_type": "object",
+    "_description": "Point-in-time resource usage snapshot, sampled by ResourceMonitor.",
+    "cpu_percent": { "_type": "float", "_example": 82.3 },
+    "memory_mb":   { "_type": "float", "_example": 1247.8 }
+  },
+
+  "_example_running_quantum": {
+    "experiment_id": "EXP-A1B2C3D4",
+    "status": "RUNNING_QUANTUM",
+    "stage": "quantum_training",
+    "progress": 0.67,
+    "message": "Training VQC — Epoch 18/30",
+    "started_at": "2026-09-10T15:35:12.123Z",
+    "elapsed_seconds": 412.5,
+    "estimated_remaining_seconds": 250.3,
+    "current_model": "vqc",
+    "completed_models": ["logistic_regression", "svm", "random_forest"],
+    "circuit_executions": 8320,
+    "current_epoch": 18,
+    "total_epochs": 30,
+    "error_message": null,
+    "resource_snapshot": { "cpu_percent": 82.3, "memory_mb": 1247.8 }
+  },
+
+  "_example_completed": {
+    "experiment_id": "EXP-A1B2C3D4",
+    "status": "COMPLETED",
+    "stage": "completed",
+    "progress": 1.0,
+    "message": "Experiment completed successfully",
+    "started_at": "2026-09-10T15:35:12.123Z",
+    "elapsed_seconds": 875.2,
+    "estimated_remaining_seconds": null,
+    "current_model": null,
+    "completed_models": ["logistic_regression", "svm", "random_forest", "vqc"],
+    "circuit_executions": 19932,
+    "current_epoch": null,
+    "total_epochs": null,
+    "error_message": null,
+    "resource_snapshot": { "cpu_percent": 12.1, "memory_mb": 384.2 }
+  },
+
+  "_example_failed": {
+    "experiment_id": "EXP-A1B2C3D4",
+    "status": "FAILED",
+    "stage": "quantum_training",
+    "progress": 0.52,
+    "message": "VQC training failed: out of memory",
+    "started_at": "2026-09-10T15:35:12.123Z",
+    "elapsed_seconds": 312.0,
+    "estimated_remaining_seconds": null,
+    "current_model": "vqc",
+    "completed_models": ["logistic_regression", "svm", "random_forest"],
+    "circuit_executions": 6140,
+    "current_epoch": 11,
+    "total_epochs": 30,
+    "error_message": "MemoryError during quantum circuit simulation at epoch 11",
+    "resource_snapshot": { "cpu_percent": 99.1, "memory_mb": 7981.4 }
+  },
+
+  "_implementation_note": "ExperimentManager must maintain a 'progress_data' JSON column in the Experiment SQLite table. ExperimentExecutor.run() calls manager.update_progress(experiment_id, {...}) after each model completes. The GET /api/experiments/{id}/status endpoint reads this column and returns it directly."
+}

@@ -1,0 +1,181 @@
+{
+  "_contract": "explanation.json v1.0",
+  "_dataset": "breast_cancer",
+  "_explainability_note": "Feature importance from RandomForest (proxy). In production, VQC uses perturbation analysis.",
+  "explanation_id": "EXPL-2D0FFE97",
+  "experiment_id": "EXP-0850F91D",
+  "sample_id": "TEST_SAMPLE_000",
+  "prediction": {
+    "value": 0,
+    "score": 0.02,
+    "actual_label": 0,
+    "is_correct": true
+  },
+  "feature_importance": [
+    {
+      "feature_name": "area_worst",
+      "feature_index": 23,
+      "feature_value": -0.6534,
+      "importance": 0.1431,
+      "effect": "negative"
+    },
+    {
+      "feature_name": "concave points_worst",
+      "feature_index": 27,
+      "feature_value": -0.3881,
+      "importance": 0.1106,
+      "effect": "negative"
+    },
+    {
+      "feature_name": "concave points_mean",
+      "feature_index": 7,
+      "feature_value": -0.5748,
+      "importance": 0.1081,
+      "effect": "negative"
+    },
+    {
+      "feature_name": "radius_worst",
+      "feature_index": 20,
+      "feature_value": -0.7214,
+      "importance": 0.0825,
+      "effect": "negative"
+    },
+    {
+      "feature_name": "perimeter_worst",
+      "feature_index": 22,
+      "feature_value": -0.7065,
+      "importance": 0.0821,
+      "effect": "negative"
+    },
+    {
+      "feature_name": "concavity_mean",
+      "feature_index": 6,
+      "feature_value": -0.6625,
+      "importance": 0.0804,
+      "effect": "negative"
+    },
+    {
+      "feature_name": "perimeter_mean",
+      "feature_index": 2,
+      "feature_value": -0.7645,
+      "importance": 0.0594,
+      "effect": "negative"
+    },
+    {
+      "feature_name": "area_mean",
+      "feature_index": 3,
+      "feature_value": -0.7118,
+      "importance": 0.0482,
+      "effect": "negative"
+    }
+  ],
+  "global_importance": [
+    {
+      "feature_name": "area_worst",
+      "importance": 0.1431
+    },
+    {
+      "feature_name": "concave points_worst",
+      "importance": 0.1106
+    },
+    {
+      "feature_name": "concave points_mean",
+      "importance": 0.1081
+    },
+    {
+      "feature_name": "radius_worst",
+      "importance": 0.0825
+    },
+    {
+      "feature_name": "perimeter_worst",
+      "importance": 0.0821
+    },
+    {
+      "feature_name": "concavity_mean",
+      "importance": 0.0804
+    },
+    {
+      "feature_name": "perimeter_mean",
+      "importance": 0.0594
+    },
+    {
+      "feature_name": "area_mean",
+      "importance": 0.0482
+    },
+    {
+      "feature_name": "radius_mean",
+      "importance": 0.0447
+    },
+    {
+      "feature_name": "concavity_worst",
+      "importance": 0.0434
+    }
+  ],
+  "quantum_circuit_explanation": {
+    "qubits": 8,
+    "circuit_depth": 17,
+    "encoding_method": "angle_encoding",
+    "feature_to_qubit_mapping": {
+      "PC1": "qubit_0",
+      "PC2": "qubit_1",
+      "PC3": "qubit_2",
+      "PC4": "qubit_3",
+      "PC5": "qubit_4",
+      "PC6": "qubit_5",
+      "PC7": "qubit_6",
+      "PC8": "qubit_7"
+    },
+    "measured_qubits": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "circuit_diagram_url": null
+  },
+  "pipeline_trace": [
+    {
+      "phase": "Phase 1",
+      "component": "Ingestion",
+      "artifact": "DS-000001"
+    },
+    {
+      "phase": "Phase 4",
+      "component": "Preprocessing",
+      "artifact": "PREP-9FA9A949",
+      "note": "StandardScaler fitted on training data only"
+    },
+    {
+      "phase": "Phase 6",
+      "component": "Feature Reduction",
+      "artifact": "QREP-001",
+      "method": "PCA",
+      "dimensions": "30 \u2192 8",
+      "variance_retained": "92.8%"
+    },
+    {
+      "phase": "Phase 8",
+      "component": "Quantum Model",
+      "artifact": "VQC",
+      "qubits": 8
+    },
+    {
+      "phase": "Phase 10",
+      "component": "Execution",
+      "artifact": "EXP-0850F91D",
+      "backend": "LOCAL_SIMULATOR"
+    }
+  ],
+  "model_decision_reason": "The VQC model predicted NEGATIVE (healthy) with score 0.020. Strongest contributing feature: 'area_worst' (importance 0.143). Actual label was NEGATIVE \u2014 correct prediction.",
+  "warnings": [
+    "Feature importance is approximated via RandomForest proxy \u2014 VQC uses perturbation analysis in production.",
+    "Prediction score is uncalibrated and should not be interpreted as a clinical probability.",
+    "This is a research/benchmarking system output. Not a clinical diagnosis."
+  ],
+  "explainability_method": "feature_perturbation",
+  "explanation_timestamp": "2026-09-24T08:41:37.639Z"
+}
