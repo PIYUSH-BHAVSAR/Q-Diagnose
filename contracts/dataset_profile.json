@@ -1,150 +1,147 @@
 {
-  "_comment": "Dataset Profile - Phase 2 Output",
-  "_description": "Produced by: Phase 2 profiler. Consumed by: Phase 3 validator, Phase 4 preprocessing, Phase 9 planner, frontend.",
-  
+  "_comment": "FROZEN CONTRACT v1.0 — Phase 2 output / Phase 3 input / Frontend input",
+  "_description": "Shape returned by GET /api/datasets/{dataset_id}/profile once profiling completes.",
+  "_producer": "Phase 2 Profiler (Jayed — data/profiler.py) via background task in api/datasets.py",
+  "_consumers": ["Phase 3 Validator (Jayed)", "Phase 4 Preprocessing (Jayed)", "Phase 9 Planner (Piyush)", "Frontend (Naeem)"],
+  "_status": "FROZEN — any change requires team ping before merging",
+
   "dataset_id": {
-    "_type": "string (UUID)",
-    "_description": "Reference to registered dataset from Phase 1.",
+    "_description": "UUID matching the upload response — links profile back to the registered dataset",
+    "_type": "string (UUID v4)",
     "_example": "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7"
   },
-  
   "profile_id": {
+    "_description": "Unique ID for this profiling run",
     "_type": "string",
-    "_description": "Unique identifier for this profile version.",
-    "_example": "PROFILE-000001"
+    "_example": "PROFILE-000001",
+    "_format": "PROFILE-{8-char-hex-prefix-of-dataset_id}"
   },
-  
   "modality": {
-    "_type": "enum",
-    "_values": ["TABULAR", "IMAGE", "MULTIMODAL", "UNSUPPORTED"],
-    "_description": "Detected ML data modality (not container type).",
+    "_description": "ML dataset type — determined by Phase 2, NOT Phase 1",
+    "_type": "string (enum)",
+    "_values": ["TABULAR", "IMAGE", "MULTIMODAL"],
     "_example": "TABULAR"
   },
-  
   "dimensions": {
-    "rows": {
-      "_type": "integer",
-      "_description": "Total number of samples in dataset.",
-      "_example_breast_cancer": 569,
-      "_example_heart_disease": 303,
-      "_example_diabetes": 768,
-      "_example_parkinsons": 195
-    },
-    "columns": {
-      "_type": "integer",
-      "_description": "Total number of columns including target.",
-      "_example_breast_cancer": 32,
-      "_example_heart_disease": 14,
-      "_example_diabetes": 9,
-      "_example_parkinsons": 24
+    "_description": "Row and column count of the dataset",
+    "_type": "object",
+    "_fields": {
+      "rows":    {"_type": "integer", "_example": 569},
+      "columns": {"_type": "integer", "_example": 32}
     }
   },
-  
   "features": {
-    "numerical": {
-      "_type": "integer",
-      "_description": "Count of numerical feature columns.",
-      "_example_breast_cancer": 30,
-      "_example_heart_disease": 13,
-      "_example_diabetes": 8,
-      "_example_parkinsons": 22
-    },
-    "categorical": {
-      "_type": "integer",
-      "_description": "Count of categorical feature columns.",
-      "_example_breast_cancer": 1,
-      "_example_heart_disease": 0,
-      "_example_diabetes": 0,
-      "_example_parkinsons": 1
+    "_description": "Count of feature columns by type",
+    "_type": "object",
+    "_fields": {
+      "numerical":   {"_type": "integer", "_example": 30},
+      "categorical": {"_type": "integer", "_example": 1}
     }
   },
-  
   "target": {
-    "candidate": {
-      "_type": "string",
-      "_description": "Detected target column name. Consumed by Phase 3 validator.",
-      "_example_breast_cancer": "diagnosis",
-      "_example_heart_disease": "target",
-      "_example_diabetes": "Outcome",
-      "_example_parkinsons": "status"
-    },
-    "confidence": {
-      "_type": "enum",
-      "_values": ["HIGH", "MEDIUM", "LOW", "NONE"],
-      "_description": "Confidence in target column detection.",
-      "_example": "HIGH"
+    "_description": "Candidate target column identified by the profiler",
+    "_type": "object",
+    "_fields": {
+      "candidate":  {"_type": "string",          "_example": "diagnosis"},
+      "confidence": {"_type": "string (enum)",   "_values": ["HIGH", "MEDIUM", "LOW"], "_example": "HIGH"}
     }
   },
-  
   "task": {
-    "candidate": {
-      "_type": "enum",
-      "_values": ["BINARY_CLASSIFICATION", "MULTICLASS_CLASSIFICATION", "REGRESSION", "UNKNOWN"],
-      "_description": "Inferred ML task type. Consumed by Phase 7/8 model selection.",
-      "_example": "BINARY_CLASSIFICATION"
-    },
-    "confidence": {
-      "_type": "enum",
-      "_values": ["HIGH", "MEDIUM", "LOW"],
-      "_description": "Confidence in task type inference.",
-      "_example": "HIGH"
+    "_description": "Candidate ML task identified from the target distribution",
+    "_type": "object",
+    "_fields": {
+      "candidate":  {
+        "_type": "string (enum)",
+        "_values": ["BINARY_CLASSIFICATION", "MULTICLASS_CLASSIFICATION", "REGRESSION", "UNKNOWN"],
+        "_example": "BINARY_CLASSIFICATION"
+      },
+      "confidence": {"_type": "string (enum)", "_values": ["HIGH", "MEDIUM", "LOW"], "_example": "HIGH"}
     }
   },
-  
   "class_distribution": {
-    "_type": "object (key-value counts)",
-    "_description": "Distribution of target classes for classification tasks.",
+    "_description": "Value counts of the target column. Empty dict for regression tasks.",
+    "_type": "object (string keys → integer counts)",
     "_example_breast_cancer": {"0": 357, "1": 212},
-    "_example_heart_disease": {"0": 138, "1": 165},
-    "_example_diabetes": {"0": 500, "1": 268},
-    "_example_parkinsons": {"0": 48, "1": 147}
+    "_example_heart":         {"0": 138, "1": 165}
   },
-  
   "missing_values": {
-    "total": {
-      "_type": "integer",
-      "_description": "Total count of missing/NaN values across all features.",
-      "_example": 0
-    },
-    "percentage": {
-      "_type": "float",
-      "_description": "Percentage of all values that are missing.",
-      "_example": 0.0
-    },
-    "by_column": {
-      "_type": "object (column_name -> count)",
-      "_description": "Missing value count per column.",
-      "_example": {}
+    "_description": "Missing value analysis across the dataset",
+    "_type": "object",
+    "_fields": {
+      "total":      {"_type": "integer",               "_example": 0},
+      "percentage": {"_type": "float [0-100]",         "_example": 0.0},
+      "by_column":  {"_type": "object (col → count)",  "_example": {}}
     }
   },
-  
   "duplicates": {
-    "candidate_count": {
-      "_type": "integer",
-      "_description": "Number of potential duplicate rows detected.",
-      "_example": 0
+    "_description": "Duplicate row detection summary",
+    "_type": "object",
+    "_fields": {
+      "candidate_count": {"_type": "integer", "_example": 0}
     }
   },
-  
   "warnings": {
+    "_description": "Non-blocking observations about data quality",
     "_type": "array of strings",
-    "_description": "Profile-level warnings for Phase 3 validation.",
-    "_example_breast_cancer": ["Class imbalance detected: 62.7% vs 37.3%"],
-    "_example_heart_disease": ["Slight class imbalance: 45.5% vs 54.5%"],
-    "_example_diabetes": ["Significant class imbalance: 65.1% vs 34.9%"],
-    "_example_parkinsons": ["Severe class imbalance: 24.6% vs 75.4%"]
+    "_example": ["Class imbalance detected: 62.7% vs 37.3%"]
   },
-  
   "status": {
-    "_type": "enum",
+    "_description": "Profiling completion status",
+    "_type": "string (enum)",
     "_values": ["PROFILED", "PROFILING_FAILED"],
-    "_description": "Profile completion status.",
     "_example": "PROFILED"
   },
-  
   "profiled_at": {
-    "_type": "ISO 8601 datetime",
-    "_description": "Timestamp when profiling completed.",
+    "_description": "UTC timestamp when profiling completed",
+    "_type": "ISO 8601 datetime string",
     "_example": "2026-09-10T14:25:12.456Z"
+  },
+
+  "_example_breast_cancer": {
+    "dataset_id":   "a1b2c3d4-e5f6-4789-a0b1-c2d3e4f5a6b7",
+    "profile_id":   "PROFILE-000001",
+    "modality":     "TABULAR",
+    "dimensions":   {"rows": 569, "columns": 32},
+    "features":     {"numerical": 30, "categorical": 1},
+    "target":       {"candidate": "diagnosis", "confidence": "HIGH"},
+    "task":         {"candidate": "BINARY_CLASSIFICATION", "confidence": "HIGH"},
+    "class_distribution": {"0": 357, "1": 212},
+    "missing_values": {"total": 0, "percentage": 0.0, "by_column": {}},
+    "duplicates":   {"candidate_count": 0},
+    "warnings":     ["Class imbalance detected: 62.7% vs 37.3%"],
+    "status":       "PROFILED",
+    "profiled_at":  "2026-09-10T14:25:12.456Z"
+  },
+
+  "_example_heart_disease": {
+    "dataset_id":   "b2c3d4e5-f6a7-4890-b1c2-d3e4f5a6b7c8",
+    "profile_id":   "PROFILE-000002",
+    "modality":     "TABULAR",
+    "dimensions":   {"rows": 303, "columns": 14},
+    "features":     {"numerical": 8, "categorical": 5},
+    "target":       {"candidate": "target", "confidence": "HIGH"},
+    "task":         {"candidate": "BINARY_CLASSIFICATION", "confidence": "HIGH"},
+    "class_distribution": {"0": 138, "1": 165},
+    "missing_values": {"total": 0, "percentage": 0.0, "by_column": {}},
+    "duplicates":   {"candidate_count": 0},
+    "warnings":     [],
+    "status":       "PROFILED",
+    "profiled_at":  "2026-09-10T15:12:30.789Z"
+  },
+
+  "_example_parkinsons": {
+    "dataset_id":   "d4e5f6a7-b8c9-4012-d3e4-f5a6b7c8d9e0",
+    "profile_id":   "PROFILE-000003",
+    "modality":     "TABULAR",
+    "dimensions":   {"rows": 195, "columns": 24},
+    "features":     {"numerical": 22, "categorical": 1},
+    "target":       {"candidate": "status", "confidence": "HIGH"},
+    "task":         {"candidate": "BINARY_CLASSIFICATION", "confidence": "HIGH"},
+    "class_distribution": {"0": 48, "1": 147},
+    "missing_values": {"total": 0, "percentage": 0.0, "by_column": {}},
+    "duplicates":   {"candidate_count": 0},
+    "warnings":     ["Severe class imbalance: 24.6% vs 75.4%"],
+    "status":       "PROFILED",
+    "profiled_at":  "2026-09-10T15:30:00.000Z"
   }
 }
