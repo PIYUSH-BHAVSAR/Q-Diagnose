@@ -242,6 +242,7 @@ sideways. Verified by `npm run test:responsive`: 0 of 112 size×route combinatio
 |---|---|
 | `npm run dev` | Vite dev server on `0.0.0.0:5173`, `/api` proxied to `:8000` |
 | `npm run build` | Production bundle (routes code-split, react vendor chunk) |
+| `npm run build:demo` | Same bundle with `VITE_MOCK=1` baked in — `npm run preview` then works with no backend, which is what you want on stage. Note `npm run check` ends with a plain `build`, so re-run `build:demo` after testing |
 | `npm test` | Vitest + Testing Library: renders every route in mock mode and asserts the flows |
 | `npm run test:backend-shape` | Same suite, but every response is served in the **backend's** shape |
 | `npm run test:adapters` | 80 assertions over `src/lib/adapters.js` against `mocks/*.json` **and** `experiment_results_*.json` |
