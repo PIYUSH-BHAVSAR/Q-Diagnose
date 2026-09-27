@@ -163,3 +163,25 @@ resolve: { alias: { '@mocks': path.resolve(__dirname, '../../mocks') } }
 8. **(0.5h)** `npm run build` + `VITE_MOCK=1`/`0` dono pe smoke test, PR bhejo (`naeem/*` branch, repo pattern follow karo).
 
 **Ek line me scene:** UI ka 40% ban gaya hai (aur build clean pass hota hai), par baaki 60% me se aadha kaam **screens banana nahi, backend ke real JSON shapes ke saath unhe wire karna** hai — kyunki mocks/contracts jo promise karte hain, `mvp/backend` aaj uska 60% hi deta hai.
+
+---
+
+## PART G — Live backend run (27 Sep 2026, `:8000` actually booted)
+
+Maine FastAPI + pandas + scikit-learn + pennylane install karke server **chalaya** aur uske
+ asli responses UI ke adapters pe chalaye — `mvp/frontend/tests/live-backend.test.mjs`
+(`npm run test:live`, server na mile khud skip ho jata hai). Results:
+
+**Chalta hai ✅**
+- `GET /api/health` → `{status:'healthy'}`; Vite proxy `:5173/api/...` → `:8000` 200 (browser ka actual rasta verify)
+- `GET /api/datasets` → 3 demo tables; `display` name se aata hai, `featureCount` = `columns.length` (breast_cancer = **32**, kyu ki loader ne all-empty column `Unnamed: 32` gira diya — jabki `/profile` me **33** columns hain; ye 1 ka farak backend ka apna inconsistency hai, UI donu handle karti hai)
+- `GET /api/datasets/{id}/profile` → flat shape, 33 column rows, `class_distribution` 2 keys, `target=diagnosis` ✅
+- `GET …/validate` → `{is_valid:false, issues:['Columns with all missing values: [\'Unnamed: 32\']'], …}` → UI me quality ring **hide** hota hai (score nahi hai), issue list dikhta hai
+
+**Backend ke 4 gaps jo live run ne dikhaaye (frontend inhe crash nahi hone deti, par ye fix hone chahiye):**
+1. `POST /run` ke baad run **FAILED** ho jata hai stage `validating` pe: `Dataset validation failed: ["Columns with all missing values: ['Unnamed: 32']"]`. Matlab `loader.load_csv` empty column **drop** karta hai, par executor ka validator raw frame/profile se check karta hai → `mvp/data/demo/breast_cancer.csv` ka trailing comma column pipeline ko block karta hai. **Piyush/Jayed ka fix** (validator ko wahi cleaned frame do, ya CSV clean karo).
+2. `status` payload me `started_at: null` → elapsed UI khud nikaal leti hai, par timer `—` dikhta hai. `manager.update_status` ko `started_at` set karna chahiye.
+3. `status.error_message` ** absent ** — failure ka reason sirf server log me hai. UI generic "no error_message returned" dikhati hai; `experiments.py:259-266` me `error_message` bharo to asli message screen pe aayega.
+4. `resources` → `{system_resources:{}, quantum_resources:null}` (empty) → Cost tab me values `—`/note dikhte hain, fake number nahi.
+
+**Iska matlab tumhare liye:** adapter layer live data pe bhi total hai (koi crash nahi, "—" + explanation dikhta hai). Aur demo ke liye `VITE_MOCK=1` use karo jab tak backend ka validation bug fix nahi hota — mock me poora 23s timeline chalta hai (Progress tab live animate hoga, phir results).
