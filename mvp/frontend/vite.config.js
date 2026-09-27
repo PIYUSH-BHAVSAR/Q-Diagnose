@@ -19,7 +19,14 @@ export default defineConfig({
     strictPort: true,
     allowedHosts: true,
     proxy: {
-      '/api': { target: process.env.VITE_API || 'http://localhost:8000', changeOrigin: true }
+      '/api': { 
+        target: process.env.VITE_API || 'https://dung-ununited-seriately.ngrok-free.dev', 
+        changeOrigin: true,
+        secure: false,
+        headers: {
+          'ngrok-skip-browser-warning': 'true'
+        }
+      }
     }
   },
   preview: { host: '0.0.0.0', port: 4173, allowedHosts: true },
