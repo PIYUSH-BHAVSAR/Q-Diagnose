@@ -212,6 +212,12 @@ VITE_MOCK=1 npm run dev
 VITE_MOCK=1 VITE_SHAPE=backend npm run dev
 ```
 
+Demo mode (`VITE_MOCK=1`) is the presentation mode: three runs are pre-seeded from the same
+fixtures — two finished, one sitting at 9 s of the 23 s timeline so the Progress tab animates —
+and a running experiment offers **Skip to results**, which just moves the mock clock forward.
+Both are mock-only: against a real backend the button is absent and the sidebar says
+`Engine live · /api` instead of `Data fixtures`, so nobody can mistake fixture data for a run.
+
 ### Scripts
 | Command | What it does |
 |---|---|
@@ -219,8 +225,9 @@ VITE_MOCK=1 VITE_SHAPE=backend npm run dev
 | `npm run build` | Production bundle (routes code-split, react vendor chunk) |
 | `npm test` | Vitest + Testing Library: renders every route in mock mode and asserts the flows |
 | `npm run test:backend-shape` | Same suite, but every response is served in the **backend's** shape |
-| `npm run test:adapters` | 67 assertions over `src/lib/adapters.js` against `mocks/*.json` **and** `experiment_results_*.json` |
-| `npm run check` | all four above, in order — run this before every PR |
+| `npm run test:adapters` | 80 assertions over `src/lib/adapters.js` against `mocks/*.json` **and** `experiment_results_*.json` |
+| `npm run test:live` | the running backend's real responses through the same adapters (self-skips when nothing answers on `:8000`) |
+| `npm run check` | all five above, in order — run this before every PR |
 
 ### Where data comes from
 ```
