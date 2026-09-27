@@ -188,3 +188,59 @@ quant-warriors-qml/
 ## License
 
 MIT License
+
+---
+
+## Frontend (React + Vite) — build, modes, tests
+
+The UI is a self-contained React 18 app: no component library, no CSS framework,
+no chart library — design tokens + hand-rolled SVG/CSS so the first paint stays cheap.
+
+```bash
+cd mvp/frontend
+npm install
+
+# 1) against the real backend (FastAPI on :8000, Vite proxies /api)
+python -m backend.main        # terminal 1
+cd mvp/frontend && npm run dev   # terminal 2 → http://localhost:5173
+
+# 2) with no backend at all — served from the repo's own contract fixtures
+VITE_MOCK=1 npm run dev
+
+# 3) fixtures re-labelled into mvp/backend's actual response shapes
+#    (proves the adapter layer absorbs the contract↔backend drift)
+VITE_MOCK=1 VITE_SHAPE=backend npm run dev
+```
+
+### Scripts
+| Command | What it does |
+|---|---|
+| `npm run dev` | Vite dev server on `0.0.0.0:5173`, `/api` proxied to `:8000` |
+| `npm run build` | Production bundle (routes code-split, react vendor chunk) |
+| `npm test` | Vitest + Testing Library: renders every route in mock mode and asserts the flows |
+| `npm run test:backend-shape` | Same suite, but every response is served in the **backend's** shape |
+| `npm run test:adapters` | 67 assertions over `src/lib/adapters.js` against `mocks/*.json` **and** `experiment_results_*.json` |
+| `npm run check` | all four above, in order — run this before every PR |
+
+### Where data comes from
+```
+pages/*            ← never read raw JSON
+  └─ services/api.js   ← the only file that knows the URL / mock switch
+       └─ lib/adapters.js  ← normalises guide/contract shape ⇄ mvp/backend shape
+            └─ lib/fieldMap.js ← stage aliases, status enum, metric aliases
+```
+Fixtures live in the repo-root `mocks/<dataset>/*.json` and are pulled in with a
+Vite glob, so `generate_mocks.py` output is picked up with no copy step.
+
+### Screen map
+`/` Dashboard · `/datasets` upload + library · `/datasets/:id` profile & gates ·
+`/experiments` run list · `/experiments/new/:datasetId` plan & run ·
+`/experiments/:id` Progress / Results / Explainability / Cost tabs · `/reports` artifacts.
+`⌘K` / `Ctrl+K` opens the command palette. Light/dark toggle persists in `localStorage`.
+
+### Rules the UI follows (from `implementaion_plan.md`)
+* No ML logic in React — the browser never computes PCA, metrics or recommendations.
+* `POST /run` returns immediately; progress is polled every 2s and pauses when the tab is hidden.
+* Predictions are shown as `POSITIVE`/`NEGATIVE` with an uncalibrated score, never as a diagnosis,
+  and `<Disclaimer />` renders on every screen that shows a model output.
+* Missing fields render as `—` plus an explanatory note. A gap in a contract is shown, never guessed.

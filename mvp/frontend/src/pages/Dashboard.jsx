@@ -1,273 +1,216 @@
-import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { datasetApi, experimentApi } from '../services/api'
-import { 
-  Database, 
-  FlaskConical, 
-  CheckCircle2, 
-  Clock, 
-  UploadCloud, 
-  Sparkles, 
-  Stethoscope, 
-  FileText, 
-  SlidersHorizontal, 
-  Binary, 
-  Cpu, 
-  BarChart3, 
-  Award, 
-  ShieldAlert, 
-  ArrowRight,
-  Zap
-} from 'lucide-react'
+import React, { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import api from '@/services/api.js';
+import Icon from '@/components/Icon.jsx';
+import Disclaimer from '@/components/Disclaimer.jsx';
+import { Card, Btn, Empty, PageSkeleton, Rail, StatusPill, StatCard, Pill, CountUp } from '@/components/ui.jsx';
+import { int, ago, score, titleize, dur } from '@/lib/format.js';
+import { STAGES } from '@/lib/fieldMap.js';
 
-function Dashboard() {
-  const [stats, setStats] = useState({
-    datasets: 0,
-    experiments: 0,
-    completed: 0,
-    running: 0
-  })
-  const [loading, setLoading] = useState(true)
+const PIPELINE = [
+  ['upload', 'Ingest CSV'], ['profile', 'Profile & target'], ['validate', 'Quality gates'],
+  ['preprocess', 'Leak-safe split'], ['reduce', 'PCA → qubits'], ['train', 'VQC vs classical'],
+  ['compare', 'Benchmark & recommend']
+];
+
+export default function Dashboard() {
+  const [loading, setLoading] = useState(true);
+  const [datasets, setDatasets] = useState([]);
+  const [experiments, setExperiments] = useState([]);
+  const [progress, setProgress] = useState({});
+  const [tick, setTick] = useState(0);
 
   useEffect(() => {
-    loadStats()
-  }, [])
-
-  const loadStats = async () => {
-    try {
-      const [datasets, experiments] = await Promise.all([
-        datasetApi.list(),
-        experimentApi.list()
-      ])
-
-      const completed = experiments.filter(e => e.status === 'completed').length
-      const running = experiments.filter(e => 
-        ['preprocessing', 'running_classical', 'running_quantum'].includes(e.status)
-      ).length
-
-      setStats({
-        datasets: datasets.length,
-        experiments: experiments.length,
-        completed,
-        running
+    let alive = true;
+    setLoading(true);
+    Promise.all([api.listDatasets().catch(() => null), api.listExperiments().catch(() => [])])
+      .then(async ([d, e]) => {
+        if (!alive) return;
+        setDatasets(d?.datasets ?? []);
+        setExperiments(e ?? []);
+        const live = (e ?? []).filter((x) => !['COMPLETED', 'FAILED'].includes(x.status)).slice(0, 4);
+        const p = await Promise.all(live.map((x) => api.getStatus(x.id).catch(() => null)));
+        if (!alive) return;
+        setProgress(Object.fromEntries(p.filter(Boolean).map((s, i) => [live[i].id, s])));
+        setLoading(false);
       })
-    } catch (error) {
-      console.error('Failed to load stats:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
+      .catch(() => alive && setLoading(false));
+    return () => { alive = false; };
+  }, [tick]);
 
-  if (loading) {
-    return (
-      <div className="card" style={{ textAlign: 'center', padding: '60px 20px' }}>
-        <div className="pipeline-icon active" style={{ margin: '0 auto 16px auto' }}>
-          <Zap size={24} />
-        </div>
-        <p style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>Loading platform telemetry...</p>
-      </div>
-    )
-  }
+  useEffect(() => {
+    const onVis = () => document.visibilityState === 'visible' && setTick((t) => t + 1);
+    document.addEventListener('visibilitychange', onVis);
+    return () => document.removeEventListener('visibilitychange', onVis);
+  }, []);
 
-  const pipelineStages = [
-    { icon: UploadCloud, label: 'Upload CSV' },
-    { icon: FileText, label: 'Profile' },
-    { icon: SlidersHorizontal, label: 'Preprocess' },
-    { icon: Binary, label: 'PCA' },
-    { icon: Cpu, label: 'Train' },
-    { icon: BarChart3, label: 'Compare' },
-    { icon: Award, label: 'Recommend' }
-  ]
+  const stats = useMemo(() => {
+    const done = experiments.filter((e) => e.status === 'COMPLETED');
+    const running = experiments.filter((e) => !['COMPLETED', 'FAILED'].includes(e.status));
+    const circuits = Object.values(progress).reduce((a, s) => a + (s?.circuitExecutions ?? 0), 0);
+    return { datasets: datasets.length, total: experiments.length, done: done.length, running: running.length, circuits };
+  }, [datasets, experiments, progress]);
+
+  if (loading) return <PageSkeleton rows={3} />;
 
   return (
-    <div>
-      {/* Hero Section */}
-      <div className="card" style={{ position: 'relative', overflow: 'hidden', borderLeft: '4px solid var(--cyan-primary)' }}>
-        <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '200px', height: '200px', background: 'var(--gradient-glow)', borderRadius: '50%', pointerEvents: 'none' }} />
-        
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '20px' }}>
-          <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '4px 12px', borderRadius: '20px', background: 'rgba(6, 182, 212, 0.1)', border: '1px solid rgba(6, 182, 212, 0.2)', color: 'var(--cyan-primary)', fontSize: '0.8rem', fontWeight: 600, marginBottom: '14px' }}>
-              <Zap size={14} /> Quantum-Classical Machine Learning Architecture
-            </div>
-            <h2 style={{ fontSize: '1.8rem', fontWeight: 800, marginBottom: '10px', letterSpacing: '-0.02em' }}>
-              Hybrid Quantum Disease Detection
-            </h2>
-            <p style={{ color: 'var(--text-secondary)', maxWidth: '750px', fontSize: '1rem', lineHeight: '1.6' }}>
-              Benchmark classical algorithms against Variational Quantum Classifier (VQC) models on high-dimensional biomedical data for accelerated early disease diagnostics.
-            </p>
-          </div>
-          
-          <Link to="/datasets" className="btn btn-primary">
-            <UploadCloud size={18} />
-            <span>Upload New Dataset</span>
-          </Link>
-        </div>
-      </div>
-
-      {/* KPI Stats Grid */}
-      <div className="stats-grid">
-        <div className="stat-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <span className="stat-label">Active Datasets</span>
-            <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(6, 182, 212, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--cyan-primary)' }}>
-              <Database size={18} />
-            </div>
-          </div>
-          <div className="stat-value">{stats.datasets}</div>
-        </div>
-
-        <div className="stat-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <span className="stat-label">Total Experiments</span>
-            <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(139, 92, 246, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--violet-primary)' }}>
-              <FlaskConical size={18} />
-            </div>
-          </div>
-          <div className="stat-value">{stats.experiments}</div>
-        </div>
-
-        <div className="stat-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <span className="stat-label">Completed Runs</span>
-            <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(16, 185, 129, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--success-color)' }}>
-              <CheckCircle2 size={18} />
-            </div>
-          </div>
-          <div className="stat-value" style={{ color: 'var(--success-color)' }}>
-            {stats.completed}
-          </div>
-        </div>
-
-        <div className="stat-card">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <span className="stat-label">Running Circuits</span>
-            <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(245, 158, 11, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--warning-color)' }}>
-              <Clock size={18} />
-            </div>
-          </div>
-          <div className="stat-value" style={{ color: 'var(--warning-color)' }}>
-            {stats.running}
-          </div>
-        </div>
-      </div>
-
-      {/* Quick Action Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '24px' }}>
-        <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <div>
-            <h3 className="card-title">
-              <UploadCloud size={20} color="var(--cyan-primary)" />
-              <span>Upload Biomedical CSV</span>
-            </h3>
-            <p style={{ color: 'var(--text-secondary)', margin: '14px 0 24px 0', fontSize: '0.925rem' }}>
-              Upload raw or tabular clinical indicators CSV datasets to profile missing values, feature types, and run ML pipeline optimization.
-            </p>
-          </div>
-          <div>
-            <Link to="/datasets" className="btn btn-primary" style={{ width: '100%' }}>
-              <span>Upload CSV Dataset</span>
-              <ArrowRight size={16} />
-            </Link>
-          </div>
-        </div>
-
-        <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <div>
-            <h3 className="card-title">
-              <Sparkles size={20} color="var(--violet-primary)" />
-              <span>Try Demo Datasets</span>
-            </h3>
-            <p style={{ color: 'var(--text-secondary)', margin: '14px 0 20px 0', fontSize: '0.925rem' }}>
-              Select pre-validated medical benchmark datasets to immediately compare classical algorithms vs quantum variational circuits.
-            </p>
-          </div>
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            <button 
-              className="btn btn-secondary"
-              style={{ flex: '1 1 auto', fontSize: '0.85rem' }}
-              onClick={() => window.alert('Demo: Breast Cancer dataset')}
-            >
-              <Stethoscope size={14} color="var(--cyan-primary)" />
-              <span>Breast Cancer</span>
-            </button>
-            <button 
-              className="btn btn-secondary"
-              style={{ flex: '1 1 auto', fontSize: '0.85rem' }}
-              onClick={() => window.alert('Demo: Heart Disease dataset')}
-            >
-              <Stethoscope size={14} color="var(--error-color)" />
-              <span>Heart Disease</span>
-            </button>
-            <button 
-              className="btn btn-secondary"
-              style={{ flex: '1 1 auto', fontSize: '0.85rem' }}
-              onClick={() => window.alert('Demo: Parkinson\'s dataset')}
-            >
-              <Stethoscope size={14} color="var(--violet-primary)" />
-              <span>Parkinson's</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* How It Works Pipeline Section */}
-      <div className="card" style={{ marginTop: '24px' }}>
-        <div className="card-header">
-          <h3 className="card-title">
-            <Cpu size={20} color="var(--cyan-primary)" />
-            <span>End-to-End Quantum ML Pipeline</span>
-          </h3>
-          <span className="badge badge-quantum">
-            QML Engine Architecture
-          </span>
-        </div>
-        <div className="pipeline">
-          {pipelineStages.map((stage, idx) => {
-            const Icon = stage.icon
-            return (
-              <React.Fragment key={idx}>
-                <div className="pipeline-stage completed">
-                  <div className="pipeline-icon">
-                    <Icon size={22} />
-                  </div>
-                  <div className="pipeline-label">{stage.label}</div>
-                </div>
-                {idx < pipelineStages.length - 1 && (
-                  <span className="pipeline-arrow">→</span>
-                )}
-              </React.Fragment>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* Disclaimer */}
-      <div 
-        className="card" 
-        style={{ 
-          marginTop: '24px', 
-          background: 'rgba(245, 158, 11, 0.05)', 
-          border: '1px solid rgba(245, 158, 11, 0.2)',
-          display: 'flex',
-          gap: '16px',
-          alignItems: 'flex-start'
-        }}
-      >
-        <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'rgba(245, 158, 11, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--warning-color)', flexShrink: 0 }}>
-          <ShieldAlert size={22} />
-        </div>
+    <>
+      <section className="hero">
         <div>
-          <h3 style={{ fontSize: '1rem', color: '#fef08a', marginBottom: '6px', fontWeight: 700 }}>
-            Research & Benchmarking Notice
-          </h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', lineHeight: '1.5' }}>
-            This platform is strictly engineered for hybrid quantum-classical algorithmic benchmarking and experimental disease detection research. Results generated do not constitute formal clinical medical diagnoses.
+          <div className="eyebrow" style={{ marginBottom: 16 }}><i className="dot" />Hybrid quantum-classical benchmark engine</div>
+          <h1>
+            Quantum vs classical,<br />
+            <span className="grad-text">measured on clinical tables.</span>
+          </h1>
+          <p className="lede">
+            Upload a tabular dataset, get an automatic profile, then run Logistic Regression, SVM and Random
+            Forest against a Variational Quantum Classifier on the exact same leak-safe split — with cost,
+            explainability and a recommendation attached.
           </p>
+          <div className="hero-cta">
+            <Btn to="/experiments/new" kind="primary" size="lg" icon="zap">Run a benchmark</Btn>
+            <Btn to="/datasets" size="lg" icon="database">Browse datasets</Btn>
+            <span className="row" style={{ gap: 6, marginLeft: 6, fontSize: 'var(--t-xs)', color: 'var(--text-3)' }}>
+              or press <span className="kbd">⌘K</span>
+            </span>
+          </div>
+          <div className="row row-wrap" style={{ gap: 22, marginTop: 26, paddingTop: 20, borderTop: '1px solid var(--line)' }}>
+            {[['Datasets', stats.datasets], ['Experiments', stats.total], ['Completed', stats.done], ['Circuits executed', stats.circuits]].map(([k, v]) => (
+              <div key={k}>
+                <div className="tiny dim" style={{ letterSpacing: '0.05em', textTransform: 'uppercase', fontWeight: 650 }}>{k}</div>
+                <div className="num" style={{ fontSize: 'var(--t-xl)', fontWeight: 650, marginTop: 2 }}><CountUp value={v} format={(x) => int(Math.round(x))} /></div>
+              </div>
+            ))}
+          </div>
         </div>
+
+        <CircuitVisual />
+      </section>
+
+      <div className="grid g-4">
+        <StatCard icon="database" label="Registered datasets" value={stats.datasets} hint="CSV ingestor · 100 MB limit" />
+        <StatCard icon="flask" label="Experiments" value={stats.total} hint="classical + quantum arms" tone="var(--violet)" />
+        <StatCard icon="check" label="Completed runs" value={stats.done} hint="results + report available" tone="var(--emerald)" />
+        <StatCard icon="clock" label="In flight" value={stats.running} hint={stats.running ? 'polling every 2s' : 'nothing queued'} tone={stats.running ? 'var(--amber)' : 'var(--text)'} />
       </div>
-    </div>
-  )
+
+      <div className="grid g-side">
+        <Card
+          title="Recent runs" icon="activity" sub="Live status from GET /experiments/{id}/status"
+          actions={<Btn size="sm" kind="quiet" icon="arrowRight" to="/experiments">All experiments</Btn>}
+          pad={false}
+        >
+          {experiments.length === 0 ? (
+            <Empty
+              icon="flask" title="No experiments yet"
+              body="Pick a dataset and start your first hybrid benchmark — the whole pipeline runs unattended and you can leave the tab."
+              action={<Btn kind="primary" icon="plus" to="/experiments/new">New experiment</Btn>}
+            />
+          ) : (
+            <ul className="list" style={{ listStyle: 'none', margin: 0 }}>
+              {experiments.slice(0, 5).map((e) => {
+                const st = progress[e.id];
+                return (
+                  <li key={e.id}>
+                    <Link to={`/experiments/${e.id}`} className="row" style={{ gap: 14, minWidth: 0, flex: 1 }}>
+                      <span className="brand-mark" style={{ width: 26, height: 26, borderRadius: 8 }}>
+                        <Icon name={e.status === 'COMPLETED' ? 'check' : 'atom'} size={13} />
+                      </span>
+                      <span style={{ minWidth: 0 }}>
+                        <span style={{ display: 'block', fontWeight: 620, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {e.name ?? e.id}
+                        </span>
+                        <span className="tiny dim mono">{e.id} · {ago(e.createdAt ?? e.completedAt)}</span>
+                      </span>
+                    </Link>
+                    <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+                      {st && !st.isCompleted && (
+                        <span style={{ width: 92 }}>
+                          <Rail value={st.progress} striped />
+                        </span>
+                      )}
+                      {st?.isCompleted && Number.isFinite(st.elapsedSeconds) && <span className="tiny dim mono">{dur(st.elapsedSeconds)}</span>}
+                      <StatusPill status={e.status} />
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </Card>
+
+        <Card title="Pipeline" icon="circuit" sub="Every run walks these seven stages">
+          <ol style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 2 }}>
+            {PIPELINE.map(([icon, label], i) => (
+              <li key={label} className="row" style={{ gap: 11, padding: '7px 0', borderBottom: i < PIPELINE.length - 1 ? '1px solid var(--line)' : 0 }}>
+                <span className="rail-dot" style={{ width: 20, height: 20 }}><Icon name={icon} size={11} /></span>
+                <span style={{ fontSize: 'var(--t-md)', color: 'var(--text-2)' }}>{label}</span>
+                <span className="tiny dim mono" style={{ marginLeft: 'auto' }}>0{i + 1}</span>
+              </li>
+            ))}
+          </ol>
+          <div className="row" style={{ marginTop: 16, gap: 8, flexWrap: 'wrap' }}>
+            <Pill icon="cpu">LR · SVM · RF</Pill>
+            <Pill icon="atom" tone="quantum">VQC · 8 qubits</Pill>
+            <Pill icon="gauge">PennyLane simulator</Pill>
+          </div>
+        </Card>
+      </div>
+
+      <Card
+        title="Demo datasets" icon="sparkles" sub="Pre-validated clinical benchmarks already registered by the loader"
+        actions={<Btn size="sm" kind="quiet" icon="upload" to="/datasets?upload=1">Add your own</Btn>}
+        pad={false}
+      >
+        <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', padding: 'var(--s-4) var(--s-5)', gap: 12 }}>
+          {datasets.length === 0 && <Empty icon="database" title="Nothing registered" body="Upload a CSV to get started." />}
+          {datasets.map((d) => (
+            <Link key={d.id} to={`/datasets/${d.id}`} className="card card-hover" style={{ padding: 14, display: 'grid', gap: 8 }}>
+              <div className="row" style={{ gap: 8 }}>
+                <Icon name="table" size={15} style={{ color: 'var(--accent)' }} />
+                <span style={{ fontWeight: 660, fontSize: 'var(--t-md)' }}>{d.display ?? d.filename}</span>
+              </div>
+              <div className="tiny dim mono">{int(d.rows)} rows · {d.featureCount ?? '—'} cols</div>
+              <div className="row" style={{ gap: 6, marginTop: 2 }}>
+                <Pill icon="check" tone="ok">profiled</Pill>
+                {d.sizeMb ? <Pill>{d.sizeMb.toFixed(1)} MB</Pill> : null}
+              </div>
+            </Link>
+          ))}
+        </div>
+      </Card>
+
+      <Disclaimer />
+    </>
+  );
 }
 
-export default Dashboard
+function CircuitVisual() {
+  return (
+    <div className="circuit-visual" aria-hidden="true">
+      <svg viewBox="0 0 200 200">
+        <defs>
+          <radialGradient id="core"><stop offset="0%" stopColor="var(--cyan)" stopOpacity="0.9" /><stop offset="100%" stopColor="var(--violet)" stopOpacity="0.15" /></radialGradient>
+        </defs>
+        {[76, 58, 40].map((r, i) => (
+          <g key={r} className={`orbit ${i % 2 ? 'rev' : ''}`}>
+            <ellipse cx="100" cy="100" rx={r} ry={r * 0.42} fill="none" stroke="var(--line-2)" strokeWidth="1"
+              transform={`rotate(${i * 60} 100 100)`} />
+            <circle className="node" cx={100 + r} cy="100" r="3.2" fill="var(--cyan)" transform={`rotate(${i * 60} 100 100)`}
+              style={{ animationDelay: `${i * 0.5}s` }} />
+          </g>
+        ))}
+        <circle cx="100" cy="100" r="26" fill="url(#core)" opacity="0.5" />
+        <circle cx="100" cy="100" r="7" fill="var(--cyan)" />
+        {Array.from({ length: 8 }).map((_, i) => {
+          const a = (i / 8) * Math.PI * 2;
+          return <circle key={i} cx={100 + Math.cos(a) * 90} cy={100 + Math.sin(a) * 90} r="1.6" fill="var(--text-3)" opacity="0.8" />;
+        })}
+      </svg>
+      <div className="card" style={{ position: 'absolute', left: 0, bottom: 6, padding: '8px 11px', display: 'grid', gap: 3 }}>
+        <span className="tiny dim" style={{ letterSpacing: '0.06em', textTransform: 'uppercase', fontWeight: 650 }}>Ansatz</span>
+        <span className="mono" style={{ fontSize: 'var(--t-sm)' }}>8 qubits · 2 layers · 1024 shots</span>
+      </div>
+    </div>
+  );
+}

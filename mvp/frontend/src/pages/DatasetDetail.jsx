@@ -1,266 +1,156 @@
-import React, { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { datasetApi, experimentApi } from '../services/api'
-import { 
-  Database, 
-  FlaskConical, 
-  CheckCircle2, 
-  AlertTriangle, 
-  XCircle, 
-  PieChart, 
-  Table, 
-  Layers, 
-  Zap, 
-  FileSpreadsheet,
-  Target,
-  ArrowRight,
-  ShieldCheck
-} from 'lucide-react'
+import React, { useMemo, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useDataset } from '@/hooks/useDataset.js';
+import api from '@/services/api.js';
+import Icon from '@/components/Icon.jsx';
+import Disclaimer from '@/components/Disclaimer.jsx';
+import ClassDistributionChart from '@/components/ClassDistributionChart.jsx';
+import { Card, Btn, ErrorBanner, KV, Note, PageSkeleton, Pill, Ring, SectionHead, StatusPill } from '@/components/ui.jsx';
+import { int, pctRaw, ago, titleize } from '@/lib/format.js';
 
-function DatasetDetail() {
-  const { id } = useParams()
-  const navigate = useNavigate()
-  const [profile, setProfile] = useState(null)
-  const [validation, setValidation] = useState(null)
-  const [loading, setLoading] = useState(true)
+export default function DatasetDetail() {
+  const { id } = useParams();
+  const nav = useNavigate();
+  const { profile, validation, loading, error, profiling, reload: load } = useDataset(id);
+  const [filter, setFilter] = useState('');
 
-  useEffect(() => {
-    loadData()
-  }, [id])
+  const columns = useMemo(() => {
+    const rows = profile?.columns ?? [];
+    const needle = filter.trim().toLowerCase();
+    return needle ? rows.filter((c) => c.name.toLowerCase().includes(needle)) : rows;
+  }, [profile, filter]);
 
-  const loadData = async () => {
-    try {
-      const [profileData, validationData] = await Promise.all([
-        datasetApi.getProfile(id),
-        datasetApi.validate(id)
-      ])
-      setProfile(profileData)
-      setValidation(validationData)
-    } catch (error) {
-      console.error('Failed to load dataset:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleCreateExperiment = async () => {
-    try {
-      const experiment = await experimentApi.create(id)
-      navigate(`/experiments/${experiment.experiment_id}`)
-    } catch (error) {
-      console.error('Failed to create experiment:', error)
-      alert('Failed to create experiment')
-    }
-  }
-
-  if (loading) {
-    return (
-      <div className="card" style={{ textAlign: 'center', padding: '60px 20px' }}>
-        <div className="pipeline-icon active" style={{ margin: '0 auto 16px auto' }}>
-          <Zap size={24} />
-        </div>
-        <p style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>Profiling biomedical dataset dimensions...</p>
-      </div>
-    )
-  }
-
-  if (!profile) {
-    return (
-      <div className="card" style={{ textAlign: 'center', padding: '40px' }}>
-        <XCircle size={36} color="var(--error-color)" style={{ margin: '0 auto 12px auto' }} />
-        <h3 style={{ fontSize: '1.2rem', marginBottom: '8px' }}>Dataset Not Found</h3>
-        <p style={{ color: 'var(--text-secondary)' }}>The requested dataset ID could not be loaded from storage.</p>
-      </div>
-    )
-  }
+  if (loading && !profile) return <PageSkeleton rows={5} />;
+  if (profiling) return <PageSkeleton rows={5} />;
 
   return (
-    <div>
-      {/* Header Profile Summary */}
-      <div className="card">
-        <div className="card-header">
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--cyan-primary)', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>
-              <FileSpreadsheet size={14} /> Dataset Profile & Diagnostics
-            </div>
-            <h2 className="card-title" style={{ fontSize: '1.5rem' }}>
-              {profile.dataset_name || `Dataset: ${id}`}
-            </h2>
+    <>
+      <SectionHead
+        eyebrow={profile ? `Phase 2 · profile · ${profile.datasetId ?? id}` : 'Phase 2 · profile'}
+        title={profile?.name ?? id}
+        sub={profile ? `${int(profile.rows)} samples · ${profile.featureCount} columns · ${profile.numerical} numeric · ${profile.categorical} categorical · loaded ${ago(profile.profiledAt ?? null)}` : 'Reading profile from the data engine'}
+        actions={
+          <>
+            <Btn icon="refresh" kind="quiet" onClick={load}>Re-profile</Btn>
+            <Btn kind="primary" icon="flask" to={`/experiments/new/${id}`}>Design experiment</Btn>
+          </>
+        }
+      />
+
+      {error && <ErrorBanner error={error} retry={load} />}
+
+      <div className="grid g-4">
+        <Card pad={false}><div className="stat"><div className="k"><Icon name="table" size={14} />Samples</div><div className="v">{int(profile?.rows)}</div><div className="d">{profile?.duplicates ? `${profile.duplicates} duplicate rows` : 'no duplicates detected'}</div></div></Card>
+        <Card pad={false}><div className="stat"><div className="k"><Icon name="layers" size={14} style={{ color: 'var(--accent)' }} />Features</div><div className="v" style={{ color: 'var(--accent)' }}>{int(profile?.featureCount)}</div><div className="d">{profile?.numerical ?? 0} numeric · {profile?.categorical ?? 0} categorical</div></div></Card>
+        <Card pad={false}><div className="stat"><div className="k"><Icon name="alert" size={14} style={{ color: (profile?.missing?.pct ?? 0) > 5 ? 'var(--warn)' : 'var(--ok)' }} />Missing values</div><div className="v" style={{ color: (profile?.missing?.pct ?? 0) > 5 ? 'var(--warn)' : 'var(--ok)' }}>{pctRaw(profile?.missing?.pct ?? 0)}<small>{int(profile?.missing?.total)} cells</small></div><div className="d">median / mode imputation upstream</div></div></Card>
+        <Card pad={false}>
+          <div className="stat">
+            <div className="k"><Icon name="target" size={14} style={{ color: 'var(--violet)' }} />Target detected</div>
+            <div className="v" style={{ fontSize: 'var(--t-xl)', color: profile?.target ? 'var(--violet)' : 'var(--err)' }}>{profile?.target ?? 'none'}</div>
+            <div className="d">{profile?.task ? titleize(profile.task) : 'task not classified'}</div>
           </div>
-          {validation?.ready_for_ml && (
-            <button className="btn btn-primary" onClick={handleCreateExperiment}>
-              <FlaskConical size={18} />
-              <span>Create Experiment</span>
-            </button>
+        </Card>
+      </div>
+
+      <div className="grid g-side">
+        <Card
+          title="Feature schema" icon="table" pad={false}
+          sub={`${profile?.columns?.length ?? 0} columns · click a column name to reuse it as target`}
+          actions={
+            <>
+              <input className="input" style={{ width: 180, height: 32, fontSize: 'var(--t-sm)' }} placeholder="Find column…"
+                value={filter} onChange={(e) => setFilter(e.target.value)} aria-label="Filter columns" />
+            </>
+          }
+        >
+          {columns.length === 0 ? (
+            <div style={{ padding: 'var(--s-5)' }}><Note icon="info" title="No column breakdown returned">The profile endpoint reported summary stats only for this dataset.</Note></div>
+          ) : (
+            <div className="table-wrap" style={{ maxHeight: 470 }}>
+              <table className="data">
+                <thead><tr><th className="strong">Column</th><th>Type</th><th className="r">Missing</th><th className="r">Unique</th><th className="r">Role</th></tr></thead>
+                <tbody>
+                  {columns.map((c) => (
+                    <tr key={c.name}>
+                      <td>
+                        <button type="button" className="mono" onClick={() => setFilter(c.name)}
+                          style={{ background: 'none', border: 0, padding: 0, color: 'var(--text)', fontWeight: 620, cursor: 'pointer' }}>
+                          {c.name}
+                        </button>
+                      </td>
+                      <td><Pill tone={c.numeric === false ? 'warn' : 'classical'}>{c.numeric === false ? 'categorical' : (c.dtype ?? 'numeric')}</Pill></td>
+                      <td className="num r" style={{ color: c.missing ? 'var(--warn)' : 'var(--text-3)' }}>{int(c.missing ?? 0)}</td>
+                      <td className="num r">{int(c.unique ?? 0)}</td>
+                      <td className="r">
+                        {c.isTargetCandidate ? <Pill tone="accent" icon="target">target candidate</Pill> : <span className="tiny dim">feature</span>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
-        </div>
+        </Card>
 
-        {/* Dimension Stats */}
-        <div className="stats-grid" style={{ marginBottom: 0 }}>
-          <div className="stat-card">
-            <div className="stat-label">Total Samples</div>
-            <div className="stat-value">{profile.rows}</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-label">Total Features</div>
-            <div className="stat-value">{profile.columns?.length || profile.columns}</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-label">Numerical Features</div>
-            <div className="stat-value" style={{ color: 'var(--cyan-primary)' }}>
-              {profile.numerical_columns_count}
+        <div className="stack" style={{ gap: 'var(--s-4)' }}>
+          <Card title="Target & class balance" icon="pie">
+            <div className="row row-wrap" style={{ gap: 12, marginBottom: 14 }}>
+              <Pill icon="target" tone="accent">{profile?.target ?? 'no target'}</Pill>
+              <Pill icon="table">{titleize(profile?.task ?? 'unknown')}</Pill>
+              {profile?.targetCandidates?.length > 1 && <Pill icon="info">{profile.targetCandidates.length} candidates</Pill>}
             </div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-label">Missing Values</div>
-            <div className="stat-value" style={{ color: profile.missing_percentage > 5 ? 'var(--warning-color)' : 'var(--success-color)' }}>
-              {profile.missing_percentage?.toFixed(1)}%
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Validation Status Card */}
-      {validation && (
-        <div className="card">
-          <h3 className="card-title">
-            <ShieldCheck size={20} color="var(--cyan-primary)" />
-            <span>Validation & Pipeline Compatibility</span>
-          </h3>
-          
-          <div style={{ marginTop: '20px' }}>
-            {validation.issues && validation.issues.length > 0 && (
-              <div style={{ marginBottom: '18px', background: 'rgba(239, 68, 68, 0.08)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(239, 68, 68, 0.2)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--error-color)', fontWeight: 700, marginBottom: '10px' }}>
-                  <XCircle size={18} />
-                  <span>Validation Issues Found</span>
-                </div>
-                <ul style={{ paddingLeft: '24px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                  {validation.issues.map((issue, i) => (
-                    <li key={i} style={{ color: 'var(--error-color)', marginBottom: '4px' }}>{issue}</li>
-                  ))}
-                </ul>
-              </div>
+            <ClassDistributionChart distribution={profile?.classDistribution} imbalanceRatio={profile?.imbalanceRatio} />
+            {profile?.warnings?.length > 0 && (
+              <ul className="checks" style={{ marginTop: 14 }}>
+                {profile.warnings.map((w, i) => (
+                  <li key={i} className="no"><Icon name="alert" size={13} style={{ color: 'var(--warn)' }} /><span>{typeof w === 'string' ? w : w?.message}</span></li>
+                ))}
+              </ul>
             )}
-            
-            {validation.warnings && validation.warnings.length > 0 && (
-              <div style={{ marginBottom: '18px', background: 'rgba(245, 158, 11, 0.08)', padding: '16px', borderRadius: '12px', border: '1px solid rgba(245, 158, 11, 0.2)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--warning-color)', fontWeight: 700, marginBottom: '10px' }}>
-                  <AlertTriangle size={18} />
-                  <span>Optimization Warnings</span>
-                </div>
-                <ul style={{ paddingLeft: '24px', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                  {validation.warnings.map((warning, i) => (
-                    <li key={i} style={{ color: 'var(--warning-color)', marginBottom: '4px' }}>{warning}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
+          </Card>
 
-            <div style={{ 
-              padding: '16px 20px', 
-              borderRadius: '12px', 
-              background: validation.ready_for_ml ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)',
-              border: validation.ready_for_ml ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)',
-              color: validation.ready_for_ml ? 'var(--success-color)' : 'var(--error-color)',
-              fontWeight: 700,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                {validation.ready_for_ml ? <CheckCircle2 size={20} /> : <XCircle size={20} />}
-                <span>{validation.ready_for_ml ? 'Dataset Verified Ready for Hybrid ML Pipeline' : 'Dataset Requires Cleansing Before Pipeline Execution'}</span>
+          {validation && (
+            <Card title="Quality gates" icon="shield" sub={validation.qualityScore != null ? 'Phase 3 validation report' : 'Phase 3 — summary only'}>
+              <div className="row" style={{ gap: 18, alignItems: 'center' }}>
+                {validation.qualityScore != null
+                  ? <Ring value={validation.qualityScore / 100} label="quality" sub="quality score" />
+                  : (
+                    <div style={{ display: 'grid', placeItems: 'center', width: 92, height: 92, borderRadius: '50%', border: '1px dashed var(--line-2)' }}>
+                      <span className="tiny dim" style={{ textAlign: 'center', padding: '0 12px' }}>score not exposed by API</span>
+                    </div>
+                  )}
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <KV rows={[
+                    ['Status', <StatusPill key="s" status={validation.passed ? 'PASS' : 'FAILED'} />],
+                    ['ML ready', validation.readyForMl ? <Pill key="r" tone="ok" icon="check">yes</Pill> : <Pill key="r" tone="err" icon="x">no</Pill>],
+                    ['Issues', int(validation.issues.length)],
+                    ['Warnings', int(validation.warnings.length)]
+                  ]} />
+                </div>
               </div>
-              {validation.ready_for_ml && (
-                <span className="badge badge-success">ML Ready</span>
+              {(validation.issues.length > 0 || validation.warnings.length > 0) && (
+                <div className="stack" style={{ gap: 8, marginTop: 14 }}>
+                  {validation.issues.slice(0, 4).map((m, i) => <Note key={`i${i}`} tone="err" icon="alert">{m}</Note>)}
+                  {validation.warnings.slice(0, 4).map((m, i) => <Note key={`w${i}`} tone="warn" icon="shield">{m}</Note>)}
+                </div>
               )}
-            </div>
-          </div>
-        </div>
-      )}
+            </Card>
+          )}
 
-      {/* Target Distribution Card */}
-      {profile.is_binary_classification && profile.class_distribution && (
-        <div className="card">
-          <h3 className="card-title">
-            <PieChart size={20} color="var(--violet-primary)" />
-            <span>Target Class Distribution</span>
-          </h3>
-          <div style={{ marginTop: '18px' }}>
-            <p style={{ fontSize: '0.925rem', color: 'var(--text-secondary)', marginBottom: '16px' }}>
-              <strong style={{ color: 'var(--text-primary)' }}>Target Column:</strong>{' '}
-              <span className="badge badge-quantum" style={{ marginLeft: '6px' }}>{profile.recommended_target}</span>
-            </p>
-            <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-              {Object.entries(profile.class_distribution).map(([cls, count]) => (
-                <div key={cls} className="stat-card" style={{ flex: 1, minWidth: '180px' }}>
-                  <div className="stat-label">Class {cls} Count</div>
-                  <div className="stat-value" style={{ color: cls === '1' ? 'var(--cyan-primary)' : 'var(--violet-primary)' }}>
-                    {count}
-                  </div>
-                </div>
-              ))}
+          <Card title="Next" icon="arrowRight" pad={false}>
+            <div style={{ padding: 'var(--s-4) var(--s-5)' }}>
+              <p className="muted" style={{ fontSize: 'var(--t-md)', marginBottom: 14 }}>
+                {validation?.readyForMl === false
+                  ? 'The validator wants attention before training. Fix the listed issues, or pick a different target column.'
+                  : 'This table passes ingestion gates. Design a run to lock the split, the PCA target and the model arms.'}
+              </p>
+              <Btn kind="primary" icon="flask" to={`/experiments/new/${id}`}>Design experiment</Btn>
             </div>
-            {profile.class_imbalance_ratio && (
-              <div style={{ marginTop: '16px', background: 'rgba(15, 23, 42, 0.5)', padding: '12px 16px', borderRadius: '10px', border: '1px solid var(--border-color)', display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
-                <Target size={16} color="var(--cyan-primary)" />
-                <span>Class Imbalance Ratio: <strong style={{ color: '#ffffff', fontFamily: 'var(--font-mono)' }}>{profile.class_imbalance_ratio.toFixed(2)}</strong></span>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+          </Card>
 
-      {/* Columns Schema Table */}
-      <div className="card">
-        <h3 className="card-title">
-          <Table size={20} color="var(--cyan-primary)" />
-          <span>Feature Columns Schema</span>
-        </h3>
-        
-        <div className="table-container" style={{ marginTop: '20px' }}>
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Column Name</th>
-                <th>Data Type</th>
-                <th>Missing Values</th>
-                <th>Unique Values</th>
-                <th>Target Candidate</th>
-              </tr>
-            </thead>
-            <tbody>
-              {Array.isArray(profile.columns) && profile.columns.slice(0, 20).map((col, i) => (
-                <tr key={i}>
-                  <td style={{ fontWeight: 600, fontFamily: 'var(--font-mono)' }}>{col.name}</td>
-                  <td>
-                    <span className={`badge ${col.is_numeric ? 'badge-classical' : 'badge-warning'}`}>
-                      {col.is_numeric ? 'Numerical' : 'Categorical'}
-                    </span>
-                  </td>
-                  <td style={{ fontFamily: 'var(--font-mono)' }}>{col.missing_count}</td>
-                  <td style={{ fontFamily: 'var(--font-mono)' }}>{col.unique_count}</td>
-                  <td>
-                    {col.is_target_candidate ? (
-                      <span className="badge badge-success">Candidate Target</span>
-                    ) : (
-                      <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>—</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <Disclaimer />
         </div>
-        {Array.isArray(profile.columns) && profile.columns.length > 20 && (
-          <p style={{ color: 'var(--text-secondary)', marginTop: '14px', fontSize: '0.85rem', fontFamily: 'var(--font-mono)' }}>
-            Showing top 20 features of {profile.columns.length} total columns
-          </p>
-        )}
       </div>
-    </div>
-  )
+    </>
+  );
 }
-
-export default DatasetDetail

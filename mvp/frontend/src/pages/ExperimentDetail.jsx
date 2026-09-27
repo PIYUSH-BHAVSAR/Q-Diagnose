@@ -1,409 +1,437 @@
-import React, { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
-import { experimentApi, reportApi } from '../services/api'
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-} from 'chart.js'
-import { Bar } from 'react-chartjs-2'
-import { 
-  Play, 
-  Download, 
-  CheckCircle2, 
-  Clock, 
-  AlertOctagon, 
-  Atom, 
-  Bot, 
-  BarChart3, 
-  Award, 
-  Zap, 
-  Cpu, 
-  SlidersHorizontal,
-  FileText,
-  Activity
-} from 'lucide-react'
+import React, { useEffect, useMemo, useState } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import api, { reportDownloadUrl } from '@/services/api.js';
+import { useExperiment } from '@/hooks/useExperiment.js';
+import Icon from '@/components/Icon.jsx';
+import StageProgress from '@/components/StageProgress.jsx';
+import MetricsTable from '@/components/MetricsTable.jsx';
+import FeatureImportanceBar from '@/components/FeatureImportanceBar.jsx';
+import MetricsBadge from '@/components/MetricsBadge.jsx';
+import ConfusionHeat from '@/components/ConfusionHeat.jsx';
+import VerdictCard from '@/components/VerdictCard.jsx';
+import Disclaimer from '@/components/Disclaimer.jsx';
+import { Card, Btn, Empty, ErrorBanner, Note, PageSkeleton, Pill, Rail, SectionHead, StatusPill, Tabs, KV } from '@/components/ui.jsx';
+import { dur, int, score, titleize, modelLabel, pct, mb } from '@/lib/format.js';
+import { toast } from '@/lib/toast.js';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-)
-
-function ExperimentDetail() {
-  const { id } = useParams()
-  const [experiment, setExperiment] = useState(null)
-  const [results, setResults] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [polling, setPolling] = useState(false)
+export default function ExperimentDetail() {
+  const { id } = useParams();
+  const nav = useNavigate();
+  const { exp, status, results, explanation, resources, cost, recommendation, running, loading, error, elapsed, run, reload } = useExperiment(id);
+  const [tab, setTab] = useState('progress');
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    loadExperiment()
-  }, [id])
+    if (status?.isCompleted && tab === 'progress') setTab('results');
+  }, [status?.isCompleted, tab]);
 
-  useEffect(() => {
-    if (polling) {
-      const interval = setInterval(loadExperiment, 3000)
-      return () => clearInterval(interval)
-    }
-  }, [polling])
+  const completed = !!results || status?.isCompleted;
 
-  const loadExperiment = async () => {
+  if (loading) return <PageSkeleton rows={3} />;
+  if (!exp) return <ErrorBanner error={error ?? { message: 'Experiment not found' }} retry={reload} />;
+
+  const generate = async () => {
+    setBusy(true);
     try {
-      const data = await experimentApi.get(id)
-      setExperiment(data)
-
-      if (data.status === 'completed') {
-        setPolling(false)
-        const resultsData = await experimentApi.getResults(id)
-        setResults(resultsData)
-      } else if (['running_classical', 'running_quantum', 'preprocessing'].includes(data.status)) {
-        setPolling(true)
-      }
-
-      setLoading(false)
-    } catch (error) {
-      console.error('Failed to load experiment:', error)
-      setLoading(false)
-    }
-  }
-
-  const handleRun = async () => {
-    try {
-      await experimentApi.run(id)
-      setPolling(true)
-      loadExperiment()
-    } catch (error) {
-      console.error('Failed to run experiment:', error)
-      alert('Failed to start experiment')
-    }
-  }
-
-  const handleDownloadReport = () => {
-    reportApi.download(id)
-  }
-
-  if (loading) {
-    return (
-      <div className="card" style={{ textAlign: 'center', padding: '60px 20px' }}>
-        <div className="pipeline-icon active" style={{ margin: '0 auto 16px auto' }}>
-          <Zap size={24} />
-        </div>
-        <p style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }}>Reading experiment state & execution logs...</p>
-      </div>
-    )
-  }
-
-  if (!experiment) {
-    return (
-      <div className="card" style={{ textAlign: 'center', padding: '40px' }}>
-        <AlertOctagon size={36} color="var(--error-color)" style={{ margin: '0 auto 12px auto' }} />
-        <h3 style={{ fontSize: '1.2rem', marginBottom: '8px' }}>Experiment Not Found</h3>
-        <p style={{ color: 'var(--text-secondary)' }}>Unable to retrieve experiment ID from database.</p>
-      </div>
-    )
-  }
-
-  const isRunning = ['running_classical', 'running_quantum', 'preprocessing'].includes(experiment.status)
-  const isCompleted = experiment.status === 'completed'
-
-  const stagesList = ['created', 'preprocessing', 'running_classical', 'running_quantum', 'completed']
+      const r = await api.generateReport(id);
+      const url = reportDownloadUrl(id);
+      toast('Report generated', r.path ?? r.reportId ?? id, 'success');
+      if (url) window.open(url, '_blank', 'noopener');
+    } catch (e) {
+      toast('Report failed', e.message, 'error');
+    } finally { setBusy(false); }
+  };
 
   return (
-    <div>
-      {/* Experiment Header */}
-      <div className="card">
-        <div className="card-header">
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--cyan-primary)', fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '6px' }}>
-              <Activity size={14} /> Experiment Controller
-            </div>
-            <h2 className="card-title" style={{ fontSize: '1.5rem', fontFamily: 'var(--font-mono)' }}>
-              {experiment.name || experiment.id}
-            </h2>
-            <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span className={`badge ${experiment.status === 'completed' ? 'badge-success' : experiment.status === 'failed' ? 'badge-error' : 'badge-warning'}`}>
-                {experiment.status === 'completed' && <CheckCircle2 size={12} />}
-                {isRunning && <Clock size={12} />}
-                {experiment.status === 'failed' && <AlertOctagon size={12} />}
-                <span>{experiment.status}</span>
-              </span>
-              <span style={{ fontSize: '0.825rem', color: 'var(--text-secondary)' }}>
-                Target Dataset: <strong style={{ color: '#ffffff', fontFamily: 'var(--font-mono)' }}>{experiment.dataset_id}</strong>
-              </span>
-            </div>
-          </div>
+    <>
+      <SectionHead
+        eyebrow={exp.datasetId ? <Link to={`/datasets/${exp.datasetId}`} className="mono-link">{exp.datasetId}</Link> : 'Phase 10 · execution'}
+        title={exp.name ?? id}
+        sub={<span className="mono tiny">{id}</span>}
+        actions={
+          <>
+            <Btn icon="refresh" kind="quiet" onClick={reload}>Refresh</Btn>
+            {completed && <Btn icon="file" onClick={generate} disabled={busy}>{busy ? 'Rendering…' : 'Generate report'}</Btn>}
+            {!running && <Btn kind="primary" icon="play" onClick={run}>{completed ? 'Re-run' : 'Start run'}</Btn>}
+            {running && <Pill tone="accent" icon="clock">polling · 2s</Pill>}
+          </>
+        }
+      />
 
-          <div style={{ display: 'flex', gap: '12px' }}>
-            {experiment.status === 'created' && (
-              <button className="btn btn-primary" onClick={handleRun}>
-                <Play size={18} />
-                <span>Run Experiment</span>
-              </button>
+      <Card pad={false}>
+        <div style={{ padding: 'var(--s-4) var(--s-5)', display: 'grid', gap: 12 }}>
+          <div className="row row-wrap" style={{ gap: 14 }}>
+            <StatusPill status={status?.status ?? exp.status} />
+            <span className="tiny dim mono">{status?.stage ? titleize(status.stage) : 'idle'}</span>
+            <span className="tiny dim mono">elapsed {dur(elapsed)}</span>
+            {status?.estimatedRemaining != null && !completed && <span className="tiny dim mono">~{dur(status.estimatedRemaining)} remaining</span>}
+            {Number.isFinite(status?.circuitExecutions) && status.circuitExecutions > 0 && (
+              <Pill tone="quantum" icon="atom">{int(status.circuitExecutions)} circuit executions</Pill>
             )}
-            {isCompleted && (
-              <button className="btn btn-secondary" onClick={handleDownloadReport}>
-                <Download size={18} />
-                <span>Download Report</span>
-              </button>
-            )}
+            <span style={{ marginLeft: 'auto' }} className="num" >
+              <span style={{ fontSize: 'var(--t-xl)', fontWeight: 650 }}>{((status?.progress ?? 0) * 100).toFixed(0)}%</span>
+              <span className="tiny dim"> complete</span>
+            </span>
           </div>
+          <Rail value={status?.progress ?? 0} striped={running} label="experiment progress" />
         </div>
+      </Card>
+
+      {error && <ErrorBanner error={error} retry={reload} />}
+
+      <div className="row" style={{ justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
+        <Tabs
+          value={tab} onChange={setTab}
+          items={[
+            { key: 'progress', label: 'Progress', icon: 'activity', count: running ? `${Math.round((status?.progress ?? 0) * 100)}%` : null },
+            { key: 'results', label: 'Results', icon: 'bar', count: completed ? Object.keys(results?.models ?? {}).length : null },
+            { key: 'explain', label: 'Explainability', icon: 'sparkles' },
+            { key: 'cost', label: 'Cost & resources', icon: 'wallet' }
+          ]}
+        />
+        {running && <span className="tiny dim">Results unlock when the executor reaches <span className="mono">COMPLETED</span>.</span>}
       </div>
 
-      {/* Progress Pipeline Stepper */}
-      {(isRunning || experiment.status === 'created') && (
-        <div className="card">
-          <h3 className="card-title">
-            <Zap size={20} color="var(--cyan-primary)" />
-            <span>Execution Telemetry Pipeline</span>
-          </h3>
-          <div className="pipeline" style={{ marginTop: '10px' }}>
-            {stagesList.map((stage, i) => {
-              const isStageActive = experiment.status === stage
-              const isStageCompleted = ['completed'].includes(experiment.status) || 
-                (experiment.status === 'running_quantum' && i < 3) ||
-                (experiment.status === 'running_classical' && i < 2)
+      {tab === 'progress' && <ProgressTab status={status} running={running} exp={exp} onRun={run} />}
+      {tab === 'results' && (completed ? <ResultsTab results={results} recommendation={recommendation} id={id} /> : <NotReady what="results" running={running} />)}
+      {tab === 'explain' && (completed ? <ExplainTab explanation={explanation} results={results} /> : <NotReady what="explanations" running={running} />)}
+      {tab === 'cost' && <CostTab cost={cost} resources={resources} results={results} status={status} />}
 
+      <Disclaimer />
+    </>
+  );
+}
+
+const NotReady = ({ what, running }) => (
+  <Card><Empty icon={running ? 'clock' : 'info'} title={running ? `${what} are not ready yet` : `No ${what} for this run`}
+    body={running ? 'The executor writes these as soon as the benchmark stage finishes — this tab will fill in by itself.' : 'Start the run to produce them.'} /></Card>
+);
+
+/* ── Progress ─────────────────────────────────────────────────────────────── */
+function ProgressTab({ status, running, exp }) {
+  return (
+    <div className="grid g-side">
+      <Card title="Stage execution" icon="activity" sub="✓ done · ● running · ○ queued">
+        <StageProgress status={status ?? { status: exp.status }} />
+        {status?.isFailed && (
+          <Note tone="err" title="Executor failed" icon="alert">
+            <span className="mono tiny">{status.error ?? 'No error_message was returned by the status endpoint.'}</span>
+          </Note>
+        )}
+      </Card>
+      <div className="stack" style={{ gap: 'var(--s-4)' }}>
+        <Card title="Executor" icon="cpu">
+          <KV rows={[
+            ['Mode', running ? <Pill key="m" tone="accent" icon="zap">live</Pill> : <Pill key="m">idle</Pill>],
+            ['Polling', 'every 2 s · paused when tab hidden'],
+            ['Message', <span className="mono tiny" key="msg">{status?.message ?? '—'}</span>],
+            ['CPU', status?.resourceSnapshot?.cpu_percent != null ? `${status.resourceSnapshot.cpu_percent.toFixed(0)}%` : '—'],
+            ['RAM', mb(status?.resourceSnapshot?.memory_mb)]
+          ]} />
+        </Card>
+        <Card title="What runs here" icon="layers" sub="identical data for both arms">
+          <ul className="checks">
+            {['Train/test split + scaler fitted on train only', 'PCA reduced to the qubit budget', 'LR, SVM and RandomForest on the reduced matrix', 'VQC (PennyLane default.qubit) on the same matrix', 'Metrics, runtime and circuit counts recorded per model'].map((t) => (
+              <li key={t}><Icon name="check" size={13} strokeWidth={2.4} />{t}</li>
+            ))}
+          </ul>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+/* ── Results ──────────────────────────────────────────────────────────────── */
+function ResultsTab({ results, recommendation, id }) {
+  const [cmModel, setCmModel] = useState('random_forest');
+  const [cm, setCm] = useState(null);
+  useEffect(() => { api.getConfusion(id, cmModel).then(setCm).catch(() => setCm(null)); }, [id, cmModel]);
+
+  const modelKeys = Object.keys(results?.models ?? {});
+  const best = results?.comparison?.bestModel;
+
+  return (
+    <>
+      <VerdictCard recommendation={recommendation} comparison={results?.comparison} />
+
+      <Card title="Model comparison" icon="bar" pad={false}
+        sub="click a column to sort · green dot = best in column"
+        actions={<Pill icon="info">7 metrics</Pill>}>
+        <MetricsTable results={results} />
+      </Card>
+
+      <div className="grid g-side">
+        <Card title="Metric spread" icon="activity" sub="per model, per metric">
+          <MetricBars results={results} />
+        </Card>
+        <Card title="Confusion matrix" icon="target"
+          sub="rows actual · columns predicted"
+          actions={
+            <select className="select" style={{ height: 30, width: 168, fontSize: 'var(--t-sm)' }} value={cmModel} onChange={(e) => setCmModel(e.target.value)} aria-label="Model for confusion matrix">
+              {modelKeys.map((k) => <option key={k} value={k}>{modelLabel(k)}</option>)}
+            </select>
+          }>
+          <div className="row" style={{ gap: 20, alignItems: 'center', flexWrap: 'wrap' }}>
+            <ConfusionHeat matrix={cm?.matrix} labels={cm?.labels} />
+            <div style={{ minWidth: 150, flex: 1 }}>
+              <KV rows={[
+                ['Model', modelLabel(cmModel)],
+                ['Support', int((cm?.matrix?.[0] ?? []).concat(cm?.matrix?.[1] ?? []).reduce((a, b) => a + (Number(b) || 0), 0))],
+                ['Best overall', best ? <Pill key="b" tone="ok" icon="award">{modelLabel(best)}</Pill> : '—']
+              ]} />
+              <p className="tiny dim" style={{ marginTop: 10 }}>Per-model metrics come from the stored results; nothing is re-inferred in the browser.</p>
+            </div>
+          </div>
+        </Card>
+      </div>
+    </>
+  );
+}
+
+function MetricBars({ results }) {
+  const metrics = [['accuracy', 'Accuracy'], ['recall', 'Recall'], ['f1', 'F1 score'], ['roc_auc', 'ROC-AUC']];
+  const models = Object.values(results?.models ?? {});
+  return (
+    <div className="stack" style={{ gap: 18 }}>
+      {metrics.map(([key, label]) => (
+        <div key={key}>
+          <div className="row" style={{ justifyContent: 'space-between', marginBottom: 7 }}>
+            <span style={{ fontSize: 'var(--t-sm)', fontWeight: 640 }}>{label}</span>
+            <span className="tiny dim mono">higher is better</span>
+          </div>
+          <div className="stack" style={{ gap: 5 }}>
+            {models.map((m) => {
+              const v = m.metrics?.[key];
+              const quantum = m.modelType === 'QUANTUM';
               return (
-                <React.Fragment key={stage}>
-                  <div className={`pipeline-stage ${isStageActive ? 'active' : isStageCompleted ? 'completed' : ''}`}>
-                    <div className="pipeline-icon">
-                      {stage === 'created' && <FileText size={20} />}
-                      {stage === 'preprocessing' && <SlidersHorizontal size={20} />}
-                      {stage === 'running_classical' && <Bot size={20} />}
-                      {stage === 'running_quantum' && <Atom size={20} />}
-                      {stage === 'completed' && <CheckCircle2 size={20} />}
-                    </div>
-                    <div className="pipeline-label">
-                      {stage.replace('_', ' ').toUpperCase()}
-                    </div>
-                  </div>
-                  {i < stagesList.length - 1 && <span className="pipeline-arrow">→</span>}
-                </React.Fragment>
-              )
+                <div key={m.key} className="bar-row" style={{ gridTemplateColumns: '150px minmax(0,1fr) 62px' }}>
+                  <span className="bar-name">{modelLabel(m.key)}</span>
+                  <span className="bar-track"><span className={`bar-fill ${quantum ? 'violet' : ''}`} style={{ width: `${(Number.isFinite(v) ? v : 0) * 100}%` }} /></span>
+                  <span className="num tiny" style={{ textAlign: 'right', color: quantum ? 'var(--quantum)' : 'var(--text-2)' }}>{score(v)}</span>
+                </div>
+              );
             })}
           </div>
         </div>
-      )}
-
-      {/* Results Dashboard */}
-      {isCompleted && results && (
-        <>
-          {/* Model Metrics Table */}
-          <div className="card">
-            <div className="card-header">
-              <h3 className="card-title">
-                <BarChart3 size={20} color="var(--cyan-primary)" />
-                <span>Classical vs Quantum Performance Matrix</span>
-              </h3>
-              <span className="badge badge-quantum">Benchmark Final</span>
-            </div>
-            
-            <div className="table-container" style={{ marginTop: '10px' }}>
-              {results.models && (
-                <table className="table">
-                  <thead>
-                    <tr>
-                      <th>Model Name</th>
-                      <th>Architecture</th>
-                      <th>Accuracy</th>
-                      <th>Recall</th>
-                      <th>F1 Score</th>
-                      <th>ROC-AUC</th>
-                      <th>Execution Time</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {Object.entries(results.models).map(([name, data]) => (
-                      <tr key={name}>
-                        <td style={{ fontWeight: 700, color: '#ffffff' }}>{name.toUpperCase()}</td>
-                        <td>
-                          <span className={`badge ${data.model_type === 'quantum' ? 'badge-quantum' : 'badge-classical'}`}>
-                            {data.model_type === 'quantum' ? <Atom size={12} /> : <Bot size={12} />}
-                            <span>{data.model_type}</span>
-                          </span>
-                        </td>
-                        <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 600, color: 'var(--cyan-primary)' }}>
-                          {data.metrics?.accuracy !== undefined ? data.metrics.accuracy.toFixed(4) : 'N/A'}
-                        </td>
-                        <td style={{ fontFamily: 'var(--font-mono)' }}>
-                          {data.metrics?.recall !== undefined ? data.metrics.recall.toFixed(4) : 'N/A'}
-                        </td>
-                        <td style={{ fontFamily: 'var(--font-mono)' }}>
-                          {data.metrics?.f1 !== undefined ? data.metrics.f1.toFixed(4) : 'N/A'}
-                        </td>
-                        <td style={{ fontFamily: 'var(--font-mono)' }}>
-                          {data.metrics?.roc_auc !== undefined ? data.metrics.roc_auc.toFixed(4) : 'N/A'}
-                        </td>
-                        <td style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>
-                          {data.training_time !== undefined ? `${data.training_time.toFixed(2)}s` : 'N/A'}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
-          </div>
-
-          {/* Performance Bar Chart Visualization */}
-          {results.models && (
-            <div className="card">
-              <h3 className="card-title" style={{ marginBottom: '20px' }}>
-                <Activity size={20} color="var(--violet-primary)" />
-                <span>Model Metric Comparison Chart</span>
-              </h3>
-              <div style={{ height: '380px', width: '100%' }}>
-                <Bar
-                  data={{
-                    labels: Object.keys(results.models).map(m => m.toUpperCase()),
-                    datasets: [
-                      {
-                        label: 'Accuracy',
-                        data: Object.values(results.models).map(m => m.metrics?.accuracy || 0),
-                        backgroundColor: 'rgba(6, 182, 212, 0.85)',
-                        borderColor: '#06b6d4',
-                        borderWidth: 1,
-                        borderRadius: 6,
-                      },
-                      {
-                        label: 'Recall',
-                        data: Object.values(results.models).map(m => m.metrics?.recall || 0),
-                        backgroundColor: 'rgba(139, 92, 246, 0.85)',
-                        borderColor: '#8b5cf6',
-                        borderWidth: 1,
-                        borderRadius: 6,
-                      },
-                      {
-                        label: 'F1 Score',
-                        data: Object.values(results.models).map(m => m.metrics?.f1 || 0),
-                        backgroundColor: 'rgba(52, 211, 153, 0.85)',
-                        borderColor: '#34d399',
-                        borderWidth: 1,
-                        borderRadius: 6,
-                      },
-                    ],
-                  }}
-                  options={{
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                      legend: {
-                        position: 'top',
-                        labels: {
-                          color: '#cbd5e1',
-                          font: { family: 'Plus Jakarta Sans', weight: 600 }
-                        }
-                      },
-                      tooltip: {
-                        backgroundColor: 'rgba(15, 23, 42, 0.95)',
-                        titleColor: '#ffffff',
-                        bodyColor: '#cbd5e1',
-                        borderColor: 'rgba(255, 255, 255, 0.1)',
-                        borderWidth: 1,
-                        padding: 12
-                      }
-                    },
-                    scales: {
-                      x: {
-                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                        ticks: { color: '#94a3b8', font: { family: 'JetBrains Mono' } }
-                      },
-                      y: {
-                        beginAtZero: true,
-                        max: 1,
-                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                        ticks: { color: '#94a3b8', font: { family: 'JetBrains Mono' } }
-                      },
-                    },
-                  }}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* AI Recommendation Callout */}
-          {results.comparison?.recommendation && (
-            <div className="card recommendation">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <Award size={24} color="var(--cyan-primary)" />
-                <h3 style={{ margin: 0 }}>Optimal Model Recommendation</h3>
-              </div>
-              
-              <div className="decision" style={{ margin: '16px 0 10px 0' }}>
-                {results.comparison.best_model}
-              </div>
-              
-              <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6', fontSize: '0.95rem' }}>
-                {results.comparison.recommendation}
-              </p>
-            </div>
-          )}
-
-          {/* Quantum Resources Dashboard */}
-          {results.models?.vqc?.metrics?.quantum_resources && (
-            <div className="card">
-              <h3 className="card-title">
-                <Atom size={20} color="var(--violet-primary)" />
-                <span>Quantum Hardware & Circuit Telemetry</span>
-              </h3>
-              
-              <div className="stats-grid" style={{ marginTop: '20px', marginBottom: 0 }}>
-                <div className="stat-card">
-                  <div className="stat-label">Allocated Qubits</div>
-                  <div className="stat-value" style={{ color: 'var(--cyan-primary)' }}>
-                    {results.models.vqc.metrics.quantum_resources.n_qubits}
-                  </div>
-                </div>
-                
-                <div className="stat-card">
-                  <div className="stat-label">Ansatz Circuit Layers</div>
-                  <div className="stat-value" style={{ color: 'var(--violet-primary)' }}>
-                    {results.models.vqc.metrics.quantum_resources.n_layers}
-                  </div>
-                </div>
-                
-                <div className="stat-card">
-                  <div className="stat-label">Circuit Executions</div>
-                  <div className="stat-value">
-                    {results.models.vqc.metrics.quantum_resources.n_circuit_executions}
-                  </div>
-                </div>
-                
-                <div className="stat-card">
-                  <div className="stat-label">Training Latency</div>
-                  <div className="stat-value" style={{ color: 'var(--success-color)' }}>
-                    {results.models.vqc.metrics.quantum_resources.training_time?.toFixed(1)}s
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </>
-      )}
-
-      {/* Error State */}
-      {experiment.status === 'failed' && (
-        <div className="card" style={{ background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--error-color)', marginBottom: '10px' }}>
-            <AlertOctagon size={24} />
-            <h3 style={{ margin: 0, fontSize: '1.2rem' }}>Execution Failure</h3>
-          </div>
-          <p style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)', fontSize: '0.9rem' }}>
-            {experiment.error || 'Quantum simulator or classical preprocessor returned an unhandled exception.'}
-          </p>
-        </div>
-      )}
+      ))}
     </div>
-  )
+  );
 }
 
-export default ExperimentDetail
+/* ── Explainability ───────────────────────────────────────────────────────── */
+function ExplainTab({ explanation, results }) {
+  const e = explanation ?? {};
+  const [mode, setMode] = useState('sample');
+  const items = mode === 'sample' && e.importance?.length ? e.importance : (e.globalImportance?.length ? e.globalImportance : e.importance);
+
+  return (
+    <>
+      <div className="grid g-side">
+        <Card title="Prediction trace" icon="eye" sub="one held-out sample · uncalibrated score">
+          {e.prediction ? (
+            <div className="stack" style={{ gap: 16 }}>
+              <div className="row row-wrap" style={{ gap: 10 }}>
+                <Pill tone={e.prediction.value === 1 ? 'quantum' : 'ok'} icon={e.prediction.value === 1 ? 'alert' : 'check'}>
+                  {e.prediction.value === 1 ? 'POSITIVE' : 'NEGATIVE'} · model output
+                </Pill>
+                {e.prediction.is_correct != null && (
+                  <Pill tone={e.prediction.is_correct ? 'ok' : 'err'} icon={e.prediction.is_correct ? 'check' : 'x'}>
+                    {e.prediction.is_correct ? 'matches held-out label' : 'differs from held-out label'}
+                  </Pill>
+                )}
+                {e.sampleId && <span className="tiny dim mono">{e.sampleId}</span>}
+              </div>
+              <div>
+                <div className="row" style={{ justifyContent: 'space-between', marginBottom: 6 }}>
+                  <span className="tiny dim" style={{ textTransform: 'uppercase', letterSpacing: '0.06em', fontWeight: 650 }}>Model score</span>
+                  <span className="num" style={{ fontSize: 'var(--t-2xl)', fontWeight: 640 }}>{score(e.prediction.score)}</span>
+                </div>
+                <Rail value={e.prediction.score} />
+                <p className="tiny dim" style={{ marginTop: 8 }}>Uncalibrated — not a probability of disease. AUC 0.5–0.6 models can still emit 0.9 scores.</p>
+              </div>
+              {e.decisionReason && <Note icon="info" title="Why the model leaned this way">{e.decisionReason}</Note>}
+            </div>
+          ) : (
+            <Note icon="info" title="Sample-level explanation not exposed yet">
+              <span className="mono tiny">GET /experiments/{'{id}'}/explanation</span> currently returns model-level feature importance and the
+              circuit structure only. Per-sample attribution needs the saved <span className="mono tiny">X_test.npy</span> artifacts
+              (tracked as MH-01) — until then we show global importances rather than invent numbers.
+              <div style={{ marginTop: 10 }}><Btn size="sm" onClick={() => setMode('global')}>View global importances →</Btn></div>
+            </Note>
+          )}
+        </Card>
+
+        <Card title="Quantum circuit" icon="atom" sub="structure that produced the decision">
+          {e.circuit ? (
+            <div className="stack" style={{ gap: 14 }}>
+              <div className="qgrid">
+                {[['Qubits', e.circuit.qubits], ['Layers', e.circuit.layers], ['Parameters', e.circuit.params],
+                  ['Depth', e.circuit.depth], ['Two-qubit gates', e.circuit.twoQubitGates], ['Shots', e.circuit.shots]].map(([k, v]) => (
+                  <div key={k}><div className="k">{k}</div><div className="v">{v ?? '—'}</div></div>
+                ))}
+              </div>
+              <KV rows={[
+                ['Encoding', e.circuit.encoding],
+                ['Backend', e.circuit.backendType],
+                ['Measurement', e.circuit.measurement ?? 'PauliZ(qubit_0)']
+              ]} />
+              {e.circuit.mapping && (
+                <div>
+                  <div className="tiny dim" style={{ marginBottom: 6 }}>feature → qubit mapping</div>
+                  <div className="chips">
+                    {Object.entries(e.circuit.mapping).map(([f, q]) => <Pill key={f} className="mono" icon="circuit">{f} → {q}</Pill>)}
+                  </div>
+                </div>
+              )}
+              {typeof e.circuit.diagram === 'string' && e.circuit.diagram.includes('\n') && (
+                <pre className="mono" style={{ margin: 0, padding: 12, borderRadius: 'var(--r)', background: 'var(--canvas)', border: '1px solid var(--line)', fontSize: '0.68rem', overflow: 'auto', maxHeight: 180, lineHeight: 1.5 }}>
+{e.circuit.diagram}
+                </pre>
+              )}
+            </div>
+          ) : <Note icon="info">No circuit metadata returned for this run.</Note>}
+        </Card>
+      </div>
+
+      <Card title="Feature importance" icon="sliders"
+        sub="positive push · negative push — model behaviour, not medical causality"
+        actions={
+          <div className="tabs" role="group" aria-label="importance scope">
+            <button type="button" className="tab" aria-selected={mode === 'sample'} onClick={() => setMode('sample')}>Per-sample</button>
+            <button type="button" className="tab" aria-selected={mode === 'global'} onClick={() => setMode('global')}>Global</button>
+          </div>
+        }>
+        <FeatureImportanceBar items={items ?? []} top={12} tone="accent" />
+        {!items?.length && <div className="tiny dim" style={{ marginTop: 10 }}>Nothing returned for this scope.</div>}
+      </Card>
+
+      {!!e.trace?.length && (
+        <Card title="Pipeline trace" icon="circuit" sub="every artifact this run touched">
+          <div className="rail">
+            {e.trace.map((t, i) => (
+              <React.Fragment key={i}>
+                <div className="rail-item done">
+                  <span className="rail-dot"><Icon name="check" size={11} strokeWidth={2.4} /></span>
+                  <div><div className="rail-name">{t.component}</div>{t.detail && <div className="tiny dim mono" style={{ marginTop: 2 }}>{t.detail}</div>}</div>
+                  <span className="rail-meta">{t.phase}</span>
+                </div>
+                {i < e.trace.length - 1 && <span className="rail-line" />}
+              </React.Fragment>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      {(e.warnings?.length ?? 0) > 0 && (
+        <div className="stack">
+          {e.warnings.map((w, i) => <Note key={i} tone="warn" icon="shield">{w}</Note>)}
+        </div>
+      )}
+    </>
+  );
+}
+
+/* ── Cost ─────────────────────────────────────────────────────────────────── */
+function CostTab({ cost, resources, results, status }) {
+  const q = resources?.quantum ?? Object.values(results?.models ?? {}).find((m) => m.quantum)?.quantum ?? null;
+  const breakdown = cost?.pipeline_cost_breakdown;
+  const total = breakdown?.total_pipeline_seconds;
+  const rows = Object.values(results?.models ?? {});
+
+  return (
+    <>
+      <div className="grid g-side">
+        <Card title="Quantum resources" icon="atom" sub="VQC circuit cost for this run">
+          {q ? (
+            <div className="qgrid" style={{ gridTemplateColumns: 'repeat(3, minmax(0,1fr))' }}>
+              {[['Qubits', q.qubits], ['Circuit depth', q.depth], ['Gate count', q.gateCount],
+                ['Two-qubit gates', q.twoQubitGates], ['Shots / execution', q.shots], ['Circuit executions', q.executions]].map(([k, v]) => (
+                <div key={k}><div className="k">{k}</div><div className="v">{v == null ? '—' : int(v)}</div></div>
+              ))}
+            </div>
+          ) : <Note icon="info">No quantum resources recorded — the run may be classical-only.</Note>}
+          {q?.totalShots == null && q?.executions && q?.shots ? (
+            <div className="tiny dim" style={{ marginTop: 12 }}>
+              total shots ≈ <span className="num">{int(q.executions * q.shots)}</span> (executions × shots — derived in the UI from API numbers, not measured)
+            </div>
+          ) : null}
+        </Card>
+
+        <Card title="Financial cost" icon="wallet">
+          <div className="stat" style={{ padding: 0 }}>
+            <div className="k">Cloud quantum billing</div>
+            <div className="v" style={{ color: 'var(--ok)' }}>₹0</div>
+            <div className="d">{cost?.financial_cost_local?.note ?? 'Local quantum simulator. No cloud quantum cost.'}</div>
+          </div>
+          {cost?.scalability_assessment && (
+            <div style={{ marginTop: 16 }}>
+              <KV rows={[
+                ['Environment', titleize(cost.scalability_assessment.current_environment)],
+                ['Feasibility', <Pill key="f" tone={cost.scalability_assessment.this_experiment_status === 'FEASIBLE' ? 'ok' : 'warn'}>{titleize(cost.scalability_assessment.this_experiment_status)}</Pill>],
+                ['Recommended max', `${cost.scalability_assessment.recommended_max_qubits ?? '—'} qubits`]
+              ]} />
+              <p className="tiny dim" style={{ marginTop: 10 }}>{cost.scalability_assessment.note}</p>
+            </div>
+          )}
+        </Card>
+      </div>
+
+      {breakdown && (
+        <Card title="Where the time went" icon="clock" sub={`total pipeline ${dur(total)}`}>
+          <div className="stack" style={{ gap: 6 }}>
+            {[['preprocessing_seconds', 'Preprocess'], ['feature_reduction_seconds', 'Feature reduction'],
+              ['quantum_training_seconds', 'Quantum training'], ['evaluation_seconds', 'Evaluation']].map(([k, label]) => {
+              const v = breakdown[k] ?? 0;
+              return (
+                <div key={k} className="bar-row">
+                  <span className="bar-name">{label}</span>
+                  <span className="bar-track"><span className={`bar-fill ${k === 'quantum_training_seconds' ? 'violet' : ''}`} style={{ width: `${total ? (v / total) * 100 : 0}%` }} /></span>
+                  <span className="num tiny" style={{ textAlign: 'right' }}>{dur(v)}</span>
+                </div>
+              );
+            })}
+          </div>
+          {cost.comparison_classical_baseline && (
+            <Note tone="warn" icon="gauge" title="Classical baseline">
+              {cost.comparison_classical_baseline.verdict ?? `Classical ${cost.comparison_classical_baseline.classical_model} trained in ${dur(cost.comparison_classical_baseline.classical_training_seconds)}.`}
+            </Note>
+          )}
+        </Card>
+      )}
+
+      <Card title="Performance vs cost" icon="bar" pad={false} sub="the honest table — accuracy is not free">
+        <div className="table-wrap">
+          <table className="data">
+            <thead><tr><th className="strong">Model</th><th className="r">ROC-AUC</th><th className="r">Recall</th><th className="r">Train time</th><th className="r">Inference</th><th className="r">Peak memory</th><th className="r">Circuit executions</th></tr></thead>
+            <tbody>
+              {rows.map((m) => (
+                <tr key={m.key} style={m.modelType === 'QUANTUM' ? { background: 'color-mix(in srgb, var(--quantum) 6%, transparent)' } : undefined}>
+                  <td className="strong"><span className="row" style={{ gap: 8 }}><Icon name={m.modelType === 'QUANTUM' ? 'atom' : 'cpu'} size={14} />{modelLabel(m.key)}</span></td>
+                  <td className="num r">{score(m.metrics?.roc_auc)}</td>
+                  <td className="num r">{score(m.metrics?.recall)}</td>
+                  <td className="num r">{dur(m.resources?.trainingTime)}</td>
+                  <td className="num r">{dur(m.resources?.inferenceTime)}</td>
+                  <td className="num r">{mb(m.resources?.memoryMb)}</td>
+                  <td className="num r">{m.quantum ? int(m.quantum.executions) : <span className="dim">n/a</span>}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Card>
+
+      <div className="row row-wrap" style={{ gap: 8 }}>
+        {status?.resourceSnapshot && (
+          <>
+            <MetricsBadge label="CPU" value={status.resourceSnapshot.cpu_percent} digits={0} hint="sampled during the run" />
+            <MetricsBadge label="RAM" value={status.resourceSnapshot.memory_mb} />
+          </>
+        )}
+        {cost?.computational_cost?.training?.wall_clock_time_seconds != null && (
+          <MetricsBadge label="Wall clock" value={cost.computational_cost.training.wall_clock_time_seconds} />
+        )}
+        {cost?.quantum_cost?.total_shots != null && <MetricsBadge label="Total shots" value={cost.quantum_cost.total_shots} />}
+      </div>
+    </>
+  );
+}
