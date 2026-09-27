@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:backend-shape": "SHAPE=backend vitest run",
     "check": "npm run test:adapters && npm run test && npm run test:backend-shape && npm run test:live && npm run build",
-    "test:live": "node tests/live-backend.test.mjs"
+    "test:live": "node tests/live-backend.test.mjs",
+    "test:responsive": "node tests/responsive.audit.mjs"
   },
   "dependencies": {
     "axios": "^1.6.2",

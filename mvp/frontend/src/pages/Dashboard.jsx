@@ -117,8 +117,8 @@ export default function Dashboard() {
                       <span className="brand-mark" style={{ width: 26, height: 26, borderRadius: 8 }}>
                         <Icon name={e.status === 'COMPLETED' ? 'check' : 'atom'} size={13} />
                       </span>
-                      <span style={{ minWidth: 0 }}>
-                        <span style={{ display: 'block', fontWeight: 620, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ minWidth: 0, flex: '1 1 160px' }}>
+                        <span className="ellip" style={{ display: 'block', fontWeight: 620 }}>
                           {e.name ?? e.id}
                         </span>
                         <span className="tiny dim mono">{e.id} · {ago(e.createdAt ?? e.completedAt)}</span>
@@ -126,7 +126,7 @@ export default function Dashboard() {
                     </Link>
                     <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
                       {st && !st.isCompleted && (
-                        <span style={{ width: 92 }}>
+                        <span className="mini-rail" style={{ width: 92 }}>
                           <Rail value={st.progress} striped />
                         </span>
                       )}

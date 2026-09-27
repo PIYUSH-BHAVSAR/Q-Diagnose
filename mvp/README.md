@@ -218,6 +218,25 @@ and a running experiment offers **Skip to results**, which just moves the mock c
 Both are mock-only: against a real backend the button is absent and the sidebar says
 `Engine live · /api` instead of `Data fixtures`, so nobody can mistake fixture data for a run.
 
+### Layout & breakpoints
+
+The shell is fluid — no fixed content width, no horizontal scroll at any size:
+
+| Width | What changes |
+|---|---|
+| ≤1120 px | hero and `.g-side` collapse to one column, decorative circuit visual hides, `.g-4` → 2-up |
+| ≤900 px | sidebar becomes a sticky horizontal strip (labels/counts hidden), `.g-2/.g-3` → 1-up, tighter content padding |
+| ≤640 px | page header stacks and its buttons go full-width; stat blocks, `kv` rows and bar rows shrink their columns; the sheet becomes a bottom-anchored modal; palette spans the viewport |
+| ≤430 px | tab strip wraps instead of hiding tabs behind a fade; the mini progress rail in Recent runs retires so the run name isn't truncated to `Parki…` |
+| ≤380 px | one stat per row, table text drops one step; the primary topbar action becomes icon-only |
+| `pointer: coarse` | thumb targets everywhere (20 px text links → 8 px padding, chips → 32 px, tabs → 36 px, nav → 40 px) — keyed to the input device, so an iPad gets it too |
+| `max-height: 560px` | landscape phones: both bars tighten so the chrome doesn't eat a third of the screen |
+| `prefers-reduced-motion` | all animations/transitions drop to 0.001 ms |
+
+Wide tables (7-metric comparison, dataset schema) scroll inside their own `.table-wrap`
+with the row label pinned sticky, which is intentional — the page itself never scrolls
+sideways. Verified by `npm run test:responsive`: 0 of 112 size×route combinations overflow.
+
 ### Scripts
 | Command | What it does |
 |---|---|
@@ -228,6 +247,7 @@ Both are mock-only: against a real backend the button is absent and the sidebar 
 | `npm run test:adapters` | 80 assertions over `src/lib/adapters.js` against `mocks/*.json` **and** `experiment_results_*.json` |
 | `npm run test:live` | the running backend's real responses through the same adapters (self-skips when nothing answers on `:8000`) |
 | `npm run check` | all five above, in order — run this before every PR |
+| `npm run test:responsive` | **optional**: drives a real browser over 14 viewports × 8 routes and fails on horizontal overflow, clipped text, sub-11px text, small touch targets or overlapping flex children. Needs `npm i -D playwright && npx playwright install chromium`; skips itself (exit 0) when no browser is installed |
 
 ### Where data comes from
 ```

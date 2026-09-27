@@ -148,7 +148,9 @@ export default function App() {
               <button type="button" className="btn btn-icon btn-quiet" onClick={toggleTheme} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`} title="Toggle theme">
                 <Icon name={theme === 'dark' ? 'sun' : 'moon'} size={16} />
               </button>
-              <Link to="/experiments/new" className="btn btn-primary"><Icon name="plus" size={15} />New experiment</Link>
+              <Link to="/experiments/new" className="btn btn-primary" aria-label="New experiment">
+                <Icon name="plus" size={15} /><span className="btn-label">New experiment</span>
+              </Link>
             </div>
           </header>
 
