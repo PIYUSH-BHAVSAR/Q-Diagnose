@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import api, { reportDownloadUrl } from '@/services/api.js';
+import api, { reportDownloadUrl, canFastForward } from '@/services/api.js';
 import { useExperiment } from '@/hooks/useExperiment.js';
 import Icon from '@/components/Icon.jsx';
 import StageProgress from '@/components/StageProgress.jsx';
@@ -11,7 +11,7 @@ import ConfusionHeat from '@/components/ConfusionHeat.jsx';
 import VerdictCard from '@/components/VerdictCard.jsx';
 import Disclaimer from '@/components/Disclaimer.jsx';
 import { Card, Btn, Empty, ErrorBanner, Note, PageSkeleton, Pill, Rail, SectionHead, StatusPill, Tabs, KV } from '@/components/ui.jsx';
-import { dur, int, score, titleize, modelLabel, pct, mb } from '@/lib/format.js';
+import { dur, int, score, titleize, modelLabel, pct, mb, statusMeta } from '@/lib/format.js';
 import { toast } from '@/lib/toast.js';
 
 export default function ExperimentDetail() {
@@ -20,15 +20,29 @@ export default function ExperimentDetail() {
   const { exp, status, results, explanation, resources, cost, recommendation, running, loading, error, elapsed, run, reload } = useExperiment(id);
   const [tab, setTab] = useState('progress');
   const [busy, setBusy] = useState(false);
+  const demo = canFastForward();          // mock data (or live backend unreachable) only
+
 
   useEffect(() => {
     if (status?.isCompleted && tab === 'progress') setTab('results');
   }, [status?.isCompleted, tab]);
 
   const completed = !!results || status?.isCompleted;
+  // the pill already spells the status out; only show the stage when it adds information
+  const stageText = status?.stage ? titleize(status.stage) : 'idle';
+  const showStage = stageText !== (status?.status ? statusMeta(status.status).label : null);
 
   if (loading) return <PageSkeleton rows={3} />;
   if (!exp) return <ErrorBanner error={error ?? { message: 'Experiment not found' }} retry={reload} />;
+
+  const fastForward = async () => {
+    try {
+      await api.fastForwardRun(id);
+      toast('Demo run fast-forwarded', 'the mock timeline jumped to COMPLETED', 'success');
+      await reload();
+      setTab('results');
+    } catch (e) { toast('Not available', e.message, 'info'); }
+  };
 
   const generate = async () => {
     setBusy(true);
@@ -54,6 +68,12 @@ export default function ExperimentDetail() {
             {completed && <Btn icon="file" onClick={generate} disabled={busy}>{busy ? 'Rendering…' : 'Generate report'}</Btn>}
             {!running && <Btn kind="primary" icon="play" onClick={run}>{completed ? 'Re-run' : 'Start run'}</Btn>}
             {running && <Pill tone="accent" icon="clock">polling · 2s</Pill>}
+            {running && demo && (
+              <Btn kind="quiet" icon="zap" onClick={fastForward}
+                   title="Demo data only — jumps the mock timeline to COMPLETED">
+                Skip to results
+              </Btn>
+            )}
           </>
         }
       />
@@ -62,7 +82,7 @@ export default function ExperimentDetail() {
         <div style={{ padding: 'var(--s-4) var(--s-5)', display: 'grid', gap: 12 }}>
           <div className="row row-wrap" style={{ gap: 14 }}>
             <StatusPill status={status?.status ?? exp.status} />
-            <span className="tiny dim mono">{status?.stage ? titleize(status.stage) : 'idle'}</span>
+            {showStage && <span className="tiny dim mono">{stageText}</span>}
             <span className="tiny dim mono">elapsed {dur(elapsed)}</span>
             {status?.estimatedRemaining != null && !completed && <span className="tiny dim mono">~{dur(status.estimatedRemaining)} remaining</span>}
             {Number.isFinite(status?.circuitExecutions) && status.circuitExecutions > 0 && (
@@ -109,6 +129,7 @@ const NotReady = ({ what, running }) => (
 
 /* ── Progress ─────────────────────────────────────────────────────────────── */
 function ProgressTab({ status, running, exp }) {
+  const demo = canFastForward();   // fixture data on screen? say so in the Mode row
   return (
     <div className="grid g-side">
       <Card title="Stage execution" icon="activity" sub="✓ done · ● running · ○ queued">
@@ -122,7 +143,8 @@ function ProgressTab({ status, running, exp }) {
       <div className="stack" style={{ gap: 'var(--s-4)' }}>
         <Card title="Executor" icon="cpu">
           <KV rows={[
-            ['Mode', running ? <Pill key="m" tone="accent" icon="zap">live</Pill> : <Pill key="m">idle</Pill>],
+            // never claim "live" while fixture data is on screen
+            ['Mode', running ? <Pill key="m" tone={demo ? 'warn' : 'accent'} icon="zap">{demo ? 'demo fixture' : 'live'}</Pill> : <Pill key="m">{demo ? 'demo fixture · idle' : 'idle'}</Pill>],
             ['Polling', 'every 2 s · paused when tab hidden'],
             ['Message', <span className="mono tiny" key="msg">{status?.message ?? '—'}</span>],
             ['CPU', status?.resourceSnapshot?.cpu_percent != null ? `${status.resourceSnapshot.cpu_percent.toFixed(0)}%` : '—'],

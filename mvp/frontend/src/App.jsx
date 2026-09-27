@@ -114,7 +114,14 @@ export default function App() {
           <div className="nav-foot">
             <div className="health" title="Backend health — polled every 20s">
               <span className={`pulse ${health.status === 'healthy' ? 'on' : health.status === 'checking' ? '' : 'off'}`} />
-              <span>{health.status === 'healthy' ? 'Engine' : health.status} <b className="mono">:{8000}</b></span>
+              <span>{health.mode === 'demo' ? 'Data' : 'Engine'}{' '}
+                <b className="mono">
+                  {health.mode === 'demo'
+                    ? 'fixtures'
+                    : health.status === 'healthy' ? 'live · /api'
+                    : health.status === 'checking' ? 'checking…' : 'unreachable'}
+                </b>
+              </span>
               {health.mode === 'demo' && <span className="pill warn" style={{ marginLeft: 'auto', padding: '1px 6px' }}>demo</span>}
             </div>
           </div>

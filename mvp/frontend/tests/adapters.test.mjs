@@ -39,6 +39,17 @@ ok('status/backend: elapsed derived from started_at', a2.elapsedSeconds > 0, a2.
 ok('status/backend: circuit fallback 0 (field absent in API)', a2.circuitExecutions === 0, a2);
 ok('status/backend: isRunning true', a2.isRunning === true, a2);
 
+/* ── 1b. DATASET LIST: feature counts must reach the table, not print "—" ── */
+const listMock = { datasets: [{ dataset_id: 'DS-1', filename: 'breast_cancer.csv', rows: 569,
+  feature_count: 32, file_size_bytes: 125204, status: 'REGISTERED' }] };
+const lm = adaptDatasetList(listMock).datasets[0];
+ok('list/contract: feature_count read directly', lm.featureCount === 32, lm.featureCount);
+ok('list/contract: size stays MB (page decides KB/MB)', Math.abs(lm.sizeMb - 125204 / 1048576) < 1e-9, lm.sizeMb);
+const listBe = { datasets: [{ id: 'DS-2', display_id: 'DS-000002', columns: Array.from({ length: 32 }, (_, i) => `c${i}`), status: 'registered' }] };
+const lb = adaptDatasetList(listBe).datasets[0];
+ok('list/backend: columns[] length becomes featureCount', lb.featureCount === 32, lb.featureCount);
+ok('list/backend: unknown counts stay null', adaptDatasetList({ datasets: [{ id: 'x' }] }).datasets[0].featureCount === null, 'null expected');
+
 /* ── 2. RESULTS: real backend file (flat f1, model-level training_time) ── */
 const real = R('mvp/' + readdirSync(path.join(REPO, 'mvp')).find((f) => f.startsWith('experiment_results_')));
 const r1 = adaptResults(real);
@@ -72,6 +83,22 @@ ok('results/mock: pr_auc present', r2.models.random_forest.metrics.pr_auc === 0.
 ok('results/mock: training_time_seconds mapped', r2.models.random_forest.resources.trainingTime === 0.134, r2.models.random_forest.resources);
 ok('results/mock: quantum_metrics → gate_count 142', r2.models.vqc.quantum.gateCount === 142, r2.models.vqc.quantum);
 ok('results/mock: classification TRADEOFF kept', r2.comparison.classification === 'TRADEOFF', r2.comparison.classification);
+
+/* ── 3b. VERDICT CARD data: recommendation.json's classical_best/quantum_best must
+        reach the screen as numbers, not "—" (the card reads diff() + metricsComparison) ── */
+const recMock = R('mocks/breast_cancer/recommendation.json');
+const r3 = adaptResults({ experiment_id: 'EXP-1', status: 'COMPLETED', models: {}, comparison: recMock });
+ok('verdict: classical_best.model_name → bestClassical', r3.comparison.bestClassical === 'RandomForest', r3.comparison.bestClassical);
+ok('verdict: quantum_best.model_name → bestQuantum', r3.comparison.bestQuantum === 'VQC', r3.comparison.bestQuantum);
+ok('verdict: metricsComparison keyed by model name', !!r3.comparison.metricsComparison.VQC && !!r3.comparison.metricsComparison.RandomForest, Object.keys(r3.comparison.metricsComparison));
+const dAcc = r3.comparison.diff('accuracy');
+ok('verdict: accuracy delta from performance_differences.accuracy_delta', dAcc && Math.abs(dAcc.difference - recMock.performance_differences.accuracy_delta) < 1e-9, dAcc);
+const dRec = r3.comparison.diff('recall');
+ok('verdict: recall delta matches the observation text (+1.35pp)', dRec && Math.abs(dRec.difference - 0.0135) < 1e-9 && dRec.quantum_better === true, dRec);
+const dRoc = r3.comparison.diff('roc_auc');
+ok('verdict: roc_auc reads the engine\'s auc_delta key', dRoc && Math.abs(dRoc.difference - -0.0109) < 1e-9, dRoc);
+ok('verdict: quantum-less metric returns null, never 0', r3.comparison.diff('specificity') === null || Math.abs(r3.comparison.diff('specificity').difference - (0.99 - 1.0)) < 1e-9, r3.comparison.diff('specificity'));
+ok('verdict: runtimeDiff built from the two best blocks + ratio', r3.comparison.runtimeDiff.quantum === 2.4 && r3.comparison.runtimeDiff.classical === 0.134 && r3.comparison.runtimeDiff.ratio === 17.8, r3.comparison.runtimeDiff);
 
 /* ── 4. PROFILE: nested mock vs flat backend ── */
 const p1 = adaptProfile(R('mocks/breast_cancer/dataset_profile.json'));

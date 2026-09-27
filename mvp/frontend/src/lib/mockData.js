@@ -97,7 +97,9 @@ function statusAt(startedAt, experimentId, circuitTotal) {
           ? `Training ${modelLabelSafe(classicalDone[classicalDone.length - 1] ?? CLASSICAL_ORDER[0])}`
           : `${current.stage.replace(/_/g, ' ')}…`,
     started_at: startedAt,
-    elapsed_seconds: Number(elapsed.toFixed(1)),
+    // a finished run reports the run length, not the wall-clock age of the fixture
+    elapsed_seconds: Number((done ? TOTAL_SECS : elapsed).toFixed(1)),
+    completed_at: done ? new Date(new Date(startedAt).getTime() + TOTAL_SECS * 1000).toISOString() : null,
     estimated_remaining_seconds: done ? 0 : Number(Math.max(0, TOTAL_SECS - elapsed).toFixed(1)),
     current_model: done ? null : inClassical ? CLASSICAL_ORDER[classicalDone.length] ?? null : current.stage === 'quantum_training' ? 'vqc' : null,
     completed_models: classicalDone,
@@ -121,11 +123,35 @@ const state = {
       dataset_id: id, display_id: `DS-${String(i + 1).padStart(6, '0')}`, key,
       filename: `${key}.csv`, container_type: 'CSV', file_size_bytes: meta.size,
       status: 'REGISTERED', upload_timestamp: nowISO(-(i + 1) * 3.7e6), has_profile: true,
-      name: meta.label, label: meta.label, rows: meta.rows
+      name: meta.label, label: meta.label, rows: meta.rows,
+      // mirrors what GET /api/datasets reports: columns minus the target column
+      feature_count: (bundle[key].dataset_profile?.dimensions?.columns ?? meta.cols ?? 0) - 1
     };
   }),
   experiments: {}
 };
+
+/* ── seeded demo runs ───────────────────────────────────────────────────────
+   Mock mode exists so a demo never shows an empty product. Three runs are
+   pre-created from the same fixtures: two finished (Results / Explanations /
+   Cost / Timeline are all populated) and one mid-flight at 9 s of 23 s, so the
+   Progress tab animates and the polling path is visible. `started_at` is what
+   drives the timeline, so these age correctly no matter when you open the app. */
+const seedRun = (id, dsIndex, name, startedAgoSecs) => {
+  const ds = state.datasets[dsIndex];
+  if (!ds || !bundle[ds.key]) return;
+  state.experiments[id] = {
+    experiment_id: id, dataset_id: ds.dataset_id, dataset_key: ds.key, name,
+    status: 'COMPLETED', stage: 'completed',
+    created_at: nowISO(-(startedAgoSecs + 120) * 1000),
+    started_at: nowISO(-startedAgoSecs * 1000),
+    completed_at: nowISO(-Math.max(0, startedAgoSecs - TOTAL_SECS) * 1000),
+    error_message: null
+  };
+};
+seedRun('EXP-DEMO-0001', 0, 'Breast Cancer · hybrid VQC benchmark', 3 * 3600);
+seedRun('EXP-DEMO-0002', 1, 'Heart Disease · 8-qubit VQC vs RandomForest', 26 * 3600);
+seedRun('EXP-DEMO-0003', 2, "Parkinson's · quantum-only feasibility probe", 9);
 
 const resultsFor = (dsKey, experimentId) => {
   const models = {};
@@ -182,9 +208,17 @@ export const mockBackend = {
     return c;
   },
 
-  listExperiments: () => ({
-    experiments: Object.values(state.experiments).sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
-  }),
+  listExperiments() {
+    const rows = Object.values(state.experiments).sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
+    return {
+      experiments: rows.map((e) => {
+        try {
+          const s = this.status(e.experiment_id);   // derived from started_at, so it stays honest
+          return { ...e, status: s.status, stage: s.stage, elapsed_seconds: s.elapsed_seconds, circuit_executions: s.circuit_executions };
+        } catch { return e; }
+      })
+    };
+  },
 
   create({ dataset_id, name }) {
     const ds = state.datasets.find((d) => d.dataset_id === dataset_id) ?? state.datasets[0];

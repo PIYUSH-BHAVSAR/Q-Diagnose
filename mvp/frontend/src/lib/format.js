@@ -59,10 +59,16 @@ export const titleize = (s) =>
 /** status → { label, kind } where kind maps to .pill.ok/.warn/.err/… */
 export const statusMeta = (status) => {
   const s = String(status ?? '').toUpperCase();
-  if (s === 'COMPLETED' || s === 'REGISTERED' || s === 'PASS') return { label: 'Completed', kind: 'ok', tone: 'ok' };
+  if (s === 'COMPLETED') return { label: 'Completed', kind: 'ok', tone: 'ok' };
+  // a dataset that merely exists is *registered*, and a validation *pass* is not a run finishing
+  if (s === 'REGISTERED') return { label: 'Registered', kind: 'ok', tone: 'ok' };
+  if (s === 'PASS' || s === 'PASSED') return { label: 'Pass', kind: 'ok', tone: 'ok' };
+  if (s === 'PASS_WITH_WARNINGS') return { label: 'Pass · warnings', kind: 'warn', tone: 'warn' };
+  if (s === 'PROFILED') return { label: 'Profiled', kind: 'ok', tone: 'ok' };
   if (s === 'FAILED' || s === 'REJECTED') return { label: 'Failed', kind: 'err', tone: 'err' };
   if (s.includes('QUANTUM')) return { label: 'Running circuits', kind: 'quantum', tone: 'quantum' };
-  if (s) return { label: titleize(s), kind: 'warn', tone: 'warn' };
+  // lower-case first: titleize('RUNNING') would otherwise print "RUNNING" next to "Completed"
+  if (s) return { label: titleize(String(s).toLowerCase()), kind: 'warn', tone: 'warn' };
   return { label: 'Unknown', kind: '', tone: 'muted' };
 };
 
@@ -75,5 +81,12 @@ export const modelLabel = (key) =>
   }[key] || titleize(key));
 
 export const isQuantumModel = (m) => String(m?.modelType ?? '').toUpperCase() === 'QUANTUM' || m?.key === 'vqc';
+
+/** 0.1 MB is useless for a 120 KB CSV — drop to KB under a megabyte */
+export const fmtSize = (mb) => {
+  if (!Number.isFinite(mb)) return '—';
+  if (mb < 1) return `${Math.max(1, Math.round(mb * 1024))} KB`;
+  return mb < 10 ? `${mb.toFixed(2)} MB` : `${mb.toFixed(1)} MB`;
+};
 
 export const safeSlice = (s, n = 64) => (s && s.length > n ? `${s.slice(0, n - 1)}…` : s || '');

@@ -113,7 +113,7 @@ body {
   font-family: var(--font-sans);
   font-size: var(--t-md);
   line-height: 1.55;
-  letter-spacing: -0.011em;
+  letter-spacing: -0.006em;   /* display sizes want tracking; 13 px text does not */
   font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -168,7 +168,7 @@ ul, ol { margin: 0; }
 .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
 .muted { color: var(--text-2); }
 .dim { color: var(--text-3); }
-.tiny { font-size: var(--t-xs); }
+.tiny { font-size: var(--t-xs); letter-spacing: 0; }
 .eyebrow {
   display: inline-flex; align-items: center; gap: 7px;
   font-size: var(--t-xs); font-weight: 650; letter-spacing: 0.08em; text-transform: uppercase;
@@ -272,7 +272,9 @@ ul, ol { margin: 0; }
 .page-head { display: flex; align-items: flex-end; gap: var(--s-5); flex-wrap: wrap; }
 .page-head > div { min-width: 0; }
 .page-title { font-size: var(--t-2xl); font-weight: 750; }
-.page-sub { color: var(--text-2); font-size: var(--t-md); margin-top: 5px; max-width: 68ch; }
+.page-sub { color: var(--text-2); font-size: var(--t-md); margin-top: 5px; max-width: 68ch;
+  letter-spacing: 0;
+}
 .page-actions { margin-left: auto; display: flex; align-items: center; gap: var(--s-2); }
 
 /* ── 4 · Surfaces ───────────────────────────────────────────────────────── */
@@ -289,7 +291,7 @@ ul, ol { margin: 0; }
   padding: 14px var(--s-5); border-bottom: 1px solid var(--line);
 }
 .card-hd h3 { font-size: var(--t-lg); font-weight: 680; }
-.card-hd .sub { font-size: var(--t-sm); color: var(--text-3); }
+.card-hd .sub { font-size: var(--t-sm); color: var(--text-3); letter-spacing: 0; }
 .card-hd-right { margin-left: auto; display: flex; align-items: center; gap: var(--s-2); }
 .card-hover { transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease); }
 .card-hover:hover { border-color: var(--line-2); transform: translateY(-1px); box-shadow: var(--sh-2); }
@@ -364,7 +366,7 @@ ul, ol { margin: 0; }
 
 /* ── 6 · Data display ───────────────────────────────────────────────────── */
 .stat { padding: var(--s-4) var(--s-5) var(--s-5); }
-.stat .k { display: flex; align-items: center; gap: 8px; font-size: var(--t-sm); color: var(--text-3); font-weight: 600; letter-spacing: -0.005em; }
+.stat .k { display: flex; align-items: center; gap: 8px; font-size: var(--t-sm); color: var(--text-3); font-weight: 600; letter-spacing: 0; }
 .stat .v { margin-top: 8px; font-family: var(--font-mono); font-size: var(--t-3xl); font-weight: 600; letter-spacing: -0.045em; line-height: 1; }
 .stat .v small { font-size: 0.42em; letter-spacing: 0.02em; color: var(--text-3); margin-left: 5px; font-weight: 600; }
 .stat .d { margin-top: 9px; font-size: var(--t-xs); color: var(--text-3); display: flex; align-items: center; gap: 6px; }
@@ -410,6 +412,9 @@ table.data td { padding: 11px var(--s-4); border-bottom: 1px solid var(--line); 
 table.data td.strong, table.data th.strong { color: var(--text); font-weight: 600; }
 table.data tbody tr { transition: background var(--dur) var(--ease); }
 table.data tbody tr:hover { background: var(--surface); }
+table.data tbody tr.clickrow { cursor: pointer; }
+table.data tbody tr.clickrow td.strong { color: var(--text); transition: color var(--dur) var(--ease); }
+table.data tbody tr.clickrow:hover td.strong { color: var(--accent); }
 table.data tbody tr:last-child td { border-bottom: 0; }
 table.data td.r, table.data th.r { text-align: right; font-variant-numeric: tabular-nums; }
 .best { color: var(--ok) !important; font-weight: 680; }

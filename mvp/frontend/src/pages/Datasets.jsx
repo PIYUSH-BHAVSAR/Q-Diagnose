@@ -4,7 +4,7 @@ import api from '@/services/api.js';
 import Icon from '@/components/Icon.jsx';
 import FileDropzone from '@/components/FileDropzone.jsx';
 import { Card, Btn, Empty, ErrorBanner, PageSkeleton, Pill, SectionHead, StatusPill } from '@/components/ui.jsx';
-import { int, ago } from '@/lib/format.js';
+import { fmtSize, int, ago } from '@/lib/format.js';
 import { toast } from '@/lib/toast.js';
 
 export default function Datasets() {
@@ -119,7 +119,12 @@ export default function Datasets() {
               </thead>
               <tbody>
                 {filtered.map((d) => (
-                  <tr key={d.id}>
+                  // the whole row is the affordance (Linear/Stripe tables do this); the
+                  // explicit link and buttons stay clickable for keyboard and mid-click
+                  <tr key={d.id} className="clickrow" onClick={(e) => {
+                    if (e.target.closest('a,button')) return;
+                    nav(`/datasets/${d.id}`);
+                  }}>
                     <td className="strong">
                       <Link to={`/datasets/${d.id}`} style={{ display: 'block' }}>
                         {d.display ?? d.filename}
@@ -128,7 +133,7 @@ export default function Datasets() {
                     </td>
                     <td className="num">{int(d.rows)}</td>
                     <td className="num">{d.featureCount ?? '—'}</td>
-                    <td className="num">{d.sizeMb ? `${d.sizeMb.toFixed(1)} MB` : '—'}</td>
+                    <td className="num">{fmtSize(d.sizeMb)}</td>
                     <td className="tiny">{ago(d.uploadedAt)}</td>
                     <td><StatusPill status={d.status} /></td>
                     <td className="r">

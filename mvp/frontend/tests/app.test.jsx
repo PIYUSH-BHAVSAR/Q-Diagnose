@@ -149,4 +149,19 @@ describe(`shell · ${SHAPE} shapes`, () => {
     expect(await screen.findByText(/does not exist/i)).toBeTruthy();
     seriousWarnings();
   });
+
+  // last on purpose: it mutates the shared mock store (one seeded run is mid-flight)
+  it('a running demo run shows progress, and Skip-to-results lands on the metrics table', async () => {
+    renderAt('/experiments/EXP-DEMO-0003');
+    expect(await screen.findByRole('heading', { name: /quantum-only feasibility/i })).toBeTruthy();
+    // mid-flight: progress UI + the demo-only escape hatch, and no results table yet
+    expect(await screen.findByRole('button', { name: /skip to results/i })).toBeTruthy();
+    expect(screen.queryByText(/Accuracy/i)).toBeNull();
+    await userEvent.click(screen.getByRole('button', { name: /skip to results/i }));
+    // after fast-forward the run is COMPLETED: real metric rows appear
+    expect((await screen.findAllByText(/^Random Forest$/i)).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Accuracy/i).length).toBeGreaterThan(0);
+    expect(screen.queryByRole('button', { name: /skip to results/i })).toBeNull();
+    seriousWarnings();
+  });
 });

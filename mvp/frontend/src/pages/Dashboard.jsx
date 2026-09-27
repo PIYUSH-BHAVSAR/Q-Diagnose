@@ -47,7 +47,8 @@ export default function Dashboard() {
   const stats = useMemo(() => {
     const done = experiments.filter((e) => e.status === 'COMPLETED');
     const running = experiments.filter((e) => !['COMPLETED', 'FAILED'].includes(e.status));
-    const circuits = Object.values(progress).reduce((a, s) => a + (s?.circuitExecutions ?? 0), 0);
+    // polled value wins; otherwise the list row's own count (live backend omits it → 0, not a guess)
+    const circuits = experiments.reduce((a, e) => a + (progress[e.id]?.circuitExecutions ?? e.circuitExecutions ?? 0), 0);
     return { datasets: datasets.length, total: experiments.length, done: done.length, running: running.length, circuits };
   }, [datasets, experiments, progress]);
 

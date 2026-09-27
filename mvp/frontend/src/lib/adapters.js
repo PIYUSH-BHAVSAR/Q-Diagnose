@@ -21,7 +21,11 @@ export function adaptDataset(d = {}) {
     display: pick(d, ['name', 'display_id', 'filename']),
     filename: d.filename ?? null,
     rows: d.rows ?? null,
-    featureCount: Array.isArray(d.columns) ? d.columns.length : pick(d, ['columns'], null),
+    // backend lists `columns` by name; the contract profile says `feature_count`
+    // (columns minus the target). Either way: never a guess, `—` when neither is present.
+    featureCount: Number.isFinite(d.feature_count) ? d.feature_count
+      : Number.isFinite(d.n_features) ? d.n_features
+      : Array.isArray(d.columns) ? d.columns.length : pick(d, ['columns'], null),
     sizeMb: d.size_mb ?? (d.file_size_bytes ? d.file_size_bytes / 1048576 : null),
     status: up(pick(d, ['status'], 'REGISTERED')),
     hasProfile: d.has_profile ?? null,
@@ -157,6 +161,53 @@ export const adaptResults = (raw = {}) => {
   const c = r?.comparison ?? {};
   const qvc = c.quantum_vs_classical ?? {};
   const ranking = c.performance_ranking ?? [];
+
+  // §4f gives per-family winners as classical_best / quantum_best; the backend's
+  // `metrics_comparison` is keyed by model name instead. Normalise to name → metrics
+  // so the verdict card can always print "quantum vs classical" numbers.
+  const clsBest = c.classical_best ?? c.best_classical_block ?? null;
+  const qBest = c.quantum_best ?? c.best_quantum_block ?? null;
+  const metricsByName = { ...(c.metrics_comparison ?? {}) };
+  for (const block of [clsBest, qBest]) {
+    const name = block?.model_name ?? block?.name;
+    if (name && block?.metrics) metricsByName[name] = { ...(metricsByName[name] ?? {}), ...block.metrics };
+  }
+  const perf = c.performance_differences ?? c.quantum_vs_classical?.metric_differences ?? {};
+  const PERF_ALIASES = {
+    accuracy: ['accuracy_delta', 'accuracy_diff', 'delta_accuracy', 'accuracy'],
+    precision: ['precision_delta', 'precision_diff', 'precision'],
+    recall: ['recall_delta', 'recall_diff', 'recall'],
+    f1: ['f1_delta', 'f1_diff', 'f1_score_delta', 'f1_score'],
+    roc_auc: ['auc_delta', 'roc_auc_delta', 'auc_diff', 'roc_auc'],
+    pr_auc: ['pr_auc_delta', 'pr_auc_diff', 'pr_auc'],
+    specificity: ['specificity_delta', 'specificity_diff', 'specificity']
+  };
+  const metricValue = (block, m) => {
+    const src = block?.metrics ?? block ?? {};
+    for (const k of [m, `${m}_score`, m === 'f1' ? 'f1_score' : m === 'roc_auc' ? 'auc' : m]) {
+      if (Number.isFinite(src[k])) return src[k];
+    }
+    return null;
+  };
+  /** quantum − classical for one metric: engine value when present, else derived (never invented) */
+  const diffOfMetric = (m) => {
+    // the engine's own quantum_vs_classical.metrics_diff wins when it exists
+    const statedObj = qvc.metrics_diff?.[m];
+    if (statedObj != null) {
+      if (Number.isFinite(statedObj.difference)) return { metric: m, ...statedObj };
+      if (Number.isFinite(statedObj)) return { metric: m, difference: statedObj, quantum_better: statedObj > 0, derivedFrom: 'engine' };
+    }
+    const q = metricValue(qBest, m);
+    const k = metricValue(clsBest, m);
+    let stated = null;
+    for (const key of PERF_ALIASES[m] ?? [`${m}_delta`]) {
+      if (Number.isFinite(perf[key])) { stated = perf[key]; break; }
+    }
+    const derived = Number.isFinite(q) && Number.isFinite(k) ? q - k : null;
+    const value = stated ?? derived;
+    if (!Number.isFinite(value)) return null;
+    return { metric: m, difference: value, quantum_better: value > 0, derivedFrom: stated == null ? 'best-model metrics' : 'engine' };
+  };
   return {
     experimentId: raw.experiment_id ?? null,
     status: up(pick(raw, ['status'], '')),
@@ -169,9 +220,13 @@ export const adaptResults = (raw = {}) => {
       bestModel: c.best_model ?? null,
       bestClassical: c.best_classical ?? c.classical_best?.model_name ?? null,
       bestQuantum: c.best_quantum ?? c.quantum_best?.model_name ?? null,
-      metricsComparison: c.metrics_comparison ?? {},
-      diff: (metric) => qvc.metrics_diff?.[metric] ?? null,
-      runtimeDiff: qvc.runtime_diff ?? null,
+      metricsComparison: metricsByName,
+      diff: diffOfMetric,
+      runtimeDiff: qvc.runtime_diff ?? {
+        classical: clsBest?.training_time_seconds ?? null,
+        quantum: qBest?.training_time_seconds ?? null,
+        ratio: c.resource_comparison?.training_time_ratio ?? null
+      },
       resourceComparison: c.resource_comparison ?? null,
       observations: c.observations ?? ranking.map(
         (row) => `${row.model} — score ${row.score}, accuracy ${row.accuracy}, ${row.training_time}s`

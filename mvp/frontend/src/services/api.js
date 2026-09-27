@@ -90,6 +90,8 @@ export const listExperiments = (filters = {}) => call(
     return rows.map((e) => ({
       id: e.experiment_id ?? e.id, datasetId: e.dataset_id ?? null, name: e.name ?? null,
       status: String(e.status ?? '').toUpperCase(), createdAt: e.created_at ?? null, completedAt: e.completed_at ?? null,
+      circuitExecutions: Number.isFinite(e.circuit_executions) ? e.circuit_executions : null,
+      elapsedSeconds: Number.isFinite(e.elapsed_seconds) ? e.elapsed_seconds : null,
       hasResults: !!(e.results && Object.keys(e.results).length)
     }));
   }
@@ -135,11 +137,20 @@ export const generateReport = (id) => call('report', () => mockBackend.generateR
 export const listReports = () => call('reports', () => ({ reports: mockBackend.listReports() }), async () => ({ reports: null }), (d) => (d.reports ?? []).map((r) => adaptReport(r)));
 export const reportDownloadUrl = (id) => (wantMock ? null : `${API_BASE}/reports/${id}/download`);
 
+/* demo-only affordance: jumps the mock timeline to COMPLETED so a presentation can show
+   results without sitting through 23 s of fake training. Never offered against a real run. */
+export const canFastForward = () => wantMock || dataMode.current === 'demo';
+export const fastForwardRun = (id) => {
+  if (!canFastForward()) return Promise.reject(new Error('A real run cannot be skipped — poll /status until COMPLETED.'));
+  mockBackend.complete(id);
+  return Promise.resolve({ experiment_id: id, status: 'COMPLETED' });
+};
+
 export const api = {
   getHealth, getConfig, listDatasets, getDataset, getProfile, validateDataset, getPlan, uploadDataset,
   listExperiments, getExperiment, createExperiment, runExperiment, getStatus, getResults,
   getExplanation, getResources, getRecommendation, getCost, getConfusion, deleteExperiment,
-  generateReport, listReports, reportDownloadUrl
+  generateReport, listReports, reportDownloadUrl, canFastForward, fastForwardRun
 };
 
 export default api;
