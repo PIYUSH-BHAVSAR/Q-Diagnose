@@ -75,28 +75,46 @@
 
 :root[data-theme='light'] {
   color-scheme: light;
-  --canvas: #f7f8fa;
+  
+  /* Backgrounds - lighter, cleaner */
+  --canvas: #f8f9fb;
   --canvas-2: #ffffff;
   --elev: #ffffff;
-  --surface: rgba(10, 12, 20, 0.03);
-  --surface-2: rgba(10, 12, 20, 0.055);
-  --surface-3: rgba(10, 12, 20, 0.09);
-  --line: rgba(10, 12, 20, 0.09);
-  --line-2: rgba(10, 12, 20, 0.16);
-  --text: #0b0d12;
-  --text-2: #525a6b;
-  --text-3: #838c9e;
+  --surface: rgba(15, 20, 35, 0.035);
+  --surface-2: rgba(15, 20, 35, 0.06);
+  --surface-3: rgba(15, 20, 35, 0.095);
+  --line: rgba(15, 20, 35, 0.1);
+  --line-2: rgba(15, 20, 35, 0.18);
+  
+  /* Text - proper contrast for light backgrounds */
+  --text: #0d0f14;
+  --text-2: #4a5568;
+  --text-3: #718096;
+  --text-inv: #ffffff;
+  
+  /* Accent colors - vibrant but readable on light */
   --cyan: #0891b2;
   --violet: #7c3aed;
   --emerald: #059669;
-  --amber: #b45309;
-  --rose: #e11d48;
+  --amber: #d97706;
+  --rose: #dc2626;
+  --accent: var(--cyan);
+  
+  /* Accent states */
   --on-accent: #ffffff;
-  --glow-accent: rgba(8, 145, 178, 0.12);
-  --sh-1: 0 1px 2px rgba(11, 13, 18, 0.06);
-  --sh-2: 0 12px 30px -14px rgba(11, 13, 18, 0.18);
-  --sh-3: 0 24px 60px -20px rgba(11, 13, 18, 0.22);
-  --ring: 0 0 0 2px var(--canvas), 0 0 0 4px color-mix(in srgb, var(--accent) 55%, transparent);
+  --glow-accent: rgba(8, 145, 178, 0.15);
+  
+  /* Status colors - consistent with dark mode */
+  --ok: var(--emerald);
+  --warn: var(--amber);
+  --err: var(--rose);
+  --quantum: var(--violet);
+  
+  /* Shadows - softer for light mode */
+  --sh-1: 0 1px 3px rgba(15, 20, 35, 0.08);
+  --sh-2: 0 8px 24px -6px rgba(15, 20, 35, 0.12);
+  --sh-3: 0 20px 50px -12px rgba(15, 20, 35, 0.18);
+  --ring: 0 0 0 2px var(--canvas), 0 0 0 4px color-mix(in srgb, var(--accent) 50%, transparent);
 }
 
 /* ── 2 · Base ───────────────────────────────────────────────────────────── */
@@ -809,3 +827,211 @@ table.data tbody tr.quantum-row td.m::after { background: linear-gradient(90deg,
   .card-hover::after { display: none; }
 }
 @media (max-height: 560px) { .ambient .c, .ambient .d { display: none; } }
+
+
+/* ── Light Mode Adjustments ─────────────────────────────────────────────── */
+:root[data-theme='light'] body::before {
+  /* Softer gradients for light mode */
+  background:
+    radial-gradient(880px 420px at 12% -6%, rgba(8, 145, 178, 0.08), transparent 62%),
+    radial-gradient(720px 400px at 92% 4%, rgba(124, 58, 237, 0.06), transparent 60%),
+    linear-gradient(180deg, var(--canvas-2), var(--canvas) 42%);
+  opacity: 0.85;
+}
+
+:root[data-theme='light'] body::after {
+  /* Lighter grid for light mode */
+  opacity: 0.35;
+}
+
+:root[data-theme='light'] .ambient .a {
+  background: radial-gradient(circle, rgba(8, 145, 178, 0.18), transparent 66%);
+  opacity: 0.5;
+}
+
+:root[data-theme='light'] .ambient .b {
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.16), transparent 66%);
+  opacity: 0.5;
+}
+
+:root[data-theme='light'] .ambient .c {
+  background: radial-gradient(circle, rgba(5, 150, 105, 0.12), transparent 68%);
+  opacity: 0.22;
+}
+
+:root[data-theme='light'] .ambient .d {
+  background: radial-gradient(circle, rgba(5, 150, 105, 0.14), transparent 70%);
+  opacity: 0.28;
+}
+
+:root[data-theme='light'] .ambient .horizon {
+  background: linear-gradient(90deg, transparent, rgba(8, 145, 178, 0.35) 30%, rgba(124, 58, 237, 0.35) 62%, transparent);
+  opacity: 0.7;
+}
+
+/* Card and surface adjustments for light mode */
+:root[data-theme='light'] .card {
+  border-color: rgba(15, 20, 35, 0.12);
+  box-shadow: 
+    0 1px 3px rgba(15, 20, 35, 0.05),
+    0 8px 16px -8px rgba(15, 20, 35, 0.08);
+}
+
+:root[data-theme='light'] .card-hover:hover {
+  border-color: rgba(8, 145, 178, 0.25);
+  box-shadow: 
+    0 2px 8px rgba(15, 20, 35, 0.08),
+    0 12px 24px -8px rgba(8, 145, 178, 0.15);
+}
+
+:root[data-theme='light'] .nav {
+  background: rgba(255, 255, 255, 0.85);
+  border-right-color: rgba(15, 20, 35, 0.12);
+  backdrop-filter: blur(20px) saturate(140%);
+}
+
+:root[data-theme='light'] .brand-mark {
+  box-shadow: 
+    0 4px 16px -4px rgba(8, 145, 178, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+:root[data-theme='light'] .badge {
+  background: rgba(15, 20, 35, 0.06);
+  border-color: rgba(15, 20, 35, 0.1);
+}
+
+:root[data-theme='light'] .badge-live {
+  background: linear-gradient(135deg, rgba(8, 145, 178, 0.12), rgba(124, 58, 237, 0.08));
+  border-color: rgba(8, 145, 178, 0.2);
+  box-shadow: 
+    inset 0 0 0 1px rgba(8, 145, 178, 0.1),
+    0 4px 12px -4px rgba(8, 145, 178, 0.2);
+}
+
+:root[data-theme='light'] .pill {
+  background: rgba(15, 20, 35, 0.08);
+}
+
+:root[data-theme='light'] .pill.ok {
+  background: rgba(5, 150, 105, 0.12);
+  color: #047857;
+}
+
+:root[data-theme='light'] .pill.warn {
+  background: rgba(217, 119, 6, 0.12);
+  color: #b45309;
+}
+
+:root[data-theme='light'] .pill.err {
+  background: rgba(220, 38, 38, 0.12);
+  color: #dc2626;
+}
+
+:root[data-theme='light'] .pill.quantum {
+  background: rgba(124, 58, 237, 0.12);
+  color: #6d28d9;
+}
+
+/* Button adjustments for light mode */
+:root[data-theme='light'] .btn-primary {
+  background: linear-gradient(135deg, #0891b2, #0e7490);
+  box-shadow: 
+    0 2px 8px -2px rgba(8, 145, 178, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+:root[data-theme='light'] .btn-primary:hover {
+  background: linear-gradient(135deg, #0e7490, #155e75);
+  box-shadow: 
+    0 4px 16px -4px rgba(8, 145, 178, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+:root[data-theme='light'] .btn-quiet:hover {
+  background: rgba(15, 20, 35, 0.06);
+}
+
+/* Input and form adjustments */
+:root[data-theme='light'] input[type="text"],
+:root[data-theme='light'] input[type="email"],
+:root[data-theme='light'] input[type="password"],
+:root[data-theme='light'] input[type="number"],
+:root[data-theme='light'] select,
+:root[data-theme='light'] textarea {
+  background: var(--elev);
+  border-color: rgba(15, 20, 35, 0.15);
+}
+
+:root[data-theme='light'] input:focus,
+:root[data-theme='light'] select:focus,
+:root[data-theme='light'] textarea:focus {
+  border-color: rgba(8, 145, 178, 0.35);
+  box-shadow: 
+    0 0 0 3px rgba(8, 145, 178, 0.12),
+    0 1px 2px rgba(15, 20, 35, 0.05);
+}
+
+/* Status indicators */
+:root[data-theme='light'] .pulse {
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.25);
+}
+
+:root[data-theme='light'] .pulse.off {
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.25);
+}
+
+/* Charts and visualizations */
+:root[data-theme='light'] .chart-bar {
+  background: linear-gradient(90deg, rgba(8, 145, 178, 0.8), rgba(8, 145, 178, 0.5));
+}
+
+:root[data-theme='light'] .confusion-cell {
+  border-color: rgba(15, 20, 35, 0.12);
+}
+
+/* Scrollbar for light mode */
+:root[data-theme='light'] ::-webkit-scrollbar-thumb {
+  background: rgba(15, 20, 35, 0.15);
+  background-clip: content-box;
+}
+
+:root[data-theme='light'] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 20, 35, 0.25);
+  background-clip: content-box;
+}
+
+/* Selection color for light mode */
+:root[data-theme='light'] *::selection {
+  background: rgba(8, 145, 178, 0.25);
+}
+
+/* Code blocks and monospace for light mode */
+:root[data-theme='light'] code,
+:root[data-theme='light'] pre {
+  background: rgba(15, 20, 35, 0.05);
+  border-color: rgba(15, 20, 35, 0.12);
+}
+
+/* Modal overlays */
+:root[data-theme='light'] .modal-overlay {
+  background: rgba(15, 20, 35, 0.35);
+  backdrop-filter: blur(8px);
+}
+
+/* Tooltips */
+:root[data-theme='light'] [data-tooltip]::after {
+  background: var(--text);
+  color: var(--canvas);
+  box-shadow: 0 4px 12px -2px rgba(15, 20, 35, 0.2);
+}
+
+/* Loading skeletons */
+:root[data-theme='light'] .skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(15, 20, 35, 0.06) 25%,
+    rgba(15, 20, 35, 0.1) 50%,
+    rgba(15, 20, 35, 0.06) 75%
+  );
+}
