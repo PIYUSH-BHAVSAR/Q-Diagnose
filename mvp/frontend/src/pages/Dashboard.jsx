@@ -69,7 +69,6 @@ export default function Dashboard() {
       <section className="hero" ref={glow}>
         <div>
           <div className="row" style={{ gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
-            <span className="badge-live"><i />Smart India Hackathon 2026</span>
             <span className="eyebrow"><i className="dot" />Hybrid quantum-classical benchmark engine</span>
           </div>
           <h1>

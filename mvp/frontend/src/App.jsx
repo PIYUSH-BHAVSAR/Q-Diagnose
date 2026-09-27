@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useCallback, useEffect, useState } from 'react';
+import React, { Suspense, lazy, useCallback, useEffect, useState, useMemo } from 'react';
 import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import Icon from '@/components/Icon.jsx';
 import CommandPalette from '@/components/CommandPalette.jsx';

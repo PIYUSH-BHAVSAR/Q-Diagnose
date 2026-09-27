@@ -100,11 +100,19 @@
 }
 
 /* ── 2 · Base ───────────────────────────────────────────────────────────── */
-* { box-sizing: border-box; }
+* { 
+  box-sizing: border-box; 
+  /* Performance optimizations */
+  -webkit-tap-highlight-color: transparent;
+}
 *::selection { background: color-mix(in srgb, var(--accent) 32%, transparent); }
 
 html, body, #root { height: 100%; }
-html { -webkit-text-size-adjust: 100%; }
+html { 
+  -webkit-text-size-adjust: 100%; 
+  /* GPU acceleration for smooth scrolling */
+  scroll-behavior: smooth;
+}
 
 body {
   margin: 0;
@@ -113,11 +121,14 @@ body {
   font-family: var(--font-sans);
   font-size: var(--t-md);
   line-height: 1.55;
-  letter-spacing: -0.006em;   /* display sizes want tracking; 13 px text does not */
+  letter-spacing: -0.006em;
   font-variant-numeric: tabular-nums;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  /* Performance: use GPU for compositing */
+  will-change: scroll-position;
+  transform: translateZ(0);
 }
 
 /* layered depth: two soft radial fields + a fine grid, all CSS-only */
@@ -131,6 +142,9 @@ body::before {
     radial-gradient(880px 420px at 12% -6%, var(--glow-accent), transparent 62%),
     radial-gradient(720px 400px at 92% 4%, color-mix(in srgb, var(--quantum) 13%, transparent), transparent 60%),
     linear-gradient(180deg, var(--canvas-2), var(--canvas) 42%);
+  /* GPU layer */
+  will-change: opacity;
+  transform: translateZ(0);
 }
 body::after {
   content: '';
@@ -143,6 +157,9 @@ body::after {
     linear-gradient(90deg, var(--line) 1px, transparent 1px);
   background-size: 96px 96px;
   mask-image: radial-gradient(circle at 50% 0%, #000 0%, transparent 68%);
+  /* GPU layer */
+  will-change: opacity;
+  transform: translateZ(0);
 }
 
 h1, h2, h3, h4 { margin: 0; font-weight: 700; letter-spacing: -0.03em; line-height: 1.12; }

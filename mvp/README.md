@@ -183,7 +183,7 @@ quant-warriors-qml/
 
 ## Team
 
-**Quant Warriors** - SIH 2026
+**Quant Warriors**
 
 ## License
 

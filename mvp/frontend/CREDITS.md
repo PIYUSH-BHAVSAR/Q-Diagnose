@@ -29,4 +29,4 @@ September 2026
 - Custom CSS (no UI library)
 
 ---
-*This frontend was built as part of the Q-Diagnose quantum-classical ML benchmarking platform for Smart India Hackathon 2026.*
+*This frontend was built as part of the Q-Diagnose quantum-classical ML benchmarking platform.*
