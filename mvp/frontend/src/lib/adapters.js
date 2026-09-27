@@ -41,7 +41,22 @@ export const adaptProfile = (p = {}) => {
     datasetId: p.dataset_id,
     name: pick(p, ['name', 'dataset_name'], p.dataset_id ?? 'Dataset'),
     rows: p.rows ?? p.dimensions?.rows ?? 0,
-    featureCount: columnsArr.length || p.dimensions?.columns || 0,
+    // a profile lists every column including the label; a "features" count excludes it.
+    // Both are exposed so the header can say 33 columns while the stat says 32 features
+    // (which is what GET /api/datasets reports, and what numeric + categorical sum to).
+    columnCount: (() => {
+      const all = columnsArr.length || p.dimensions?.columns || 0;
+      return Number.isFinite(p.n_columns) ? p.n_columns : all;
+    })(),
+    featureCount: (() => {
+      if (Number.isFinite(p.n_features)) return p.n_features;
+      const all = columnsArr.length || p.dimensions?.columns || 0;
+      const tgt = p.recommended_target ?? p.target?.candidate ?? null;
+      const targetIncluded = columnsArr.length
+        ? !!tgt && columnsArr.some((c) => c.name === tgt)
+        : !!tgt;
+      return Math.max(0, all - (targetIncluded ? 1 : 0));
+    })(),
     numerical: p.numerical_columns_count ?? p.features?.numerical ?? 0,
     categorical: p.categorical_columns_count ?? p.features?.categorical ?? 0,
     target: p.recommended_target ?? p.target?.candidate ?? null,

@@ -28,7 +28,7 @@ export default function DatasetDetail() {
       <SectionHead
         eyebrow={profile ? `Phase 2 · profile · ${profile.datasetId ?? id}` : 'Phase 2 · profile'}
         title={profile?.name ?? id}
-        sub={profile ? `${int(profile.rows)} samples · ${profile.featureCount} columns · ${profile.numerical} numeric · ${profile.categorical} categorical · loaded ${ago(profile.profiledAt ?? null)}` : 'Reading profile from the data engine'}
+        sub={profile ? `${int(profile.rows)} samples · ${profile.columnCount} columns · ${profile.numerical} numeric · ${profile.categorical} categorical · profiled ${ago(profile.profiledAt ?? null)}` : 'Reading profile from the data engine'}
         actions={
           <>
             <Btn icon="refresh" kind="quiet" onClick={load}>Re-profile</Btn>

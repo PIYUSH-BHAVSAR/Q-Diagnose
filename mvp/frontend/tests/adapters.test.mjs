@@ -105,9 +105,16 @@ const p1 = adaptProfile(R('mocks/breast_cancer/dataset_profile.json'));
 ok('profile/mock: rows 569 from dimensions', p1.rows === 569, p1.rows);
 ok('profile/mock: target from target.candidate', p1.target === 'diagnosis', p1.target);
 ok('profile/mock: missing.total', p1.missing.total === 0 && p1.missing.pct === 0, p1.missing);
+ok('profile/mock: featureCount excludes the target (33 cols → 32 features)', p1.featureCount === 32 && p1.columnCount === 33, [p1.featureCount, p1.columnCount]);
 const p2 = adaptProfile(real.results.dataset_profile); // flat, and has class_imbalance_ratio in the stored object
 ok('profile/backend: rows 303-ish numeric', typeof p2.rows === 'number' && p2.rows > 0, p2.rows);
-ok('profile/backend: featureCount from columns[]', p2.featureCount === (real.results.dataset_profile.columns?.length ?? 0), p2.featureCount);
+{
+  const rawCols = real.results.dataset_profile.columns ?? [];
+  const tgt = real.results.dataset_profile.recommended_target;
+  const expectFeat = rawCols.length - (rawCols.some((c) => c.name === tgt) ? 1 : 0);
+  ok(`profile/backend: columns[] (${rawCols.length}) minus target '${tgt}' → featureCount`,
+     p2.featureCount === expectFeat && p2.columnCount === rawCols.length, [p2.featureCount, expectFeat, p2.columnCount]);
+}
 ok('profile/backend: columns[] parsed to rows', p2.columns.length > 0 && p2.columns[0].name !== undefined, p2.columns[0]);
 ok('profile/backend: imbalanceRatio present in stored profile', p2.imbalanceRatio !== undefined, p2.imbalanceRatio);
 ok('profile/backend: name field used (not dataset_name)', typeof p2.name === 'string' && p2.name.length > 0, p2.name);
