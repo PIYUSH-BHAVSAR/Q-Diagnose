@@ -25,7 +25,7 @@ beforeAll(() => {
 afterEach(() => { consoleErrors = []; });
 afterAll(() => { console.error = realError; });
 
-const renderAt = (path) => render(<MemoryRouter initialEntries={[path]}><App /></MemoryRouter>);
+const renderAt = (path) => render(<MemoryRouter initialEntries={[path]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}><App /></MemoryRouter>);
 
 const seriousWarnings = () => {
   const bad = consoleErrors.filter((m) => /unique "key"|unknown prop|cannot be given refs|validateDOMNesting|each child in a list/i.test(m));
@@ -125,13 +125,20 @@ describe(`shell · ${SHAPE} shapes`, () => {
     seriousWarnings();
   });
 
+
   it('⌘K palette opens, filters and jumps', async () => {
     renderAt('/');
     await screen.findByText(/measured on clinical tables/i);
-    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true }));
+    await userEvent.keyboard('{Meta>}k{/Meta}');
     const box = await screen.findByPlaceholderText(/Jump to a page/i);
     await userEvent.type(box, 'expe');
-    expect(screen.getAllByRole('option').length).toBeGreaterThan(0);
+    const options = screen.getAllByRole('option');
+    expect(options.length).toBeGreaterThan(0);
+    // the palette must actually navigate, not merely close
+    await userEvent.click(options[0]);
+    expect(await screen.findByRole('heading', { name: /experiments/i })).toBeTruthy();
+    await userEvent.keyboard('{Meta>}k{/Meta}');
+    await screen.findByPlaceholderText(/Jump to a page/i);
     await userEvent.keyboard('{Escape}');
     await waitFor(() => expect(screen.queryByLabelText('Search')).toBeNull());
     seriousWarnings();
