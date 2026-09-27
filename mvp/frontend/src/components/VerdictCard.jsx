@@ -54,7 +54,7 @@ export default function VerdictCard({ recommendation, comparison, status }) {
               const cls = comparison?.metricsComparison?.[comparison.bestClassical]?.[m];
               const q = comparison?.metricsComparison?.[comparison.bestQuantum]?.[m === 'roc_auc' ? 'roc_auc' : m];
               return (
-                <div key={m} style={{ padding: '12px 14px', border: '1px solid var(--line)', borderRadius: 'var(--r)', background: 'var(--surface)' }}>
+                <div key={m} className="cell" style={{ padding: '12px 14px', border: '1px solid var(--line)', borderRadius: 'var(--r)', background: 'var(--surface)' }}>
                   <div className="tiny dim">{titleize(m)} · quantum − classical</div>
                   <div className="num" style={{ fontSize: 'var(--t-xl)', marginTop: 4, color: d?.quantum_better ? 'var(--ok)' : 'var(--err)' }}>
                     {d ? `${d.difference > 0 ? '+' : '−'}${Math.abs(d.difference).toFixed(4)}` : '—'}
@@ -63,7 +63,7 @@ export default function VerdictCard({ recommendation, comparison, status }) {
                 </div>
               );
             })}
-            <div style={{ padding: '12px 14px', border: '1px solid var(--line)', borderRadius: 'var(--r)', background: 'var(--surface)' }}>
+            <div className="cell" style={{ padding: '12px 14px', border: '1px solid var(--line)', borderRadius: 'var(--r)', background: 'var(--surface)' }}>
               <div className="tiny dim">Runtime ratio</div>
               <div className="num" style={{ fontSize: 'var(--t-xl)', marginTop: 4, color: 'var(--quantum)' }}>
                 {comparison?.runtimeDiff?.ratio ? `${comparison.runtimeDiff.ratio.toFixed(1)}×` : '—'}

@@ -71,6 +71,15 @@ const PROBE = () => {
     }
     return false;
   };
+  // Purely decorative backdrops — an aria-hidden layer that takes no input and clips its own
+  // overflow (the drifting ambient lights) — may paint past the viewport by design. No text and
+  // no control ever lives in there, so they are exempt from the *viewport* test only.
+  const inDecorLayer = (el) => {
+    for (let n = el; n && n !== document.body; n = n.parentElement) {
+      if (n.getAttribute?.('aria-hidden') === 'true' && getComputedStyle(n).pointerEvents === 'none') return true;
+    }
+    return false;
+  };
   const clipped = [];
   const overflowing = [];
   const tiny = [];
@@ -86,10 +95,10 @@ const PROBE = () => {
     // 1. paints outside the viewport (and is not inside an intentional scroller)
     // a visually-hidden element (skip links park at left:-9999px until focused) is not overflow
     const parkedOffscreen = cs.position === 'absolute' && r.left <= -100;
-    if (r.right > vw + 1.5 && !inScroller(el) && !parkedOffscreen) {
+    if (r.right > vw + 1.5 && !inScroller(el) && !parkedOffscreen && !inDecorLayer(el)) {
       overflowing.push({ what: esc(el), right: Math.round(r.right), w: Math.round(r.width) });
     }
-    // 2. text cut off with no ellipsis
+    // 2. text cut off with no ellipsis (decorative layers hold no text, so still checked)
     if (r.width > 8 && el.scrollWidth > el.clientWidth + 2 && !inScroller(el)) {
       const noEllipsis = !/ellipsis|clip/.test(cs.textOverflow) && cs.whiteSpace !== 'nowrap';
       if (noEllipsis && el.children.length === 0 && el.textContent.trim().length > 2) {

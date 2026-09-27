@@ -112,10 +112,12 @@ export default function ExperimentDetail() {
         {running && <span className="tiny dim">Results unlock when the executor reaches <span className="mono">COMPLETED</span>.</span>}
       </div>
 
+      <div className="tab-panel" key={tab}>
       {tab === 'progress' && <ProgressTab status={status} running={running} exp={exp} onRun={run} />}
       {tab === 'results' && (completed ? <ResultsTab results={results} recommendation={recommendation} id={id} /> : <NotReady what="results" running={running} />)}
       {tab === 'explain' && (completed ? <ExplainTab explanation={explanation} results={results} /> : <NotReady what="explanations" running={running} />)}
       {tab === 'cost' && <CostTab cost={cost} resources={resources} results={results} status={status} />}
+      </div>
 
       <Disclaimer />
     </>

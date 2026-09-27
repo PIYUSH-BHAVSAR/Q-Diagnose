@@ -85,6 +85,7 @@ export default function Datasets() {
               <Btn kind="primary" icon={busy ? 'refresh' : 'upload'} onClick={upload} disabled={!file || busy} style={{ width: '100%' }}>
                 {busy ? 'Uploading and analysing…' : 'Upload & profile'}
               </Btn>
+              <div className="eyebrow" style={{ marginBottom: -4 }}>Biomedical dataset requirements</div>
               <ul className="checks" style={{ marginTop: 4 }}>
                 {[
                   ['UTF-8 CSV with one header row', true],

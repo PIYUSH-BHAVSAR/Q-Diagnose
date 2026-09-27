@@ -23,7 +23,7 @@ export function useExperiment(id) {
 
   const loadCompleted = useCallback(async (experimentId, comparisonHint) => {
     const [results, explanation, resources, cost, recommendation] = await Promise.all([
-      api.getResults(experimentId).catch(() => null),
+      api.loadResults(experimentId).catch(() => null),   // /results, with the legacy /metrics + /comparison fallback
       api.getExplanation(experimentId).catch(() => null),
       api.getResources(experimentId).catch(() => null),
       api.getCost(experimentId).catch(() => null),

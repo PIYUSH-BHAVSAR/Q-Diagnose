@@ -114,6 +114,39 @@ export const getStatus = (id) => call('status', () => mockBackend.status(id), ()
 
 export const getResults = (id) => call('results', () => mockBackend.results(id), () => http.get(`/experiments/${id}/results`).then((r) => r.data), adaptResults);
 
+/* Two routes the deployed backend also serves (they are what the first frontend on main called)
+   are wired as a *fallback*, not a primary source: if /results answers but carries no model rows,
+   the metric table and verdict still get real numbers instead of an empty state. Mock fixtures
+   have no such routes, so nothing changes in demo mode. */
+export const getMetrics = (id) => call('legacyMetrics', () => null, () => http.get(`/experiments/${id}/metrics`).then((r) => r.data?.metrics ?? r.data), passthrough);
+export const getComparison = (id) => call('legacyComparison', () => null, () => http.get(`/experiments/${id}/comparison`).then((r) => r.data), passthrough);
+
+export const loadResults = async (id) => {
+  const results = await getResults(id);
+  if (results && Object.keys(results.models ?? {}).length) return results;
+  const [metrics, comparison] = await Promise.all([
+    getMetrics(id).catch(() => null),
+    getComparison(id).catch(() => null)
+  ]);
+  if (!metrics || typeof metrics !== 'object' || !Object.keys(metrics).length) return results;
+  const models = {};
+  for (const [name, m] of Object.entries(metrics)) {
+    models[name] = { metrics: m?.metrics ?? m, resource_usage: m?.resource_usage ?? m?.resources ?? {} };
+  }
+  // /results carried nothing, so for the numbers the legacy pair is the source of truth;
+  // only the identity/enrichment fields of the primary response are kept where they exist.
+  const base = results ?? {};
+  const fallback = adaptResults({ models, comparison });
+  return {
+    ...fallback,
+    experimentId: base.experimentId ?? fallback.experimentId,
+    status: base.status || fallback.status,
+    ranking: (fallback.ranking && fallback.ranking.length ? fallback.ranking : base.ranking) ?? [],
+    preprocessing: fallback.preprocessing ?? base.preprocessing ?? null,
+    datasetProfile: fallback.datasetProfile ?? base.datasetProfile ?? null
+  };
+};
+
 export const getExplanation = (id) => call('explanation', () => mockBackend.explanation(id), () => http.get(`/experiments/${id}/explanation`).then((r) => r.data), adaptExplanation);
 
 export const getResources = (id) => call('resources', () => mockBackend.resources(id), () => http.get(`/experiments/${id}/resources`).then((r) => r.data), adaptResources);
@@ -148,8 +181,8 @@ export const fastForwardRun = (id) => {
 
 export const api = {
   getHealth, getConfig, listDatasets, getDataset, getProfile, validateDataset, getPlan, uploadDataset,
-  listExperiments, getExperiment, createExperiment, runExperiment, getStatus, getResults,
-  getExplanation, getResources, getRecommendation, getCost, getConfusion, deleteExperiment,
+  listExperiments, getExperiment, createExperiment, runExperiment, getStatus, getResults, loadResults,
+  getMetrics, getComparison, getExplanation, getResources, getRecommendation, getCost, getConfusion, deleteExperiment,
   generateReport, listReports, reportDownloadUrl, canFastForward, fastForwardRun
 };
 

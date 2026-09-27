@@ -13,7 +13,10 @@ const PIPELINE = [
   ['compare', 'Benchmark & recommend']
 ];
 
+import { useGlow } from '@/hooks/useGlow.js';
+
 export default function Dashboard() {
+  const glow = useGlow();
   const [loading, setLoading] = useState(true);
   const [datasets, setDatasets] = useState([]);
   const [experiments, setExperiments] = useState([]);
@@ -49,16 +52,26 @@ export default function Dashboard() {
     const running = experiments.filter((e) => !['COMPLETED', 'FAILED'].includes(e.status));
     // polled value wins; otherwise the list row's own count (live backend omits it → 0, not a guess)
     const circuits = experiments.reduce((a, e) => a + (progress[e.id]?.circuitExecutions ?? e.circuitExecutions ?? 0), 0);
-    return { datasets: datasets.length, total: experiments.length, done: done.length, running: running.length, circuits };
+    // the KPI row must not repeat the hero, so these measure the *queue*, not the totals
+    const failed = experiments.filter((e) => e.status === 'FAILED').length;
+    const idle = datasets.filter((d) => !experiments.some((e) => e.datasetId === d.id)).length;
+    const queued = running.filter((e) => ['QUEUED', 'CREATED', 'PENDING', 'VALIDATING', 'CREATING', 'PREPROCESSING', 'PROFILING'].includes(String(progress[e.id]?.stage || e.status).toUpperCase())).length;
+    return {
+      datasets: datasets.length, total: experiments.length, done: done.length, running: running.length, circuits,
+      failed, idle, queued, avgCircuits: done.length ? Math.round(circuits / done.length) : 0,
+    };
   }, [datasets, experiments, progress]);
 
   if (loading) return <PageSkeleton rows={3} />;
 
   return (
     <>
-      <section className="hero">
+      <section className="hero" ref={glow}>
         <div>
-          <div className="eyebrow" style={{ marginBottom: 16 }}><i className="dot" />Hybrid quantum-classical benchmark engine</div>
+          <div className="row" style={{ gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
+            <span className="badge-live"><i />Smart India Hackathon 2026</span>
+            <span className="eyebrow"><i className="dot" />Hybrid quantum-classical benchmark engine</span>
+          </div>
           <h1>
             Quantum vs classical,<br />
             <span className="grad-text">measured on clinical tables.</span>
@@ -75,11 +88,17 @@ export default function Dashboard() {
               or press <span className="kbd">⌘K</span>
             </span>
           </div>
-          <div className="row row-wrap" style={{ gap: 22, marginTop: 26, paddingTop: 20, borderTop: '1px solid var(--line)' }}>
+          <div className="hero-stack">
+            {['FastAPI + PennyLane', 'leak-safe stratified 80/20', 'SHAP explanations', 'uncalibrated scores, labelled as such'].map((t) => (
+              <span key={t} className="pill">{t}</span>
+            ))}
+          </div>
+
+          <div className="hero-stats">
             {[['Datasets', stats.datasets], ['Experiments', stats.total], ['Completed', stats.done], ['Circuits executed', stats.circuits]].map(([k, v]) => (
               <div key={k}>
-                <div className="tiny dim" style={{ letterSpacing: '0.05em', textTransform: 'uppercase', fontWeight: 650 }}>{k}</div>
-                <div className="num" style={{ fontSize: 'var(--t-xl)', fontWeight: 650, marginTop: 2 }}><CountUp value={v} format={(x) => int(Math.round(x))} /></div>
+                <div className="k">{k}</div>
+                <div className="v"><CountUp value={v} format={(x) => int(Math.round(x))} /></div>
               </div>
             ))}
           </div>
@@ -89,10 +108,10 @@ export default function Dashboard() {
       </section>
 
       <div className="grid g-4">
-        <StatCard icon="database" label="Registered datasets" value={stats.datasets} hint="CSV ingestor · 100 MB limit" />
-        <StatCard icon="flask" label="Experiments" value={stats.total} hint="classical + quantum arms" tone="var(--violet)" />
-        <StatCard icon="check" label="Completed runs" value={stats.done} hint="results + report available" tone="var(--emerald)" />
-        <StatCard icon="clock" label="In flight" value={stats.running} hint={stats.running ? 'polling every 2s' : 'nothing queued'} tone={stats.running ? 'var(--amber)' : 'var(--text)'} />
+        <StatCard icon="clock" label="In flight" value={stats.running} hint={stats.running ? `polling every 2s · ${stats.queued} not started yet` : 'nothing running'} tone={stats.running ? 'var(--amber)' : 'var(--text)'} />
+        <StatCard icon="database" label="Datasets without a run" value={stats.idle} hint={stats.idle ? 'ready to benchmark' : 'every dataset has been used'} tone="var(--cyan)" />
+        <StatCard icon="check" label="Reports ready" value={stats.done} hint="results + explanation attached" tone="var(--emerald)" />
+        <StatCard icon="alert" label="Needs attention" value={stats.failed} hint={stats.failed ? 'runs that errored' : 'no failures — clean board'} tone={stats.failed ? 'var(--rose)' : 'var(--text)'} />
       </div>
 
       <div className="grid g-side">
@@ -112,7 +131,7 @@ export default function Dashboard() {
               {experiments.slice(0, 5).map((e) => {
                 const st = progress[e.id];
                 return (
-                  <li key={e.id}>
+                  <li key={e.id} className={st && !st.isCompleted && !st.isFailed ? 'is-live' : undefined}>
                     <Link to={`/experiments/${e.id}`} className="row" style={{ gap: 14, minWidth: 0, flex: 1 }}>
                       <span className="brand-mark" style={{ width: 26, height: 26, borderRadius: 8 }}>
                         <Icon name={e.status === 'COMPLETED' ? 'check' : 'atom'} size={13} />

@@ -54,7 +54,7 @@ export const METRIC_COLUMNS = [
   { key: 'recall',      label: 'Recall',      src: ['recall'] },
   { key: 'specificity', label: 'Specificity', src: ['specificity'] },
   { key: 'f1',          label: 'F1 Score',    src: ['f1_score', 'f1'] },
-  { key: 'roc_auc',     label: 'ROC-AUC',     src: ['roc_auc'] },
+  { key: 'roc_auc',     label: 'ROC-AUC',     src: ['roc_auc', 'auc', 'roc_auc_score'] },   // legacy /metrics says "auc" 
   { key: 'pr_auc',      label: 'PR-AUC',      src: ['pr_auc', 'average_precision'] } // ⚠️ absent in both today → renders '—'
 ];
 

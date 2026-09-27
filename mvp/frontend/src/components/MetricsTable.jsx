@@ -60,7 +60,7 @@ export default function MetricsTable({ results, highlight = true }) {
           {sorted.map((m) => {
             const quantum = isQuantumModel(m);
             return (
-              <tr key={m.key} style={quantum ? { background: 'color-mix(in srgb, var(--quantum) 6%, transparent)' } : undefined}>
+              <tr key={m.key} className={quantum ? 'quantum-row' : ''} style={quantum ? { background: 'color-mix(in srgb, var(--quantum) 6%, transparent)' } : undefined}>
                 <td className="strong">
                   <span className="row" style={{ gap: 8 }}>
                     <Icon name={quantum ? 'atom' : 'cpu'} size={14} style={{ color: quantum ? 'var(--quantum)' : 'var(--text-3)' }} />
@@ -71,7 +71,14 @@ export default function MetricsTable({ results, highlight = true }) {
                 {METRIC_COLUMNS.map((c) => {
                   const v = m.metrics?.[c.key];
                   const isBest = highlight && Number.isFinite(v) && best[c.key] != null && Math.abs(v - best[c.key]) < 1e-9;
-                  return <td key={c.key} className={`num r ${isBest ? 'best' : ''}`}>{score(v)}</td>;
+                  // --v drives the micro-bar under the number (CSS 9.4); only 0–1 metrics get one,
+                  // so a missing value never draws a bar out of thin air
+                  const bar = Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : 0;
+                  return (
+                    <td key={c.key} className={`num r m ${isBest ? 'best' : ''}`} style={{ '--v': bar }}>
+                      {score(v)}
+                    </td>
+                  );
                 })}
                 <td className="num r">{Number.isFinite(m.resources?.trainingTime) ? dur(m.resources.trainingTime) : '—'}</td>
               </tr>

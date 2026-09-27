@@ -38,7 +38,10 @@ describe(`shell · ${SHAPE} shapes`, () => {
   it('dashboard: hero, live KPIs and the registered demo datasets', async () => {
     renderAt('/');
     expect(await screen.findByText(/measured on clinical tables/i)).toBeTruthy();
-    expect(await screen.findByText('Registered datasets')).toBeTruthy();
+    // hero counts totals, the card row counts the queue — assert one of each, plus the SIH chip
+    expect(await screen.findByText('Circuits executed')).toBeTruthy();
+    expect(await screen.findByText('Datasets without a run')).toBeTruthy();
+    expect(await screen.findByText(/Smart India Hackathon 2026/i)).toBeTruthy();
     expect(await screen.findByText('Breast Cancer Wisconsin')).toBeTruthy();
     expect(screen.getByText(/Hybrid quantum-classical benchmark engine/i)).toBeTruthy();
     expect(screen.getByLabelText('Primary')).toBeTruthy();          // nav landmark

@@ -86,6 +86,9 @@ export default function App() {
   return (
     <>
       <a className="skip" href="#main">Skip to content</a>
+      <div className="ambient" aria-hidden="true">
+        <i className="a" /><i className="b" /><i className="c" /><i className="d" /><span className="horizon" />
+      </div>
       <div className="shell">
         <aside className="nav" aria-label="Primary">
           <Link to="/" className="brand">
