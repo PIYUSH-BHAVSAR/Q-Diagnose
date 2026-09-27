@@ -30,6 +30,9 @@ function useTheme() {
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem('qw.theme', theme);
+    // keep the browser chrome / OS accent strip in sync with the canvas
+    const meta = document.querySelector('meta[name=theme-color]');
+    if (meta) meta.setAttribute('content', theme === 'light' ? '#f7f8fa' : '#06070a');
   }, [theme]);
   return [theme, () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))];
 }
