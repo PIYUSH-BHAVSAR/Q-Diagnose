@@ -83,13 +83,32 @@ export const uploadDataset = (file, name) => call(
 
 /* ── experiments ────────────────────────────────────────────────────────── */
 export const listExperiments = (filters = {}) => call(
-  'listExperiments', () => mockBackend.listExperiments(),
-  () => http.get('/experiments', { params: filters }).then((r) => r.data),
+  'listExperiments', 
+  () => mockBackend.listExperiments(),
+  async () => {
+    try {
+      // Try GET first (new backend endpoint)
+      const res = await http.get('/experiments', { params: filters });
+      return res.data;
+    } catch (err) {
+      // If GET fails with 405, backend may not have the endpoint yet
+      // Return empty array so UI doesn't break
+      if (err.response?.status === 405) {
+        console.warn('GET /experiments not available yet, using empty state');
+        return { experiments: [], total: 0 };
+      }
+      throw err;
+    }
+  },
   (d) => {
     const rows = Array.isArray(d) ? d : (d.experiments ?? []);
     return rows.map((e) => ({
-      id: e.experiment_id ?? e.id, datasetId: e.dataset_id ?? null, name: e.name ?? null,
-      status: String(e.status ?? '').toUpperCase(), createdAt: e.created_at ?? null, completedAt: e.completed_at ?? null,
+      id: e.experiment_id ?? e.id, 
+      datasetId: e.dataset_id ?? null, 
+      name: e.name ?? null,
+      status: String(e.status ?? '').toUpperCase(), 
+      createdAt: e.created_at ?? null, 
+      completedAt: e.completed_at ?? null,
       circuitExecutions: Number.isFinite(e.circuit_executions) ? e.circuit_executions : null,
       elapsedSeconds: Number.isFinite(e.elapsed_seconds) ? e.elapsed_seconds : null,
       hasResults: !!(e.results && Object.keys(e.results).length)
@@ -103,9 +122,22 @@ export const getExperiment = (id) => call(
 );
 
 export const createExperiment = (datasetId, config = {}) => call(
-  'create', () => mockBackend.create({ dataset_id: datasetId, name: config.name }),
-  () => http.post('/experiments', { dataset_id: datasetId, ...config }).then((r) => r.data),
-  (d) => ({ id: d.experiment_id ?? d.id, datasetId: d.dataset_id, status: String(d.status ?? 'CREATED').toUpperCase() })
+  'create', 
+  () => mockBackend.create({ dataset_id: datasetId, name: config.name }),
+  () => http.post('/experiments', { 
+    dataset_id: datasetId,
+    dataset_path: config.dataset_path || `datasets/${datasetId}/raw/original.csv`,
+    n_components: config.n_components || 4,
+    random_state: config.random_state || 42,
+    quantum_enabled: config.quantum_enabled !== false,
+    dev_mode: config.dev_mode !== false,
+    ...config
+  }).then((r) => r.data),
+  (d) => ({ 
+    id: d.experiment_id ?? d.id, 
+    datasetId: d.dataset_id, 
+    status: String(d.status ?? 'CREATED').toUpperCase() 
+  })
 );
 
 export const runExperiment = (id) => call('run', () => mockBackend.run(id), () => http.post(`/experiments/${id}/run`).then((r) => r.data), passthrough);

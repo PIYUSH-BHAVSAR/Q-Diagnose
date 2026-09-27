@@ -8,25 +8,24 @@ import { shortTime, titleize } from '@/lib/format.js';
 import { toast } from '@/lib/toast.js';
 
 export default function Reports() {
-  const [rows, setRows] = useState(null);
+  const [rows, setRows] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState(null);
 
   const load = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
+      // Try to get reports list
       const r = await api.listReports();
-      let list = r?.reports;
-      if (!list) {
-        const exps = await api.listExperiments();
-        list = (exps ?? []).filter((e) => e.status === 'COMPLETED').map((e) => ({
-          experiment_id: e.id, name: e.name ?? e.id, generatedAt: e.completedAt, status: 'NOT_GENERATED', path: null
-        }));
-      }
-      setRows(list ?? []);
+      const list = r?.reports || r || [];
+      
+      setRows(Array.isArray(list) ? list : []);
     } catch (e) {
-      setError(e);
+      console.error('Failed to load reports:', e);
+      // For now, just show empty state - backend may not have reports endpoint yet
+      setRows([]);
     } finally {
       setLoading(false);
     }

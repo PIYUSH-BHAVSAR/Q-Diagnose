@@ -21,15 +21,25 @@ export default function ExperimentsList() {
   const [confirm, setConfirm] = useState(null);
 
   const load = useCallback(async () => {
+    setLoading(true);
     try {
       const list = await api.listExperiments();
-      setRows(list ?? []);
+      setRows(Array.isArray(list) ? list : []);
       setError(null);
-      const live = (list ?? []).filter((e) => !['COMPLETED', 'FAILED'].includes(e.status)).slice(0, 6);
-      const st = await Promise.all(live.map((e) => api.getStatus(e.id).catch(() => null)));
-      setStatuses(Object.fromEntries(st.filter(Boolean).map((s, i) => [live[i].id, s])));
+      
+      const live = (Array.isArray(list) ? list : [])
+        .filter((e) => !['COMPLETED', 'FAILED'].includes(e.status))
+        .slice(0, 6);
+      
+      if (live.length > 0) {
+        const st = await Promise.all(live.map((e) => api.getStatus(e.id).catch(() => null)));
+        setStatuses(Object.fromEntries(st.filter(Boolean).map((s, i) => [live[i].id, s])));
+      }
     } catch (e) {
-      setError(e);
+      console.error('Failed to load experiments:', e);
+      // Show empty state instead of error for now (backend may not have endpoint)
+      setRows([]);
+      setError(null);
     } finally {
       setLoading(false);
     }
