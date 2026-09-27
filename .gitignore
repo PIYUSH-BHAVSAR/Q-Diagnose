@@ -23,6 +23,7 @@
 #    ✗  Trained model artifacts (artifacts/)
 #    ✗  SQLite database (mvp.db)
 #    ✗  Python bytecode (__pycache__, *.pyc)
+#    ✗  Generated audit output (mvp/frontend/.audit-responsive/)
 #    ✗  IDE / OS metadata
 # ════════════════════════════════════════════════════════════
 
@@ -60,7 +61,10 @@ mvp/frontend/node_modules/
 mvp/frontend/dist/
 mvp/frontend/.vite/
 mvp/frontend/.cache/
-# Keep: package.json, vite.config.js, src/
+# `npm run test:responsive` writes its screenshots + report.json here; the audit is
+# reproducible from source, so the output never belongs in a commit.
+mvp/frontend/.audit-responsive/
+# Keep: package.json, package-lock.json, vite.config.js, src/, tests/
 
 
 # ── SQLite database (auto-created on first run) ──────────────
