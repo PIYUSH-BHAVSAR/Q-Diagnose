@@ -185,10 +185,8 @@ export const demoCsvUrl   = (name) => `${API_BASE}/demo/${name}`;
 
 /** Fetch the demo CSV blob so the UI can pass it straight into uploadDataset */
 export const fetchDemoCsv = async (name) => {
-  const res  = await fetch(`${API_BASE}/demo/${name}`);
-  if (!res.ok) throw new Error(`Demo fetch failed: ${res.status}`);
-  const blob = await res.blob();
-  return new File([blob], `${name}.csv`, { type: 'text/csv' });
+  const res  = await http.get(`/demo/${name}`, { responseType: 'blob' });
+  return new File([res.data], `${name}.csv`, { type: 'text/csv' });
 };
 
 export const getConfusion = (id, model) =>
