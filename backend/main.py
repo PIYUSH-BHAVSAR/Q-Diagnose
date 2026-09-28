@@ -197,6 +197,58 @@ def get_dataset_info(dataset_id: str, db: Session = Depends(get_db)):
 
 
 # ---------------------------------------------------------------------------
+# Demo CSV download  (GET /api/demo/breast-cancer.csv)
+# ---------------------------------------------------------------------------
+
+_DEMO_DATASETS = {
+    "breast-cancer": {
+        "filename": "breast_cancer.csv",
+        "description": "Breast Cancer Wisconsin Diagnostic · 569 rows · 30 features · binary classification",
+    },
+}
+
+@app.get("/api/demo/{name}", tags=["demo"])
+def download_demo_dataset(name: str):
+    """
+    Serve a bundled demo CSV so users can download and immediately upload it.
+    GET /api/demo/breast-cancer  → downloads breast_cancer.csv
+    """
+    meta = _DEMO_DATASETS.get(name)
+    if meta is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Demo dataset '{name}' not found. Available: {list(_DEMO_DATASETS.keys())}",
+        )
+    csv_path = config.demo_path / meta["filename"]
+    if not csv_path.exists():
+        raise HTTPException(
+            status_code=404,
+            detail=f"Demo file not found on disk: {csv_path}. Ensure data/demo/ is present.",
+        )
+    return FileResponse(
+        path=str(csv_path),
+        media_type="text/csv",
+        filename=meta["filename"],
+    )
+
+
+@app.get("/api/demo", tags=["demo"])
+def list_demo_datasets():
+    """List available demo datasets with their download URLs."""
+    return {
+        "demos": [
+            {
+                "name":        k,
+                "filename":    v["filename"],
+                "description": v["description"],
+                "download_url": f"/api/demo/{k}",
+            }
+            for k, v in _DEMO_DATASETS.items()
+        ]
+    }
+
+
+# ---------------------------------------------------------------------------
 # Exception handlers
 # ---------------------------------------------------------------------------
 

@@ -177,6 +177,20 @@ export const getRecommendation = (id, comparison) =>
 
 export const getCost = (_id) => Promise.resolve(null);  // not implemented in backend yet
 
+// Demo datasets — download URL served by backend
+export const listDemos    = () =>
+  live(() => http.get('/demo').then((r) => r.data.demos ?? []), passthrough).catch(() => []);
+
+export const demoCsvUrl   = (name) => `${API_BASE}/demo/${name}`;
+
+/** Fetch the demo CSV blob so the UI can pass it straight into uploadDataset */
+export const fetchDemoCsv = async (name) => {
+  const res  = await fetch(`${API_BASE}/demo/${name}`);
+  if (!res.ok) throw new Error(`Demo fetch failed: ${res.status}`);
+  const blob = await res.blob();
+  return new File([blob], `${name}.csv`, { type: 'text/csv' });
+};
+
 export const getConfusion = (id, model) =>
   http.get(`/experiments/${id}/confusion-matrix/${model}`)
     .then((r) => r.data)
@@ -204,6 +218,7 @@ export const fastForwardRun  = (_id) =>
 export const api = {
   getHealth, getConfig,
   listDatasets, getDataset, getProfile, validateDataset, getPlan, uploadDataset,
+  listDemos, demoCsvUrl, fetchDemoCsv,
   listExperiments, getExperiment, createExperiment, runExperiment,
   getStatus, getResults, loadResults, getMetrics, getComparison,
   getExplanation, getResources, getRecommendation, getCost, getConfusion, deleteExperiment,
