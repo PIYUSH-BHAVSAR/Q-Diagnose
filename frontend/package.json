@@ -1,0 +1,35 @@
+{
+  "name": "quantwarriors-frontend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test:adapters": "node tests/adapters.test.mjs",
+    "test": "vitest run",
+    "test:backend-shape": "SHAPE=backend vitest run",
+    "check": "npm run test:adapters && npm run test && npm run test:backend-shape && npm run test:live && npm run build",
+    "test:live": "node tests/live-backend.test.mjs",
+    "test:responsive": "node tests/responsive.audit.mjs",
+    "build:demo": "VITE_MOCK=1 vite build"
+  },
+  "dependencies": {
+    "axios": "^1.6.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.20.0"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@vitejs/plugin-react": "^4.2.0",
+    "jsdom": "^25.0.1",
+    "vite": "^5.0.0",
+    "vitest": "^2.1.9"
+  },
+  "description": "React + Vite frontend for the QuantWarriors hybrid quantum-classical benchmark platform"
+}

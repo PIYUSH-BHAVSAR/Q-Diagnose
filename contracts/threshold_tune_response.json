@@ -1,0 +1,40 @@
+{
+  "_comment": "Contract: POST /api/experiments/{id}/threshold-tune response schema",
+  "_description": "Response schema for decision threshold optimization (sensitivity vs specificity trade-off) (Deliverable 4)",
+  "experiment_id": "EXP-0001",
+  "target_sensitivity": 0.90,
+  "optimal_threshold": 0.21,
+  "achieved_sensitivity": 1.0,
+  "achieved_specificity": 0.25,
+  "achieved_accuracy": 0.625,
+  "achieved_f1_score": 0.7273,
+  "confusion_matrix": {
+    "tp": 8,
+    "fp": 3,
+    "tn": 1,
+    "fn": 0
+  },
+  "threshold_grid": [
+    {
+      "threshold": 0.05,
+      "sensitivity": 1.0,
+      "specificity": 0.0,
+      "f1_score": 0.6667,
+      "accuracy": 0.5
+    },
+    {
+      "threshold": 0.21,
+      "sensitivity": 1.0,
+      "specificity": 0.25,
+      "f1_score": 0.7273,
+      "accuracy": 0.625
+    },
+    {
+      "threshold": 0.5,
+      "sensitivity": 0.75,
+      "specificity": 0.75,
+      "f1_score": 0.75,
+      "accuracy": 0.75
+    }
+  ]
+}

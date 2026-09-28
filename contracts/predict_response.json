@@ -1,0 +1,17 @@
+{
+  "_comment": "Contract: POST /api/experiments/{id}/predict response schema",
+  "_description": "Response schema for live single-patient disease risk stratification & scoring (Deliverable 4)",
+  "experiment_id": "EXP-0001",
+  "model_used": "VQC",
+  "prediction": 1,
+  "prediction_label": "POSITIVE (Disease Detected)",
+  "probability_score": 0.8421,
+  "decision_threshold": 0.35,
+  "risk_stratification": {
+    "probability_score": 0.8421,
+    "risk_level": "HIGH_RISK",
+    "action_recommendation": "Urgent diagnostic confirmation and specialist referral required.",
+    "color_code": "#dc2626"
+  },
+  "timestamp": "2026-09-27T16:40:00Z"
+}

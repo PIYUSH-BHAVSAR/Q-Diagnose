@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <title>QuantWarriors · Quantum ML for biomedical decision support</title>
+    <meta name="description" content="Train, benchmark and explain quantum machine learning models on clinical tabular datasets — with honest, uncalibrated decision support, never a diagnosis." />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2306070a'/%3E%3Ccircle cx='16' cy='16' r='9.5' fill='none' stroke='%2322d3ee' stroke-width='2'/%3E%3Cpath d='M19.5 19.5 24 24' stroke='%239d7bff' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#06070a" />
+    <meta name="color-scheme" content="dark light" />
+    <meta property="og:title" content="QuantWarriors · QML biomedical platform" />
+    <meta property="og:description" content="Benchmark classical vs quantum models on clinical tables, with SHAP explanations and explicit calibration caveats." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" />
+    <script>
+      /* Applied before first paint so a saved light theme never flashes dark,
+         and the browser chrome colour follows the same choice. */
+      (function () {
+        try {
+          var t = localStorage.getItem('qw.theme') || 'dark';
+          document.documentElement.dataset.theme = t;
+          var m = document.querySelector('meta[name=theme-color]');
+          if (m && t === 'light') m.setAttribute('content', '#f7f8fa');
+        } catch (e) { /* private mode / storage disabled — stay dark */ }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>Q-Diagnose is an interactive benchmarking console — please enable JavaScript.</noscript>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
