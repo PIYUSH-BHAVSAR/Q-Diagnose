@@ -12,7 +12,7 @@ import {
   adaptExplanation, adaptResources, adaptRecommendation, adaptReport, adaptError, adaptQuantum
 } from '@/lib/adapters.js';
 
-const API_BASE = '/api';
+const API_BASE = (import.meta.env.VITE_API || '') + '/api';
 const wantMock = import.meta.env.VITE_MOCK === '1';
 const USE_SHAPE = import.meta.env.VITE_SHAPE === 'backend' ? 'backend' : 'contract';
 
